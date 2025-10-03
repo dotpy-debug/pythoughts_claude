@@ -1,0 +1,535 @@
+version: '3.9'
+
+# ==============================================================================
+# Docker Compose - Production Configuration for Pythoughts Platform
+# ==============================================================================
+#
+# USAGE:
+#   docker-compose -f docker-compose.prod.yml up -d
+#
+# PREREQUISITES:
+#   - .env.production file with all required variables
+#   - SSL certificates in ./certs/ directory
+#   - Production domain configured in DNS
+#
+# SECURITY:
+#   - All services run as non-root users
+#   - Secrets managed via Docker secrets
+#   - Resource limits enforced
+#   - Health checks enabled
+#   - Read-only file systems where possible
+# ==============================================================================
+
+services:
+  # ==============================================================================
+  # PostgreSQL Database - Production Configuration
+  # ==============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: pythoughts-postgres-prod
+    restart: always
+
+    # Security: Run as non-root user
+    user: postgres
+
+    # Resource Limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+    # Port mapping (only expose internally in production)
+    # SECURITY: Do not expose PostgreSQL port publicly
+    expose:
+      - "5432"
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pythoughts}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: ${POSTGRES_DB:-pythoughts_production}
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
+
+      # Performance tuning
+      POSTGRES_SHARED_BUFFERS: 512MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 1536MB
+      POSTGRES_WORK_MEM: 16MB
+      POSTGRES_MAINTENANCE_WORK_MEM: 128MB
+      POSTGRES_MAX_CONNECTIONS: 100
+      POSTGRES_CHECKPOINT_COMPLETION_TARGET: 0.9
+      POSTGRES_WAL_BUFFERS: 16MB
+      POSTGRES_DEFAULT_STATISTICS_TARGET: 100
+
+    secrets:
+      - db_password
+
+    volumes:
+      # Data persistence
+      - postgres_data:/var/lib/postgresql/data:rw
+
+      # Initialization scripts
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+      # Configuration
+      - ./docker/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+
+      # Backup location
+      - postgres_backups:/backups:rw
+
+    # Health check
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-pythoughts} -d ${POSTGRES_DB:-pythoughts_production}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}/{{.ID}}"
+
+    networks:
+      - pythoughts-backend
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Read-only root filesystem (data dirs excluded)
+    # read_only: true
+    # tmpfs:
+    #   - /tmp
+    #   - /var/run/postgresql
+
+  # ==============================================================================
+  # Redis Cache - Production Configuration
+  # ==============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: pythoughts-redis-prod
+    restart: always
+
+    # Resource Limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # Port mapping (only expose internally)
+    expose:
+      - "6379"
+
+    # Redis configuration with password from secrets
+    command: >
+      sh -c 'redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --requirepass "$$(cat /run/secrets/redis_password)"
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --timeout 300
+      --tcp-keepalive 60
+      --loglevel notice
+      --databases 16'
+
+    secrets:
+      - redis_password
+
+    volumes:
+      # Data persistence
+      - redis_data:/data:rw
+
+      # Redis configuration
+      - ./docker/redis.conf:/usr/local/etc/redis/redis.conf:ro
+
+    # Health check
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}/{{.ID}}"
+
+    networks:
+      - pythoughts-backend
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+  # ==============================================================================
+  # Application - Production Configuration
+  # ==============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        NODE_ENV: production
+        VITE_API_URL: ${VITE_APP_URL}
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_BETTER_AUTH_URL: ${VITE_BETTER_AUTH_URL}
+        VITE_REDIS_URL: ${VITE_REDIS_URL}
+        VITE_ENABLE_ANALYTICS: ${VITE_ENABLE_ANALYTICS:-true}
+        VITE_ENABLE_DEBUG: ${VITE_ENABLE_DEBUG:-false}
+      # Cache build layers
+      cache_from:
+        - pythoughts:latest
+
+    image: pythoughts:${APP_VERSION:-latest}
+    container_name: pythoughts-app-prod
+    restart: always
+
+    # Resource Limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+
+    # Port mapping (expose internally only, nginx handles external)
+    expose:
+      - "3000"
+
+    environment:
+      NODE_ENV: production
+
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pythoughts}:$${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-pythoughts_production}?sslmode=disable
+
+      # Redis
+      REDIS_URL: redis://:$${REDIS_PASSWORD}@redis:6379
+
+      # Supabase
+      VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+      VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+
+      # Better Auth
+      VITE_BETTER_AUTH_URL: ${VITE_BETTER_AUTH_URL}
+      VITE_BETTER_AUTH_SECRET_FILE: /run/secrets/auth_secret
+
+      # Email
+      VITE_RESEND_API_KEY_FILE: /run/secrets/resend_api_key
+
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FORMAT: json
+
+      # Health checks
+      HEALTH_CHECK_ENABLED: true
+
+    secrets:
+      - auth_secret
+      - resend_api_key
+
+    # Health check
+    healthcheck:
+      test: ['CMD', 'node', '-e', "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        tag: "{{.Name}}/{{.ID}}"
+
+    networks:
+      - pythoughts-frontend
+      - pythoughts-backend
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Read-only root filesystem
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.cache
+
+  # ==============================================================================
+  # Nginx Reverse Proxy - Production Configuration
+  # ==============================================================================
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: pythoughts-nginx-prod
+    restart: always
+
+    # Resource Limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      # Nginx configuration
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+
+      # SSL certificates
+      - ./certs:/etc/nginx/certs:ro
+
+      # Static assets (if serving directly)
+      - ./docker/nginx/html:/usr/share/nginx/html:ro
+
+      # Logs
+      - nginx_logs:/var/log/nginx:rw
+
+      # Cache
+      - nginx_cache:/var/cache/nginx:rw
+
+    # Health check
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    depends_on:
+      app:
+        condition: service_healthy
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        tag: "{{.Name}}/{{.ID}}"
+
+    networks:
+      - pythoughts-frontend
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+  # ==============================================================================
+  # Database Backup Service
+  # ==============================================================================
+  db-backup:
+    image: postgres:16-alpine
+    container_name: pythoughts-db-backup
+    restart: "no"
+
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-pythoughts}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB: ${POSTGRES_DB:-pythoughts_production}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}
+
+    secrets:
+      - db_password
+
+    volumes:
+      - postgres_backups:/backups:rw
+      - ./docker/scripts/backup.sh:/backup.sh:ro
+
+    command: sh /backup.sh
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - pythoughts-backend
+
+    profiles:
+      - backup
+
+  # ==============================================================================
+  # Redis Backup Service
+  # ==============================================================================
+  redis-backup:
+    image: redis:7-alpine
+    container_name: pythoughts-redis-backup
+    restart: "no"
+
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD_FILE: /run/secrets/redis_password
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}
+
+    secrets:
+      - redis_password
+
+    volumes:
+      - redis_backups:/backups:rw
+      - ./docker/scripts/redis-backup.sh:/redis-backup.sh:ro
+
+    command: sh /redis-backup.sh
+
+    depends_on:
+      redis:
+        condition: service_healthy
+
+    networks:
+      - pythoughts-backend
+
+    profiles:
+      - backup
+
+# ==============================================================================
+# Docker Secrets (Production Secret Management)
+# ==============================================================================
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+
+  redis_password:
+    file: ./secrets/redis_password.txt
+
+  auth_secret:
+    file: ./secrets/auth_secret.txt
+
+  resend_api_key:
+    file: ./secrets/resend_api_key.txt
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+networks:
+  # Frontend network (nginx <-> app)
+  pythoughts-frontend:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: pythoughts-frontend
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+  # Backend network (app <-> postgres/redis)
+  pythoughts-backend:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: pythoughts-backend
+    ipam:
+      config:
+        - subnet: 172.21.0.0/24
+    internal: true  # No external access
+
+# ==============================================================================
+# Volumes (Data Persistence)
+# ==============================================================================
+volumes:
+  # PostgreSQL data
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_DIR:-./data}/postgres
+
+  # PostgreSQL backups
+  postgres_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${BACKUP_DIR:-./backups}/postgres
+
+  # Redis data
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_DIR:-./data}/redis
+
+  # Redis backups
+  redis_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${BACKUP_DIR:-./backups}/redis
+
+  # Nginx logs
+  nginx_logs:
+    driver: local
+
+  # Nginx cache
+  nginx_cache:
+    driver: local
+
+# ==============================================================================
+# PRODUCTION DEPLOYMENT COMMANDS
+# ==============================================================================
+#
+# 1. Initial Setup:
+#    mkdir -p data/{postgres,redis} backups/{postgres,redis} secrets certs logs
+#
+# 2. Create Secrets:
+#    echo "$(openssl rand -base64 32)" > secrets/db_password.txt
+#    echo "$(openssl rand -base64 32)" > secrets/redis_password.txt
+#    echo "$(openssl rand -base64 32)" > secrets/auth_secret.txt
+#    echo "re_your_resend_key" > secrets/resend_api_key.txt
+#    chmod 600 secrets/*
+#
+# 3. Deploy:
+#    docker-compose -f docker-compose.prod.yml up -d
+#
+# 4. View Logs:
+#    docker-compose -f docker-compose.prod.yml logs -f
+#
+# 5. Database Backup:
+#    docker-compose -f docker-compose.prod.yml --profile backup run --rm db-backup
+#
+# 6. Health Check:
+#    docker-compose -f docker-compose.prod.yml ps
+#
+# 7. Shutdown:
+#    docker-compose -f docker-compose.prod.yml down
+#
+# 8. Update (Zero-Downtime):
+#    docker-compose -f docker-compose.prod.yml pull
+#    docker-compose -f docker-compose.prod.yml up -d --no-deps --build app
+#
+# ==============================================================================

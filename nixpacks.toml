@@ -1,0 +1,63 @@
+# Nixpacks Configuration for Pythoughts Platform
+# Used by Railway, Render, and other platforms that support Nixpacks
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "npm-9_x"]
+
+[phases.install]
+cmds = [
+  "npm ci --prefer-offline --no-audit"
+]
+
+[phases.build]
+cmds = [
+  "npm run build"
+]
+
+[start]
+cmd = "npm run preview"
+
+[variables]
+# Node environment
+NODE_ENV = "production"
+
+# Build optimization
+NODE_OPTIONS = "--max-old-space-size=4096"
+
+# Vite configuration
+VITE_BUILD_SOURCEMAP = "false"
+
+[health_check]
+path = "/"
+interval = 30
+timeout = 10
+retries = 3
+
+# Static file serving configuration
+[static]
+# Serve built assets from dist directory
+dir = "dist"
+
+# Cache static assets for 1 year
+[[static.headers]]
+path = "/assets/*"
+headers = [
+  "Cache-Control: public, max-age=31536000, immutable"
+]
+
+# Cache HTML for 5 minutes
+[[static.headers]]
+path = "*.html"
+headers = [
+  "Cache-Control: public, max-age=300"
+]
+
+# Security headers for all responses
+[[static.headers]]
+path = "/*"
+headers = [
+  "X-Frame-Options: DENY",
+  "X-Content-Type-Options: nosniff",
+  "Referrer-Policy: strict-origin-when-cross-origin",
+  "Permissions-Policy: camera=(), microphone=(), geolocation=()"
+]
