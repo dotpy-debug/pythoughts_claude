@@ -22,7 +22,7 @@ export const handlers = [
   }),
 
   http.post(`${API_URL}/api/auth/signup`, async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
 
     return HttpResponse.json({
       user: {
@@ -77,7 +77,7 @@ export const handlers = [
   }),
 
   http.post(`${API_URL}/api/posts`, async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
 
     const newPost = {
       id: `post-${Date.now()}`,
@@ -95,7 +95,7 @@ export const handlers = [
   }),
 
   http.patch(`${API_URL}/api/posts/:id`, async ({ params, request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
     const post = mockPosts.find((p) => p.id === params.id);
 
     if (!post) {
@@ -134,7 +134,7 @@ export const handlers = [
   }),
 
   http.post(`${API_URL}/api/posts/:postId/comments`, async ({ params, request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
 
     const newComment = {
       id: `comment-${Date.now()}`,
@@ -176,7 +176,7 @@ export const handlers = [
   }),
 
   http.post(`${API_URL}/api/tasks`, async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
 
     const newTask = {
       id: `task-${Date.now()}`,
@@ -202,7 +202,7 @@ export const handlers = [
 
   // Reaction handlers
   http.post(`${API_URL}/api/posts/:id/reactions`, async ({ request }) => {
-    const body = await request.json() as any;
+    const body = await request.json() as Record<string, unknown>;
 
     return HttpResponse.json({
       success: true,

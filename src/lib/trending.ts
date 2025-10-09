@@ -171,10 +171,12 @@ export async function getTrendingPosts(
   }
 
   // Transform the data to match Post type (profiles is returned as array from Supabase)
-  const posts: Post[] = (data || []).map((item: any) => ({
-    ...item,
-    profiles: Array.isArray(item.profiles) ? item.profiles[0] : item.profiles,
-  }));
+  const posts: Post[] = (data || []).map((item) => ({
+    ...(item as unknown as Post),
+    profiles: Array.isArray((item as { profiles?: unknown }).profiles)
+      ? (item as { profiles: unknown[] }).profiles[0]
+      : (item as { profiles?: unknown }).profiles,
+  })) as Post[];
 
   // Step 3: Cache the result
   await cacheSet(cacheKey, posts, TRENDING_CONSTANTS.CACHE_TTL);
@@ -235,10 +237,12 @@ export async function getTrendingPostsByCategory(
   }
 
   // Transform the data to match Post type (profiles is returned as array from Supabase)
-  const posts: Post[] = (data || []).map((item: any) => ({
-    ...item,
-    profiles: Array.isArray(item.profiles) ? item.profiles[0] : item.profiles,
-  }));
+  const posts: Post[] = (data || []).map((item) => ({
+    ...(item as unknown as Post),
+    profiles: Array.isArray((item as { profiles?: unknown }).profiles)
+      ? (item as { profiles: unknown[] }).profiles[0]
+      : (item as { profiles?: unknown }).profiles,
+  })) as Post[];
   await cacheSet(cacheKey, posts, TRENDING_CONSTANTS.CACHE_TTL);
 
   return posts;

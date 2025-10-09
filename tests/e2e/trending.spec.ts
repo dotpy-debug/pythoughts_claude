@@ -34,17 +34,19 @@ test.describe('Trending Algorithm Validation', () => {
 
     // Verify posts are ordered by engagement
     // (This assumes posts display engagement metrics)
-    const firstPostEngagement = await posts
+    const _firstPostEngagement = await posts
       .first()
       .locator('[data-testid="engagement-score"], .engagement')
       .first()
       .textContent();
+    void _firstPostEngagement; // Could be used for engagement comparison
 
-    const lastPostEngagement = await posts
+    const _lastPostEngagement = await posts
       .last()
       .locator('[data-testid="engagement-score"], .engagement')
       .first()
       .textContent();
+    void _lastPostEngagement; // Could be used for engagement comparison
 
     // First post should have higher or equal engagement than last
     // Note: This is a simplified check, actual implementation may vary
@@ -215,10 +217,11 @@ test.describe('Trending Algorithm Validation', () => {
 
     // Get first post title
     const firstPost = page.locator('[data-testid="post-card"], article').first();
-    const firstTitle = await firstPost
+    const _firstTitle = await firstPost
       .locator('h2, h3, [data-testid="post-title"]')
       .first()
       .textContent();
+    void _firstTitle; // Could be used for title comparison after reload
 
     // Reload page
     await page.reload();

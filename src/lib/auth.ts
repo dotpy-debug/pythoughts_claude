@@ -471,10 +471,10 @@ export type Auth = typeof auth;
 // We need to extract the actual session data from the Data wrapper
 type SessionResponse = Awaited<ReturnType<typeof auth.api.getSession>>;
 export type Session = SessionResponse extends { data: infer D }
-  ? D extends { user: any; session: any }
+  ? D extends { user: unknown; session: unknown }
     ? D
     : never
-  : SessionResponse extends { user: any; session: any }
+  : SessionResponse extends { user: unknown; session: unknown }
     ? SessionResponse
     : never;
 

@@ -99,7 +99,7 @@ export function isStrongPassword(password: string): boolean {
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumbers = /\d/.test(password);
-  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
 
   return (
     password.length >= minLength &&
@@ -251,21 +251,23 @@ export function isValidSessionToken(token: string): boolean {
 /**
  * Sanitize error messages to prevent information disclosure
  */
-export function sanitizeErrorMessage(error: any): string {
+export function sanitizeErrorMessage(error: unknown): string {
   // In production, never expose internal error details
   if (process.env.NODE_ENV === 'production') {
     return 'An error occurred. Please try again later.';
   }
 
   if (typeof error === 'string') return error;
-  if (error?.message) return error.message;
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String((error as { message: unknown }).message);
+  }
   return 'An unknown error occurred';
 }
 
 /**
  * Check if error is safe to display to user
  */
-export function isSafeError(error: any): boolean {
+export function isSafeError(error: unknown): boolean {
   const safeErrorMessages = [
     'Invalid email or password',
     'Username already exists',
@@ -276,7 +278,12 @@ export function isSafeError(error: any): boolean {
     'Invalid input',
   ];
 
-  const message = error?.message || String(error);
+  let message = '';
+  if (error && typeof error === 'object' && 'message' in error) {
+    message = String((error as { message: unknown }).message);
+  } else {
+    message = String(error);
+  }
   return safeErrorMessages.some(safe => message.includes(safe));
 }
 
@@ -297,13 +304,13 @@ export function maskEmail(email: string): string {
 /**
  * Remove sensitive data from objects before logging
  */
-export function removeSensitiveData(obj: any): any {
+export function removeSensitiveData<T extends Record<string, unknown>>(obj: T): T {
   const sensitive = ['password', 'token', 'secret', 'apiKey', 'accessToken', 'refreshToken'];
   const cleaned = { ...obj };
 
   for (const key in cleaned) {
     if (sensitive.some(s => key.toLowerCase().includes(s.toLowerCase()))) {
-      cleaned[key] = '[REDACTED]';
+      cleaned[key] = '[REDACTED]' as T[Extract<keyof T, string>];
     }
   }
 

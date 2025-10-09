@@ -27,7 +27,7 @@ export type LogLevelString = 'debug' | 'info' | 'warn' | 'error' | 'fatal';
  * Metadata that can be attached to log messages
  */
 export interface LogMetadata {
-  [key: string]: any;
+  [key: string]: unknown;
   error?: Error;
   stack?: string;
   timestamp?: string;
@@ -208,7 +208,7 @@ class Logger {
    * Pretty prints log entry for development
    */
   private prettyPrint(
-    consoleMethod: (...args: any[]) => void,
+    consoleMethod: (...args: unknown[]) => void,
     level: LogLevel,
     entry: LogEntry
   ): void {
@@ -232,7 +232,8 @@ class Logger {
 
     // Log metadata if present
     if (entry.metadata && Object.keys(entry.metadata).length > 1) { // > 1 because timestamp is always there
-      const { timestamp: _, error, stack, ...restMetadata } = entry.metadata;
+      const { timestamp, error, stack, ...restMetadata } = entry.metadata;
+      void timestamp; // Mark as intentionally unused
 
       if (Object.keys(restMetadata).length > 0) {
         console.log('  Metadata:', restMetadata);
@@ -251,7 +252,7 @@ class Logger {
   /**
    * Prints structured JSON log entry for production
    */
-  private structuredPrint(consoleMethod: (...args: any[]) => void, entry: LogEntry): void {
+  private structuredPrint(consoleMethod: (...args: unknown[]) => void, entry: LogEntry): void {
     // Serialize error objects properly
     const serializedEntry = {
       ...entry,
@@ -264,17 +265,24 @@ class Logger {
   /**
    * Serializes metadata, handling Error objects
    */
-  private serializeMetadata(metadata: LogMetadata): Record<string, any> {
-    const serialized: Record<string, any> = {};
+  private serializeMetadata(metadata: LogMetadata): Record<string, unknown> {
+    const serialized: Record<string, unknown> = {};
 
     for (const [key, value] of Object.entries(metadata)) {
       if (value instanceof Error) {
-        serialized[key] = {
+        // Serialize Error with its basic properties
+        const errorObj: Record<string, unknown> = {
           name: value.name,
           message: value.message,
           stack: value.stack,
-          ...(value as any), // Include any custom properties
         };
+        // Include any custom properties from the error
+        Object.keys(value).forEach(errKey => {
+          if (!['name', 'message', 'stack'].includes(errKey)) {
+            errorObj[errKey] = (value as unknown as Record<string, unknown>)[errKey];
+          }
+        });
+        serialized[key] = errorObj;
       } else if (value !== undefined) {
         serialized[key] = value;
       }
@@ -286,7 +294,7 @@ class Logger {
   /**
    * Gets the console method for a log level
    */
-  private getConsoleMethod(level: LogLevel): (...args: any[]) => void {
+  private getConsoleMethod(level: LogLevel): (...args: unknown[]) => void {
     switch (level) {
       case LogLevel.DEBUG:
         return console.debug;

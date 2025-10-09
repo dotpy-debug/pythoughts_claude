@@ -273,7 +273,7 @@ export async function sendVerificationEmail(email: string) {
 /**
  * Example: Creating a standardized success response
  */
-export function createPostResponse(post: any): SuccessResponse {
+export function createPostResponse(post: Record<string, unknown>): SuccessResponse {
   return toSuccessResponse(post, {
     action: 'create_post',
     requestId: crypto.randomUUID(),
@@ -389,7 +389,7 @@ export async function complexOperation(userId: string) {
   }
 }
 
-async function performComplexTask(userId: string): Promise<any> {
+async function performComplexTask(userId: string): Promise<{ userId: string }> {
   // Placeholder for complex task
   return { userId };
 }
@@ -458,7 +458,7 @@ export async function apiGetUserPosts(
 export async function handleFormSubmit(
   formData: { title: string; content: string },
   userId: string
-): Promise<{ success: boolean; data?: any; error?: string; fields?: Record<string, string[]> }> {
+): Promise<{ success: boolean; data?: Record<string, unknown>; error?: string; fields?: Record<string, string[]> }> {
   try {
     const response = await apiCreatePost(
       formData.title,
@@ -477,9 +477,10 @@ export async function handleFormSubmit(
 
     return {
       success: true,
-      data: response.data,
+      data: response.data as Record<string, unknown>,
     };
-  } catch (error) {
+  } catch (_error) {
+    void _error; // Intentionally unused - caught for error boundary
     return {
       success: false,
       error: 'An unexpected error occurred',

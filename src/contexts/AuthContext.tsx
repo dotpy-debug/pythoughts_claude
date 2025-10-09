@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profileError) return { error: null }; // Convert to AuthError | null
 
       return { error: null };
-    } catch (error) {
+    } catch {
       // Return null for errors - Supabase already handles auth errors via the error property
       return { error: null };
     }

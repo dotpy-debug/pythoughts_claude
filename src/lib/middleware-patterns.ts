@@ -59,7 +59,7 @@ export type Middleware<TInput> = (
 /**
  * Authentication middleware - verifies user session
  */
-export const withAuth: Middleware<any> = async (_input, context) => {
+export const withAuth: Middleware<unknown> = async (_input, context) => {
   const { data: { session }, error } = await supabase.auth.getSession();
 
   if (error || !session) {
@@ -78,7 +78,7 @@ const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 export const createRateLimitMiddleware = (
   maxRequests: number = 100,
   windowMs: number = 60000
-): Middleware<any> => {
+): Middleware<unknown> => {
   return async (_input, context) => {
     const key = context.userId || context.ip || 'anonymous';
     const now = Date.now();
@@ -108,7 +108,7 @@ export const createRateLimitMiddleware = (
 /**
  * Request logging middleware - logs all requests
  */
-export const withRequestLogging: Middleware<any> = async (_input, context) => {
+export const withRequestLogging: Middleware<unknown> = async (_input, context) => {
   logger.info('Request received', {
     requestId: context.requestId,
     userId: context.userId,
@@ -123,6 +123,7 @@ export const createValidationMiddleware = <TInput>(
   validator: (input: TInput) => void | Promise<void>
 ): Middleware<TInput> => {
   return async (input, _context) => {
+    void _context; // Intentionally unused - middleware signature requires it
     try {
       await validator(input);
     } catch (error) {
@@ -222,6 +223,7 @@ export function createHandler<TInput, TOutput>(
  */
 export const getPosts = createHandler(
   async (input: { limit: number }, _context) => {
+    void _context; // Intentionally unused - handler signature requires it
     const { data, error } = await supabase
       .from('posts')
       .select('*')
@@ -403,6 +405,7 @@ export async function executeBatch<T>(
 
   for (const chunk of chunks) {
     const promises = chunk.map(async (op, _index) => {
+      void _index; // Intentionally unused - map signature provides it
       try {
         const result = await op();
         results.push(result);
@@ -548,7 +551,7 @@ export async function createPostWithTags(
   content: string,
   tags: string[],
   userId: string
-): Promise<any> {
+): Promise<unknown[]> {
   let postId: string | null = null;
   let tagIds: string[] = [];
 
@@ -584,7 +587,7 @@ export async function createPostWithTags(
           .select();
 
         if (error) throw new AppError('Failed to create tags');
-        tagIds = data.map((t: any) => t.id);
+        tagIds = data.map((t: Record<string, unknown> & { id: string }) => t.id);
         return data;
       },
       rollback: async () => {

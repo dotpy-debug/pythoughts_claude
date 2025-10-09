@@ -119,7 +119,7 @@ export type TaskActivity = {
   task_id: string;
   user_id: string;
   action: string;
-  changes: Record<string, any>;
+  changes: Record<string, unknown>;
   created_at: string;
   profiles?: Profile;
 };

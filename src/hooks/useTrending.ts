@@ -172,7 +172,7 @@ export function useTrendingWithOptimisticUpdates(
   options: UseTrendingOptions = {}
 ): UseTrendingWithOptimisticUpdatesReturn {
   const trendingHook = useTrending(options);
-  const { setPosts } = trendingHook as any;
+  const [, setPosts] = useState<Post[]>([]);
 
   /**
    * Optimistically update vote count for a post

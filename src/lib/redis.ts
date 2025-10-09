@@ -135,7 +135,7 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
 /**
  * Sets a cached value with TTL and proper error handling
  */
-export async function cacheSet(key: string, value: any, ttl: number = CACHE_TTL.MEDIUM): Promise<void> {
+export async function cacheSet(key: string, value: unknown, ttl: number = CACHE_TTL.MEDIUM): Promise<void> {
   try {
     const redis = getRedisClient();
     await withRetry(

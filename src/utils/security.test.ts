@@ -14,6 +14,7 @@ import {
   isValidSessionToken,
   maskEmail,
   removeSensitiveData,
+  cleanupRateLimitStore,
 } from './security';
 
 describe('Security Utilities', () => {
@@ -166,7 +167,6 @@ describe('Security Utilities', () => {
   describe('checkRateLimit', () => {
     beforeEach(() => {
       // Clear rate limit store before each test
-      const { cleanupRateLimitStore } = require('./security');
       cleanupRateLimitStore();
     });
 

@@ -1,7 +1,7 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 import { cn } from '../../lib/utils';
 
-export interface ShadcnInputProps extends InputHTMLAttributes<HTMLInputElement> {}
+export type ShadcnInputProps = InputHTMLAttributes<HTMLInputElement>;
 
 export const ShadcnInput = forwardRef<HTMLInputElement, ShadcnInputProps>(
   ({ className, type, ...props }, ref) => {

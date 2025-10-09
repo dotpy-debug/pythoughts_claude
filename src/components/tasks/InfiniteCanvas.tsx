@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import { Plus, ZoomIn, ZoomOut, Maximize } from 'lucide-react';
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import { ShadcnButton } from '../ui/ShadcnButton';
@@ -23,7 +23,7 @@ type InfiniteCanvasProps = {
 
 export function InfiniteCanvas({ tasks, onTaskMove, onTaskClick, onAddTask }: InfiniteCanvasProps) {
   const [scale, setScale] = useState(1);
-  const transformRef = useRef<any>(null);
+  const transformRef = useRef<ReactZoomPanPinchRef>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

@@ -280,20 +280,20 @@ export interface ErrorResponse {
     statusCode: number;
     timestamp: string;
     fields?: Record<string, string[]>;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   };
 }
 
 /**
  * Standard success response format
  */
-export interface SuccessResponse<T = any> {
+export interface SuccessResponse<T = unknown> {
   success: true;
   data: T;
   metadata?: {
     timestamp?: string;
     requestId?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -304,7 +304,7 @@ export class ErrorLogger {
   /**
    * Logs an error with appropriate level and metadata
    */
-  static log(error: Error | AppError, context?: string, metadata?: Record<string, any>): void {
+  static log(error: Error | AppError, context?: string, metadata?: Record<string, unknown>): void {
     const errorMetadata = {
       context,
       ...metadata,
@@ -345,7 +345,7 @@ export class ErrorLogger {
   static logValidation(
     error: ValidationError,
     context?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): void {
     logger.warn(error.message, {
       context,
@@ -360,7 +360,7 @@ export class ErrorLogger {
   static logDatabase(
     error: DatabaseError,
     context?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): void {
     logger.error(error.message, error, {
       context,
@@ -376,7 +376,7 @@ export class ErrorLogger {
   static logExternalService(
     error: ExternalServiceError,
     context?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): void {
     logger.error(error.message, error.originalError || error, {
       context,
@@ -420,7 +420,7 @@ export async function withErrorHandling<T>(
 /**
  * Wraps a function with error handling
  */
-export function withErrorBoundary<TArgs extends any[], TReturn>(
+export function withErrorBoundary<TArgs extends unknown[], TReturn>(
   fn: (...args: TArgs) => Promise<TReturn>,
   context: string
 ): (...args: TArgs) => Promise<TReturn> {
@@ -504,7 +504,7 @@ export function toErrorResponse(error: unknown): ErrorResponse {
  */
 export function toSuccessResponse<T>(
   data: T,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ): SuccessResponse<T> {
   return {
     success: true,

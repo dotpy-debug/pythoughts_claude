@@ -109,7 +109,7 @@ export function CreateTaskModal({ isOpen, onClose, onTaskCreated }: CreateTaskMo
             </label>
             <select
               value={priority}
-              onChange={(e) => setPriority(e.target.value as any)}
+              onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high' | 'urgent')}
               className="w-full px-4 py-2.5 rounded border border-gray-700 bg-gray-800 text-gray-100 focus:border-terminal-green focus:ring-2 focus:ring-terminal-green/20 transition-all duration-200 outline-none font-mono"
             >
               <option value="low">Low</option>
