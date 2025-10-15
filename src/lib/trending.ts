@@ -133,24 +133,11 @@ export async function getTrendingPosts(
 
   console.log('[Trending] Cache MISS for trending posts - querying database');
 
-  // Step 2: Query from materialized view with comprehensive joins
+  // Step 2: Query from posts table directly since view may not exist
   const { data, error } = await supabase
-    .from('trending_posts_view')
+    .from('posts')
     .select(`
-      id,
-      title,
-      content,
-      author_id,
-      post_type,
-      image_url,
-      category,
-      is_published,
-      vote_count,
-      comment_count,
-      reaction_count,
-      trending_score,
-      created_at,
-      updated_at,
+      *,
       profiles:author_id (
         id,
         username,
@@ -161,7 +148,8 @@ export async function getTrendingPosts(
       )
     `)
     .eq('is_published', true)
-    .order('trending_score', { ascending: false })
+    .eq('is_draft', false)
+    .order('vote_count', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(limit);
 
@@ -198,22 +186,9 @@ export async function getTrendingPostsByCategory(
   }
 
   const { data, error } = await supabase
-    .from('trending_posts_view')
+    .from('posts')
     .select(`
-      id,
-      title,
-      content,
-      author_id,
-      post_type,
-      image_url,
-      category,
-      is_published,
-      vote_count,
-      comment_count,
-      reaction_count,
-      trending_score,
-      created_at,
-      updated_at,
+      *,
       profiles:author_id (
         id,
         username,
@@ -224,8 +199,9 @@ export async function getTrendingPostsByCategory(
       )
     `)
     .eq('is_published', true)
+    .eq('is_draft', false)
     .eq('category', category)
-    .order('trending_score', { ascending: false })
+    .order('vote_count', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(limit);
 
