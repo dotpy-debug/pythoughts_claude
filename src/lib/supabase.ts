@@ -46,11 +46,22 @@ export type Post = {
   image_url: string;
   category: string;
   is_published: boolean;
+  is_draft: boolean;
+  published_at: string;
+  reading_time_minutes: number;
+  subtitle: string;
+  seo_title: string;
+  seo_description: string;
+  canonical_url: string;
+  featured: boolean;
   vote_count: number;
   comment_count: number;
   created_at: string;
   updated_at: string;
   profiles?: Profile;
+  post_stats?: PostStats;
+  tags?: Tag[];
+  series?: Series[];
 };
 
 export type Comment = {
@@ -201,5 +212,201 @@ export type CanvasTask = {
   color: string;
   user_id: string;
   created_at: string;
+  updated_at: string;
+};
+
+export type PostDraft = {
+  id: string;
+  title: string;
+  content: string;
+  author_id: string;
+  post_type: 'news' | 'blog';
+  image_url: string;
+  category: string;
+  tags: string[];
+  series_id: string | null;
+  publication_id: string | null;
+  scheduled_publish_at: string | null;
+  auto_saved_at: string;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+};
+
+export type Clap = {
+  id: string;
+  user_id: string;
+  post_id: string;
+  clap_count: number;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+};
+
+export type ReadingList = {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+  bookmarks?: Bookmark[];
+};
+
+export type Bookmark = {
+  id: string;
+  user_id: string;
+  post_id: string;
+  reading_list_id: string | null;
+  notes: string;
+  created_at: string;
+  profiles?: Profile;
+  posts?: Post;
+  reading_lists?: ReadingList;
+};
+
+export type Highlight = {
+  id: string;
+  user_id: string;
+  post_id: string;
+  highlighted_text: string;
+  start_offset: number;
+  end_offset: number;
+  color: 'yellow' | 'green' | 'blue' | 'pink' | 'purple';
+  note: string;
+  is_public: boolean;
+  created_at: string;
+  profiles?: Profile;
+  posts?: Post;
+};
+
+export type Series = {
+  id: string;
+  author_id: string;
+  name: string;
+  description: string;
+  slug: string;
+  cover_image_url: string;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+  series_posts?: SeriesPost[];
+};
+
+export type SeriesPost = {
+  id: string;
+  series_id: string;
+  post_id: string;
+  order_index: number;
+  created_at: string;
+  series?: Series;
+  posts?: Post;
+};
+
+export type Publication = {
+  id: string;
+  name: string;
+  description: string;
+  slug: string;
+  logo_url: string;
+  cover_image_url: string;
+  owner_id: string;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+  publication_members?: PublicationMember[];
+};
+
+export type PublicationMember = {
+  id: string;
+  publication_id: string;
+  user_id: string;
+  role: 'owner' | 'editor' | 'writer';
+  joined_at: string;
+  publications?: Publication;
+  profiles?: Profile;
+};
+
+export type PublicationSubmission = {
+  id: string;
+  publication_id: string;
+  post_id: string;
+  author_id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  reviewer_id: string | null;
+  review_notes: string;
+  submitted_at: string;
+  reviewed_at: string | null;
+  publications?: Publication;
+  posts?: Post;
+  profiles?: Profile;
+};
+
+export type Tag = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  follower_count: number;
+  post_count: number;
+  created_at: string;
+};
+
+export type PostTag = {
+  id: string;
+  post_id: string;
+  tag_id: string;
+  created_at: string;
+  posts?: Post;
+  tags?: Tag;
+};
+
+export type TagFollow = {
+  id: string;
+  user_id: string;
+  tag_id: string;
+  created_at: string;
+  profiles?: Profile;
+  tags?: Tag;
+};
+
+export type ReadingProgress = {
+  id: string;
+  user_id: string;
+  post_id: string;
+  progress_percentage: number;
+  last_position: number;
+  completed: boolean;
+  reading_time_seconds: number;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+  posts?: Post;
+};
+
+export type PostView = {
+  id: string;
+  post_id: string;
+  user_id: string | null;
+  referrer: string;
+  user_agent: string;
+  created_at: string;
+  posts?: Post;
+  profiles?: Profile;
+};
+
+export type PostStats = {
+  post_id: string;
+  view_count: number;
+  read_count: number;
+  clap_count: number;
+  bookmark_count: number;
+  highlight_count: number;
+  avg_read_time_seconds: number;
+  engagement_score: number;
   updated_at: string;
 };
