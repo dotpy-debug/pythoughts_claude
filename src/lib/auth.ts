@@ -15,7 +15,7 @@
 import { betterAuth } from 'better-auth';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-import { env } from './env';
+import { env, serverEnv } from './env';
 import { logger } from './logger';
 
 /**
@@ -43,12 +43,12 @@ const getDatabaseConfig = () => {
  * Handles OTP verification, password reset, and welcome emails
  */
 const getResendConfig = () => {
-  if (!env.VITE_RESEND_API_KEY) {
+  if (!serverEnv.RESEND_API_KEY) {
     logger.warn('Resend API key not configured - email features disabled');
     return undefined;
   }
 
-  const resend = new Resend(env.VITE_RESEND_API_KEY);
+  const resend = new Resend(serverEnv.RESEND_API_KEY);
 
   return {
     /**
@@ -400,7 +400,7 @@ const getResendConfig = () => {
  */
 export const auth = betterAuth({
   // Base configuration
-  secret: env.VITE_BETTER_AUTH_SECRET || 'development-secret-change-in-production',
+  secret: serverEnv.BETTER_AUTH_SECRET || 'development-secret-change-in-production',
   baseURL: env.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
 
   // Database configuration
@@ -522,7 +522,7 @@ export async function getCurrentUser(request: Request) {
 // Log initialization status
 logger.info('Better-Auth initialized', {
   baseURL: env.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
-  emailEnabled: !!env.VITE_RESEND_API_KEY,
+  emailEnabled: !!serverEnv.RESEND_API_KEY,
   twoFactorEnabled: true,
   sessionExpiry: '7 days',
 });

@@ -18,13 +18,59 @@ export function CommentSection({ postId }: CommentSectionProps) {
 
   const loadComments = useCallback(async () => {
     try {
+      // Load comments with explicit fields
       const { data, error } = await supabase
         .from('comments')
-        .select('*, profiles(*)')
+        .select(`
+          id,
+          content,
+          author_id,
+          post_id,
+          parent_comment_id,
+          depth,
+          vote_count,
+          created_at,
+          updated_at,
+          profiles:author_id (
+            id,
+            username,
+            avatar_url,
+            bio
+          )
+        `)
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
+
+      // Transform profiles from array to single object
+      const commentsData: Comment[] = (data || []).map((item) => ({
+        ...(item as unknown as Comment),
+        profiles: Array.isArray((item as { profiles?: unknown }).profiles)
+          ? (item as { profiles: unknown[] }).profiles[0]
+          : (item as { profiles?: unknown }).profiles,
+      })) as Comment[];
+
+      // Load user votes for visible comments (not N+1)
+      if (user && commentsData.length > 0) {
+        const commentIds = commentsData.map(c => c.id);
+        const { data: votesData, error: votesError } = await supabase
+          .from('votes')
+          .select('comment_id, vote_type')
+          .eq('user_id', user.id)
+          .in('comment_id', commentIds)
+          .not('comment_id', 'is', null);
+
+        if (!votesError && votesData) {
+          const votesMap: Record<string, 1 | -1> = {};
+          votesData.forEach((vote) => {
+            if (vote.comment_id) {
+              votesMap[vote.comment_id] = vote.vote_type;
+            }
+          });
+          setUserVotes(votesMap);
+        }
+      }
 
       const buildCommentTree = (flatComments: Comment[]): Comment[] => {
         const commentMap: Record<string, Comment> = {};
@@ -45,44 +91,17 @@ export function CommentSection({ postId }: CommentSectionProps) {
         return rootComments;
       };
 
-      const commentsTree = buildCommentTree(data || []);
+      const commentsTree = buildCommentTree(commentsData);
       setComments(commentsTree);
     } catch (error) {
       console.error('Error loading comments:', error);
     } finally {
       setLoading(false);
     }
-  }, [postId]);
-
-  const loadUserVotes = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('votes')
-        .select('comment_id, vote_type')
-        .eq('user_id', user.id)
-        .not('comment_id', 'is', null);
-
-      if (error) throw error;
-
-      const votesMap: Record<string, 1 | -1> = {};
-      data?.forEach((vote: Pick<Vote, 'comment_id' | 'vote_type'>) => {
-        if (vote.comment_id) {
-          votesMap[vote.comment_id] = vote.vote_type;
-        }
-      });
-      setUserVotes(votesMap);
-    } catch (error) {
-      console.error('Error loading user votes:', error);
-    }
-  }, [user]);
+  }, [postId, user]);
 
   useEffect(() => {
     loadComments();
-    if (user) {
-      loadUserVotes();
-    }
 
     const channel = supabase
       .channel(`comments:${postId}`)
@@ -94,7 +113,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [postId, user, loadComments, loadUserVotes]);
+  }, [postId, user, loadComments]);
 
   const handleVote = async (commentId: string, voteType: 1 | -1) => {
     if (!user) return;

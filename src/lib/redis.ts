@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { env } from './env';
+import { serverEnv } from './env';
 import { ExternalServiceError, ErrorLogger, withRetry, isRetryableError } from './errors';
 import { logger } from './logger';
 
@@ -12,10 +12,10 @@ export function getRedisClient(): Redis {
   if (!redisClient) {
     try {
       logger.info('Initializing Redis client', {
-        url: env.VITE_REDIS_URL,
+        url: serverEnv.REDIS_URL,
       });
 
-      redisClient = new Redis(env.VITE_REDIS_URL, {
+      redisClient = new Redis(serverEnv.REDIS_URL, {
         retryStrategy(times) {
           const delay = Math.min(times * 50, 2000);
 
@@ -95,6 +95,9 @@ export const CACHE_KEYS = {
   TRENDING_CATEGORY: (category: string, limit: number) => `trending:posts:category:${category}:limit:${limit}`,
   TRENDING_STATS: () => `trending:stats`,
   TRENDING_SCORE: (postId: string) => `trending:score:${postId}`,
+  // Performance optimization cache keys
+  POSTS_LIST: (type: string, sort: string, page: number) => `posts:${type}:${sort}:${page}`,
+  BLOGS_BY_CATEGORY: (category: string, page: number) => `blogs:${category}:${page}`,
 };
 
 export const CACHE_TTL = {

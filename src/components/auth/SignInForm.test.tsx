@@ -6,10 +6,16 @@ import { SignInForm } from './SignInForm';
 // Mock the auth context
 const mockSignIn = vi.fn();
 vi.mock('../../contexts/AuthContext', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
   useAuth: () => ({
     signIn: mockSignIn,
     user: null,
+    profile: null,
+    session: null,
     loading: false,
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+    updateProfile: vi.fn(),
   }),
 }));
 
@@ -130,7 +136,7 @@ describe('SignInForm Component', () => {
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
     expect(screen.getByRole('button', { name: /signing in\.\.\./i })).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeDisabled();
+    expect(screen.getByRole('button', { name: /signing in\.\.\./i })).toBeDisabled();
 
     await waitFor(() => {
       expect(mockOnSuccess).toHaveBeenCalled();

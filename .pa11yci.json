@@ -1,0 +1,39 @@
+{
+  "defaults": {
+    "standard": "WCAG2AA",
+    "timeout": 30000,
+    "wait": 2000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+    },
+    "hideElements": ".ad-banner, .cookie-banner",
+    "runners": [
+      "axe",
+      "htmlcs"
+    ],
+    "ignore": [
+      "warning"
+    ]
+  },
+  "urls": [
+    {
+      "url": "http://localhost:4173/",
+      "screenCapture": "./pa11y-screenshots/home.png"
+    },
+    {
+      "url": "http://localhost:4173/blogs",
+      "screenCapture": "./pa11y-screenshots/blogs.png"
+    },
+    {
+      "url": "http://localhost:4173/tasks",
+      "screenCapture": "./pa11y-screenshots/tasks.png"
+    },
+    {
+      "url": "http://localhost:4173/profile",
+      "screenCapture": "./pa11y-screenshots/profile.png",
+      "actions": [
+        "wait for element #profile-content to be visible"
+      ]
+    }
+  ]
+}

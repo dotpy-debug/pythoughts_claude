@@ -262,4 +262,8 @@ describe('Trending Algorithm', () => {
       expect(score).toBeLessThan(0);
     });
   });
+
+  // Note: getTrendingPosts, getTrendingPostsByCategory, and invalidateTrendingCache
+  // are integration functions that require Supabase and Redis connections.
+  // These should be tested with integration tests in a test environment.
 });

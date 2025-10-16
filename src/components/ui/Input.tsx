@@ -7,11 +7,11 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, icon, className = '', ...props }, ref) => {
+  ({ label, error, icon, className = '', id, ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-mono text-gray-300 mb-1.5">
+          <label htmlFor={id} className="block text-sm font-mono text-gray-300 mb-1.5">
             <span className="text-terminal-green">$ </span>{label}
           </label>
         )}
@@ -23,6 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
           <input
             ref={ref}
+            id={id}
             className={`
               w-full px-4 py-2.5 rounded border border-gray-700 bg-gray-800 text-gray-100
               focus:border-terminal-green focus:ring-2 focus:ring-terminal-green/20
