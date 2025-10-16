@@ -9,55 +9,57 @@ type BlogCardProps = {
 };
 
 export function BlogCard({ post, onClick, featured = false }: BlogCardProps) {
-  const readTime = Math.ceil(post.content.length / 1000);
+  const readTime = post.reading_time_minutes || Math.ceil(post.content.length / 1000);
 
   if (featured) {
     return (
-      <div
-        onClick={onClick}
-        className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer mb-8"
-      >
-        {post.image_url && (
-          <img
-            src={post.image_url}
-            alt={post.title}
-            className="w-full h-96 object-cover"
-          />
-        )}
-        <div className="p-8">
-          {post.category && (
-            <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-4">
-              {post.category}
-            </span>
+      <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow mb-8 group">
+        <div
+          onClick={onClick}
+          className="cursor-pointer"
+        >
+          {post.image_url && (
+            <img
+              src={post.image_url}
+              alt={post.title}
+              className="w-full h-96 object-cover"
+            />
           )}
-          <h2 className="text-3xl font-bold text-gray-900 mb-4 hover:text-blue-600 transition-colors">
-            {post.title}
-          </h2>
-          <p className="text-gray-600 text-lg mb-6 line-clamp-3">
-            {post.content}
-          </p>
-          <div className="flex items-center space-x-4">
-            {post.profiles?.avatar_url ? (
-              <img
-                src={post.profiles.avatar_url}
-                alt={post.profiles.username}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <User size={20} />
-              </div>
+          <div className="p-8">
+            {post.category && (
+              <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+                {post.category}
+              </span>
             )}
-            <div className="flex-1">
-              <p className="font-medium text-gray-900">
-                {post.profiles?.username || 'Unknown'}
-              </p>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <span>{formatDistanceToNow(post.created_at)}</span>
-                <span>•</span>
-                <div className="flex items-center space-x-1">
-                  <Clock size={14} />
-                  <span>{readTime} min read</span>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4 hover:text-blue-600 transition-colors">
+              {post.title}
+            </h2>
+            <p className="text-gray-600 text-lg mb-6 line-clamp-3">
+              {post.content}
+            </p>
+            <div className="flex items-center space-x-4">
+              {post.profiles?.avatar_url ? (
+                <img
+                  src={post.profiles.avatar_url}
+                  alt={post.profiles.username}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                  <User size={20} />
+                </div>
+              )}
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">
+                  {post.profiles?.username || 'Unknown'}
+                </p>
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <span>{formatDistanceToNow(post.created_at)}</span>
+                  <span>•</span>
+                  <div className="flex items-center space-x-1">
+                    <Clock size={14} />
+                    <span>{readTime} min read</span>
+                  </div>
                 </div>
               </div>
             </div>

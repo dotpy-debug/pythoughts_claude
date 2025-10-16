@@ -1,9 +1,12 @@
-import { lazy, Suspense } from 'react';
-import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal } from 'lucide-react';
+import { lazy, Suspense, useRef } from 'react';
+import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal, Share2, Clock } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { CommentSection } from '../comments/CommentSection';
 import { ReactionBar } from '../reactions/ReactionBar';
+import { ClapButton } from '../claps/ClapButton';
+import { BookmarkButton } from '../bookmarks/BookmarkButton';
+import { ReadingProgressBar } from '../reading/ReadingProgressBar';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeURL } from '../../utils/security';
 
@@ -19,6 +22,7 @@ type PostDetailProps = {
 
 export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) {
   const { user } = useAuth();
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const handleVote = (voteType: 1 | -1) => {
     if (user) {
@@ -26,8 +30,28 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
     }
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: post.title,
+          text: post.subtitle || post.title,
+          url: url,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      alert('Link copied to clipboard!');
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
+      {post.post_type === 'blog' && <ReadingProgressBar postId={post.id} contentRef={contentRef} />}
+
       <button
         onClick={onBack}
         className="flex items-center space-x-2 text-gray-400 hover:text-terminal-green mb-6 transition-colors font-mono"
@@ -106,6 +130,19 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                 $ {post.title}
               </h1>
 
+              {post.subtitle && (
+                <p className="text-lg text-gray-400 mb-6 font-mono italic">
+                  {post.subtitle}
+                </p>
+              )}
+
+              {post.reading_time_minutes > 0 && (
+                <div className="flex items-center space-x-2 text-sm text-gray-500 mb-6 font-mono">
+                  <Clock size={16} />
+                  <span>{post.reading_time_minutes} min read</span>
+                </div>
+              )}
+
               {post.image_url && (
                 <img
                   src={sanitizeURL(post.image_url)}
@@ -114,7 +151,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                 />
               )}
 
-              <div className="prose prose-invert max-w-none mb-6 text-gray-300 text-base leading-relaxed font-mono">
+              <div ref={contentRef} className="prose prose-invert max-w-none mb-6 text-gray-300 text-base leading-relaxed font-mono">
                 <Suspense fallback={
                   <div className="animate-pulse space-y-2">
                     <div className="h-4 bg-gray-800 rounded w-full"></div>
@@ -126,7 +163,22 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                 </Suspense>
               </div>
 
-              <div className="border-t border-gray-700 pt-4">
+              <div className="border-t border-gray-700 pt-6 mt-6 space-y-6">
+                {post.post_type === 'blog' && (
+                  <div className="flex items-center justify-between">
+                    <ClapButton postId={post.id} />
+                    <div className="flex items-center space-x-3">
+                      <BookmarkButton postId={post.id} variant="icon" />
+                      <button
+                        onClick={handleShare}
+                        className="p-2 rounded-lg text-gray-400 hover:text-terminal-blue hover:bg-gray-800 transition-colors"
+                        title="Share this post"
+                      >
+                        <Share2 size={20} />
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <ReactionBar postId={post.id} />
               </div>
             </div>
