@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { MentionsInput } from '../mentions/MentionsInput';
 import { isValidContentLength } from '../../utils/security';
+import { checkContentSafety, shouldAutoBlock } from '../../utils/contentFilter';
 
 type CommentFormProps = {
   onSubmit: (content: string) => Promise<void>;
@@ -24,6 +26,21 @@ export function CommentForm({ onSubmit, onCancel, placeholder = 'Write a comment
       return;
     }
 
+    // Check content safety with automated filtering
+    const safetyCheck = checkContentSafety(content);
+
+    // Block content that is flagged as critical
+    if (shouldAutoBlock(content)) {
+      setError(`Content blocked: ${safetyCheck.issues.join(', ')}`);
+      return;
+    }
+
+    // Warn about content that has issues but allow posting
+    if (!safetyCheck.isSafe && safetyCheck.severity !== 'critical') {
+      console.warn('Content safety issues detected:', safetyCheck.issues);
+      // In production, you might want to flag this for review
+    }
+
     setSubmitting(true);
     try {
       await onSubmit(content);
@@ -39,10 +56,10 @@ export function CommentForm({ onSubmit, onCancel, placeholder = 'Write a comment
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <textarea
+      <MentionsInput
         value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder={placeholder}
+        onChange={setContent}
+        placeholder={`${placeholder} (Use @ to mention users)`}
         rows={3}
         className={`w-full px-3 py-2 border ${
           error ? 'border-red-500' : 'border-gray-700'

@@ -1,10 +1,16 @@
-import { useState } from 'react';
-import { Terminal } from 'lucide-react';
+import { useState, lazy, Suspense } from 'react';
+import { Terminal, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { supabase, Tag } from '../../lib/supabase';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
+import { MentionsInput } from '../mentions/MentionsInput';
+import { TagInput } from '../tags/TagInput';
 import { sanitizeInput, sanitizeURL, isValidContentLength } from '../../utils/security';
+import { checkContentSafety, shouldAutoBlock } from '../../utils/contentFilter';
+import { autoFlagContent } from '../../utils/autoFlag';
+
+const MarkdownEditor = lazy(() => import('../blog/MarkdownEditor').then(mod => ({ default: mod.MarkdownEditor })));
 
 type CreatePostModalProps = {
   isOpen: boolean;
@@ -20,6 +26,7 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [category, setCategory] = useState('');
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [titleError, setTitleError] = useState('');
@@ -73,22 +80,92 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
       // Sanitize title (prevent XSS in title)
       const sanitizedTitle = sanitizeInput(title.trim());
 
-      const { error: insertError } = await supabase.from('posts').insert({
-        title: sanitizedTitle,
-        content: content.trim(),
-        image_url: sanitizedImageUrl || null,
-        category: category || null,
-        author_id: user.id,
-        post_type: postType,
-        is_published: true,
-      });
+      // Check content safety with automated filtering
+      const combinedContent = `${title} ${content}`;
+      const safetyCheck = checkContentSafety(combinedContent);
+
+      // Block content that is flagged as critical
+      if (shouldAutoBlock(combinedContent)) {
+        setError(
+          `Content was blocked due to security concerns: ${safetyCheck.issues.join(', ')}. Please review and modify your post.`
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      // Warn about content that has issues but allow posting
+      if (!safetyCheck.isSafe && safetyCheck.severity !== 'critical') {
+        console.warn('Content safety issues detected:', safetyCheck.issues);
+        // In production, you might want to flag this for review or notify moderators
+      }
+
+      const { data: newPost, error: insertError } = await supabase
+        .from('posts')
+        .insert({
+          title: sanitizedTitle,
+          content: content.trim(),
+          image_url: sanitizedImageUrl || null,
+          category: category || null,
+          author_id: user.id,
+          post_type: postType,
+          is_published: true,
+        })
+        .select('id')
+        .single();
 
       if (insertError) throw insertError;
+
+      // Save tags
+      if (newPost && selectedTags.length > 0) {
+        for (const tag of selectedTags) {
+          // Create tag if it doesn't exist (new tag)
+          let tagId = tag.id;
+          if (!tagId) {
+            const { data: existingTag } = await supabase
+              .from('tags')
+              .select('id')
+              .eq('slug', tag.slug)
+              .single();
+
+            if (existingTag) {
+              tagId = existingTag.id;
+            } else {
+              const { data: newTag, error: tagError } = await supabase
+                .from('tags')
+                .insert({
+                  name: tag.name,
+                  slug: tag.slug,
+                  color: tag.color,
+                })
+                .select('id')
+                .single();
+
+              if (tagError) {
+                console.error('Error creating tag:', tagError);
+                continue;
+              }
+              tagId = newTag.id;
+            }
+          }
+
+          // Link tag to post
+          await supabase.from('post_tags').insert({
+            post_id: newPost.id,
+            tag_id: tagId,
+          });
+        }
+      }
+
+      // Auto-flag content if it has safety issues
+      if (newPost && !safetyCheck.isSafe) {
+        await autoFlagContent(newPost.id, 'post', combinedContent, user.id);
+      }
 
       setTitle('');
       setContent('');
       setImageUrl('');
       setCategory('');
+      setSelectedTags([]);
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create post');
@@ -152,6 +229,17 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
             </select>
           </div>
 
+          <div>
+            <label className="block text-sm font-mono text-gray-300 mb-1.5">
+              <span className="text-terminal-green">$ </span>Tags (max 5)
+            </label>
+            <TagInput
+              selectedTags={selectedTags}
+              onTagsChange={setSelectedTags}
+              maxTags={5}
+            />
+          </div>
+
           <Input
             id="imageUrl"
             label="Image URL"
@@ -166,17 +254,31 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
             <label className="block text-sm font-mono text-gray-300 mb-1.5">
               <span className="text-terminal-green">$ </span>Content
             </label>
-            <textarea
-              id="content"
-              required
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={postType === 'blog' ? 12 : 6}
-              className={`w-full px-4 py-2.5 rounded border ${
-                contentError ? 'border-red-500' : 'border-gray-700'
-              } bg-gray-800 text-gray-100 focus:border-terminal-green focus:ring-2 focus:ring-terminal-green/20 transition-all duration-200 outline-none font-mono resize-none placeholder:text-gray-500`}
-              placeholder={postType === 'blog' ? 'Write your blog post...' : 'What\'s on your mind?'}
-            />
+
+            {postType === 'blog' ? (
+              <Suspense fallback={
+                <div className="h-[500px] bg-gray-800 border border-gray-700 rounded flex items-center justify-center">
+                  <Loader2 className="animate-spin text-terminal-green" size={32} />
+                </div>
+              }>
+                <MarkdownEditor
+                  value={content}
+                  onChange={setContent}
+                  placeholder="Write your blog post in markdown..."
+                />
+              </Suspense>
+            ) : (
+              <MentionsInput
+                value={content}
+                onChange={setContent}
+                rows={6}
+                placeholder="What's on your mind? Use @ to mention users"
+                className={`w-full px-4 py-2.5 rounded border ${
+                  contentError ? 'border-red-500' : 'border-gray-700'
+                } bg-gray-800 text-gray-100 focus:border-terminal-green focus:ring-2 focus:ring-terminal-green/20 transition-all duration-200 outline-none font-mono resize-none placeholder:text-gray-500`}
+              />
+            )}
+
             <div className="flex items-center justify-between mt-1.5">
               <p className="text-xs text-gray-500 font-mono">
                 {content.length} / 10,000 characters (min 10)

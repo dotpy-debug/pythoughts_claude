@@ -16,6 +16,47 @@
   * {
     scroll-behavior: smooth;
   }
+
+  /* Font Size Variables */
+  :root[data-font-size="small"] {
+    --reading-font-size: 14px;
+    --reading-line-height: 1.6;
+  }
+
+  :root[data-font-size="medium"] {
+    --reading-font-size: 16px;
+    --reading-line-height: 1.7;
+  }
+
+  :root[data-font-size="large"] {
+    --reading-font-size: 18px;
+    --reading-line-height: 1.8;
+  }
+
+  /* Apply font sizes to reading content */
+  [data-font-size] .post-content,
+  [data-font-size] .blog-content,
+  [data-font-size] .comment-content {
+    font-size: var(--reading-font-size);
+    line-height: var(--reading-line-height);
+  }
+
+  /* Light theme colors */
+  :root:not(.dark) {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-tertiary: #6b7280;
+    --border-color: #e5e7eb;
+  }
+
+  /* Light theme application */
+  :root:not(.dark) body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
 }
 
 @layer utilities {

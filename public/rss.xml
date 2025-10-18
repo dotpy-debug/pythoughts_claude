@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pythoughts - Terminal Blog Platform</title>
+    <link>https://pythoughts.com</link>
+    <description>A terminal-themed blogging platform for sharing thoughts, news, and technical content. Join developers and tech enthusiasts in building, learning, and sharing knowledge.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 18 Oct 2025 00:00:00 GMT</lastBuildDate>
+    <atom:link href="https://pythoughts.com/rss.xml" rel="self" type="application/rss+xml"/>
+    <image>
+      <url>https://pythoughts.com/icon-512x512.png</url>
+      <title>Pythoughts</title>
+      <link>https://pythoughts.com</link>
+    </image>
+    <item>
+      <title><![CDATA[Welcome to Pythoughts]]></title>
+      <description><![CDATA[Discover a new way to share your thoughts with the developer community. Pythoughts combines the power of Medium with a terminal-inspired aesthetic.]]></description>
+      <link>https://pythoughts.com/</link>
+      <guid isPermaLink="true">https://pythoughts.com/</guid>
+      <pubDate>Sat, 18 Oct 2025 00:00:00 GMT</pubDate>
+      <category>Technology</category>
+    </item>
+  </channel>
+</rss>

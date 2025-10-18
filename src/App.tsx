@@ -1,13 +1,16 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { FloatingBubbles } from './components/animations/FloatingBubbles';
 import { LogoLoopHorizontal } from './components/animations/LogoLoopHorizontal';
 import { LogoLoopVertical } from './components/animations/LogoLoopVertical';
 import { Loader2 } from 'lucide-react';
+import { useKeyboardShortcuts, SkipNavLink } from './hooks/useKeyboardNavigation';
+import { initFocusVisible } from './utils/accessibility';
 
 // Lazy load page components
 const HomePage = lazy(() => import('./pages/HomePage').then(mod => ({ default: mod.HomePage })));
@@ -15,16 +18,25 @@ const BlogsPage = lazy(() => import('./pages/BlogsPage').then(mod => ({ default:
 const TasksPage = lazy(() => import('./pages/TasksPage').then(mod => ({ default: mod.TasksPage })));
 const PostDetailPage = lazy(() => import('./pages/PostDetailPage').then(mod => ({ default: mod.PostDetailPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(mod => ({ default: mod.ProfilePage })));
+const UserProfilePage = lazy(() => import('./pages/UserProfilePage').then(mod => ({ default: mod.UserProfilePage })));
+const FollowersPage = lazy(() => import('./pages/FollowersPage').then(mod => ({ default: mod.FollowersPage })));
+const FollowingPage = lazy(() => import('./pages/FollowingPage').then(mod => ({ default: mod.FollowingPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(mod => ({ default: mod.SettingsPage })));
 const DraftsPage = lazy(() => import('./pages/DraftsPage').then(mod => ({ default: mod.DraftsPage })));
 const BookmarksPage = lazy(() => import('./pages/BookmarksPage').then(mod => ({ default: mod.BookmarksPage })));
+const ReadingListsPage = lazy(() => import('./pages/ReadingListsPage').then(mod => ({ default: mod.ReadingListsPage })));
 const ExplorePage = lazy(() => import('./pages/ExplorePage').then(mod => ({ default: mod.ExplorePage })));
+const ActivityFeedPage = lazy(() => import('./pages/ActivityFeedPage').then(mod => ({ default: mod.ActivityFeedPage })));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage').then(mod => ({ default: mod.AnalyticsPage })));
+const TrendingPage = lazy(() => import('./pages/TrendingPage').then(mod => ({ default: mod.TrendingPage })));
+const SearchResultsPage = lazy(() => import('./pages/SearchResultsPage').then(mod => ({ default: mod.SearchResultsPage })));
 const PublicationsPage = lazy(() => import('./pages/PublicationsPage').then(mod => ({ default: mod.PublicationsPage })));
 const PublicationDetailPage = lazy(() => import('./pages/PublicationDetailPage').then(mod => ({ default: mod.PublicationDetailPage })));
 const PublicationSettingsPage = lazy(() => import('./pages/PublicationSettingsPage').then(mod => ({ default: mod.PublicationSettingsPage })));
 const SeriesPage = lazy(() => import('./pages/SeriesPage').then(mod => ({ default: mod.SeriesPage })));
 const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage').then(mod => ({ default: mod.SeriesDetailPage })));
 const SeriesEditPage = lazy(() => import('./pages/SeriesEditPage').then(mod => ({ default: mod.SeriesEditPage })));
+const ModerationPage = lazy(() => import('./pages/ModerationPage').then(mod => ({ default: mod.ModerationPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(mod => ({ default: mod.NotFoundPage })));
 
 const CreatePostModal = lazy(() => import('./components/posts/CreatePostModal').then(mod => ({ default: mod.CreatePostModal })));
@@ -47,15 +59,76 @@ function AppContent() {
     }
   };
 
+  // Initialize focus-visible detection for keyboard navigation
+  useEffect(() => {
+    const cleanup = initFocusVisible();
+    return cleanup;
+  }, []);
+
+  // Global keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: '/',
+      action: () => {
+        const searchInput = document.querySelector<HTMLInputElement>('input[type="text"][placeholder*="Search"]');
+        searchInput?.focus();
+      },
+      description: 'Focus search',
+      preventDefault: true,
+    },
+    {
+      key: 'n',
+      ctrl: true,
+      action: () => {
+        if (user) handleCreatePost();
+      },
+      description: 'New post',
+    },
+    {
+      key: 'k',
+      ctrl: true,
+      action: () => {
+        const searchInput = document.querySelector<HTMLInputElement>('input[type="text"][placeholder*="Search"]');
+        searchInput?.focus();
+      },
+      description: 'Open search',
+    },
+    {
+      key: 'h',
+      ctrl: true,
+      action: () => {
+        window.location.href = '/';
+      },
+      description: 'Go to home',
+    },
+    {
+      key: 'b',
+      ctrl: true,
+      action: () => {
+        if (user) window.location.href = '/bookmarks';
+      },
+      description: 'Go to bookmarks',
+    },
+    {
+      key: 'p',
+      ctrl: true,
+      action: () => {
+        if (user) window.location.href = '/profile';
+      },
+      description: 'Go to profile',
+    },
+  ]);
+
   return (
     <div className="min-h-screen bg-gray-950 relative overflow-hidden">
+      <SkipNavLink />
       <FloatingBubbles />
       <LogoLoopHorizontal />
       <LogoLoopVertical />
 
       <Header onCreatePost={handleCreatePost} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 pr-20 relative z-10">
+      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 lg:pr-20 relative z-10 outline-none">
         <Suspense fallback={
           <div className="flex items-center justify-center py-20">
             <Loader2 className="animate-spin text-terminal-green" size={48} />
@@ -67,10 +140,21 @@ function AppContent() {
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/post/:postId" element={<PostDetailPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/followers" element={<FollowersPage />} />
+            <Route path="/profile/following" element={<FollowingPage />} />
+            <Route path="/user/:username" element={<UserProfilePage />} />
+            <Route path="/user/:username/followers" element={<FollowersPage />} />
+            <Route path="/user/:username/following" element={<FollowingPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/moderation" element={<ModerationPage />} />
             <Route path="/drafts" element={<DraftsPage />} />
             <Route path="/bookmarks" element={<BookmarksPage />} />
+            <Route path="/reading-lists" element={<ReadingListsPage />} />
             <Route path="/explore" element={<ExplorePage />} />
+            <Route path="/activity" element={<ActivityFeedPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/trending" element={<TrendingPage />} />
+            <Route path="/search" element={<SearchResultsPage />} />
             <Route path="/publications" element={<PublicationsPage />} />
             <Route path="/publication/:slug" element={<PublicationDetailPage />} />
             <Route path="/publication/:slug/settings" element={<PublicationSettingsPage />} />
@@ -114,9 +198,11 @@ function App() {
 
   return (
     <BrowserRouter>
-      <NotificationProvider>
-        <AppContent />
-      </NotificationProvider>
+      <ThemeProvider>
+        <NotificationProvider>
+          <AppContent />
+        </NotificationProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

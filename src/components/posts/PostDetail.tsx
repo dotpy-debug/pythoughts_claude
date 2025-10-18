@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef } from 'react';
-import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal, Share2, Clock } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal, Clock } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { CommentSection } from '../comments/CommentSection';
@@ -7,6 +7,8 @@ import { ReactionBar } from '../reactions/ReactionBar';
 import { ClapButton } from '../claps/ClapButton';
 import { BookmarkButton } from '../bookmarks/BookmarkButton';
 import { ReadingProgressBar } from '../reading/ReadingProgressBar';
+import { RecommendedPosts } from '../recommendations/RecommendedPosts';
+import { ShareButton } from './ShareButton';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeURL } from '../../utils/security';
 
@@ -27,24 +29,6 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
   const handleVote = (voteType: 1 | -1) => {
     if (user) {
       onVote(post.id, voteType);
-    }
-  };
-
-  const handleShare = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: post.title,
-          text: post.subtitle || post.title,
-          url: url,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      navigator.clipboard.writeText(url);
-      alert('Link copied to clipboard!');
     }
   };
 
@@ -104,6 +88,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                   <img
                     src={sanitizeURL(post.profiles.avatar_url)}
                     alt={post.profiles.username}
+                    loading="lazy"
                     className="w-10 h-10 rounded-full object-cover border border-terminal-purple"
                   />
                 ) : (
@@ -147,6 +132,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                 <img
                   src={sanitizeURL(post.image_url)}
                   alt={post.title}
+                  loading="lazy"
                   className="w-full rounded border border-gray-700 mb-6"
                 />
               )}
@@ -168,14 +154,8 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                   <div className="flex items-center justify-between">
                     <ClapButton postId={post.id} />
                     <div className="flex items-center space-x-3">
-                      <BookmarkButton postId={post.id} variant="icon" />
-                      <button
-                        onClick={handleShare}
-                        className="p-2 rounded-lg text-gray-400 hover:text-terminal-blue hover:bg-gray-800 transition-colors"
-                        title="Share this post"
-                      >
-                        <Share2 size={20} />
-                      </button>
+                      <BookmarkButton postId={post.id} variant="compact" />
+                      <ShareButton post={post} variant="default" />
                     </div>
                   </div>
                 )}
@@ -185,8 +165,17 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
           </div>
         </div>
 
-        <div className="border-t border-gray-700 p-8 bg-gray-850">
-          <CommentSection postId={post.id} />
+        {/* Recommended Posts */}
+        <div className="mt-8">
+          <RecommendedPosts
+            currentPostId={post.id}
+            currentPostCategory={post.category}
+            limit={5}
+          />
+        </div>
+
+        <div className="border-t border-gray-700 p-8 bg-gray-850 mt-8">
+          <CommentSection postId={post.id} postAuthorId={post.author_id} />
         </div>
       </div>
     </div>

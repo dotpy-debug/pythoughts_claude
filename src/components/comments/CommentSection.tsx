@@ -3,23 +3,29 @@ import { supabase, Comment } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { CommentItem } from './CommentItem';
 import { CommentForm } from './CommentForm';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowUpDown, Clock, TrendingUp } from 'lucide-react';
 import { sanitizeInput, isValidContentLength } from '../../utils/security';
+import { checkContentSafety } from '../../utils/contentFilter';
+import { autoFlagContent } from '../../utils/autoFlag';
 
 type CommentSectionProps = {
   postId: string;
+  postAuthorId?: string;
 };
 
-export function CommentSection({ postId }: CommentSectionProps) {
+type SortType = 'best' | 'newest' | 'oldest';
+
+export function CommentSection({ postId, postAuthorId }: CommentSectionProps) {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, 1 | -1>>({});
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortType>('best');
 
   const loadComments = useCallback(async () => {
     try {
-      // Load comments with explicit fields
-      const { data, error } = await supabase
+      // Load comments with explicit fields including is_pinned
+      const { data, error} = await supabase
         .from('comments')
         .select(`
           id,
@@ -29,6 +35,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
           parent_comment_id,
           depth,
           vote_count,
+          is_pinned,
           created_at,
           updated_at,
           profiles:author_id (
@@ -91,14 +98,50 @@ export function CommentSection({ postId }: CommentSectionProps) {
         return rootComments;
       };
 
+      const sortComments = (commentsToSort: Comment[]): Comment[] => {
+        const sorted = [...commentsToSort];
+
+        // Sort replies recursively
+        sorted.forEach(comment => {
+          if (comment.replies && comment.replies.length > 0) {
+            comment.replies = sortComments(comment.replies);
+          }
+        });
+
+        // Apply sorting based on sortBy state
+        sorted.sort((a, b) => {
+          // Always put pinned comments first
+          if (a.is_pinned && !b.is_pinned) return -1;
+          if (!a.is_pinned && b.is_pinned) return 1;
+
+          // Then sort by selected method
+          switch (sortBy) {
+            case 'best':
+              // Best: Sort by vote_count descending
+              return b.vote_count - a.vote_count;
+            case 'newest':
+              // Newest: Sort by created_at descending
+              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            case 'oldest':
+              // Oldest: Sort by created_at ascending
+              return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+            default:
+              return 0;
+          }
+        });
+
+        return sorted;
+      };
+
       const commentsTree = buildCommentTree(commentsData);
-      setComments(commentsTree);
+      const sortedComments = sortComments(commentsTree);
+      setComments(sortedComments);
     } catch (error) {
       console.error('Error loading comments:', error);
     } finally {
       setLoading(false);
     }
-  }, [postId, user]);
+  }, [postId, user, sortBy]);
 
   useEffect(() => {
     loadComments();
@@ -113,7 +156,7 @@ export function CommentSection({ postId }: CommentSectionProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [postId, user, loadComments]);
+  }, [postId, user, sortBy, loadComments]);
 
   const handleVote = async (commentId: string, voteType: 1 | -1) => {
     if (!user) return;
@@ -166,14 +209,28 @@ export function CommentSection({ postId }: CommentSectionProps) {
     // Sanitize content to prevent XSS
     const sanitizedContent = sanitizeInput(content.trim());
 
+    // Check content safety
+    const safetyCheck = checkContentSafety(content);
+
     try {
-      await supabase.from('comments').insert({
-        content: sanitizedContent,
-        author_id: user.id,
-        post_id: postId,
-        parent_comment_id: null,
-        depth: 0,
-      });
+      const { data: newComment, error: insertError } = await supabase
+        .from('comments')
+        .insert({
+          content: sanitizedContent,
+          author_id: user.id,
+          post_id: postId,
+          parent_comment_id: null,
+          depth: 0,
+        })
+        .select('id')
+        .single();
+
+      if (insertError) throw insertError;
+
+      // Auto-flag content if it has safety issues
+      if (newComment && !safetyCheck.isSafe) {
+        await autoFlagContent(newComment.id, 'comment', content, user.id);
+      }
 
       await loadComments();
     } catch (error) {
@@ -193,6 +250,9 @@ export function CommentSection({ postId }: CommentSectionProps) {
     // Sanitize content to prevent XSS
     const sanitizedContent = sanitizeInput(content.trim());
 
+    // Check content safety
+    const safetyCheck = checkContentSafety(content);
+
     try {
       const { data: parentComment } = await supabase
         .from('comments')
@@ -200,13 +260,24 @@ export function CommentSection({ postId }: CommentSectionProps) {
         .eq('id', parentId)
         .single();
 
-      await supabase.from('comments').insert({
-        content: sanitizedContent,
-        author_id: user.id,
-        post_id: postId,
-        parent_comment_id: parentId,
-        depth: (parentComment?.depth || 0) + 1,
-      });
+      const { data: newReply, error: insertError } = await supabase
+        .from('comments')
+        .insert({
+          content: sanitizedContent,
+          author_id: user.id,
+          post_id: postId,
+          parent_comment_id: parentId,
+          depth: (parentComment?.depth || 0) + 1,
+        })
+        .select('id')
+        .single();
+
+      if (insertError) throw insertError;
+
+      // Auto-flag content if it has safety issues
+      if (newReply && !safetyCheck.isSafe) {
+        await autoFlagContent(newReply.id, 'comment', content, user.id);
+      }
 
       await loadComments();
     } catch (error) {
@@ -226,9 +297,47 @@ export function CommentSection({ postId }: CommentSectionProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-100 mb-4 font-mono">
-          $ comments ({comments.length})
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-100 font-mono">
+            $ comments ({comments.length})
+          </h3>
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-gray-500 font-mono">Sort by:</span>
+            <button
+              onClick={() => setSortBy('best')}
+              className={`px-3 py-1.5 rounded text-xs font-mono border transition-all flex items-center space-x-1 ${
+                sortBy === 'best'
+                  ? 'border-terminal-green bg-terminal-green/20 text-terminal-green'
+                  : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600'
+              }`}
+            >
+              <TrendingUp size={12} />
+              <span>Best</span>
+            </button>
+            <button
+              onClick={() => setSortBy('newest')}
+              className={`px-3 py-1.5 rounded text-xs font-mono border transition-all flex items-center space-x-1 ${
+                sortBy === 'newest'
+                  ? 'border-terminal-green bg-terminal-green/20 text-terminal-green'
+                  : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600'
+              }`}
+            >
+              <Clock size={12} />
+              <span>Newest</span>
+            </button>
+            <button
+              onClick={() => setSortBy('oldest')}
+              className={`px-3 py-1.5 rounded text-xs font-mono border transition-all flex items-center space-x-1 ${
+                sortBy === 'oldest'
+                  ? 'border-terminal-green bg-terminal-green/20 text-terminal-green'
+                  : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600'
+              }`}
+            >
+              <ArrowUpDown size={12} />
+              <span>Oldest</span>
+            </button>
+          </div>
+        </div>
         {user ? (
           <CommentForm onSubmit={handleAddComment} />
         ) : (
@@ -246,6 +355,8 @@ export function CommentSection({ postId }: CommentSectionProps) {
             userVote={userVotes[comment.id] || null}
             onVote={handleVote}
             onReply={handleReply}
+            onPinToggle={loadComments}
+            postAuthorId={postAuthorId}
             depth={0}
           />
         ))}

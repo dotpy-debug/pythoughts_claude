@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase, Post } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { PostCard } from './PostCard';
-import { Loader2, ChevronDown } from 'lucide-react';
+import { Loader2, ChevronDown, TrendingUp, Clock, BarChart } from 'lucide-react';
 
 type PostListProps = {
   postType: 'news' | 'blog';
   onPostClick: (post: Post) => void;
+  authorId?: string; // Optional filter by author
 };
 
 type SortOption = 'hot' | 'new' | 'top';
@@ -14,7 +15,7 @@ type SortOption = 'hot' | 'new' | 'top';
 // Pagination configuration
 const POSTS_PER_PAGE = 50;
 
-export function PostList({ postType, onPostClick }: PostListProps) {
+export function PostList({ postType, onPostClick, authorId }: PostListProps) {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, 1 | -1>>({});
@@ -23,6 +24,7 @@ export function PostList({ postType, onPostClick }: PostListProps) {
   const [sortBy, setSortBy] = useState<SortOption>('hot');
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const loadPosts = useCallback(async (pageNum: number = 0, append: boolean = false) => {
     if (append) {
@@ -70,6 +72,11 @@ export function PostList({ postType, onPostClick }: PostListProps) {
         .eq('post_type', postType)
         .eq('is_published', true)
         .eq('is_draft', false);
+
+      // Filter by author if provided
+      if (authorId) {
+        query = query.eq('author_id', authorId);
+      }
 
       // Apply sorting
       if (sortBy === 'hot') {
@@ -133,7 +140,7 @@ export function PostList({ postType, onPostClick }: PostListProps) {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [postType, sortBy, user]);
+  }, [postType, sortBy, user, authorId]);
 
   // Reset to page 0 when sort or type changes
   useEffect(() => {
@@ -210,10 +217,38 @@ export function PostList({ postType, onPostClick }: PostListProps) {
     loadPosts(nextPage, true);
   };
 
+  // Infinite scroll with Intersection Observer
+  useEffect(() => {
+    if (!hasMore || loadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loadingMore) {
+          handleLoadMore();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '100px',
+      }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasMore, loadingMore, page]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <Loader2 className="animate-spin text-blue-600" size={32} />
+        <Loader2 className="animate-spin text-terminal-green" size={32} />
       </div>
     );
   }
@@ -221,42 +256,46 @@ export function PostList({ postType, onPostClick }: PostListProps) {
   return (
     <div>
       <div className="flex items-center space-x-2 mb-6">
+        <span className="text-xs text-gray-500 font-mono mr-2">$ sort:</span>
         <button
           onClick={() => setSortBy('hot')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-4 py-2 rounded font-mono text-sm transition-all border flex items-center space-x-2 ${
             sortBy === 'hot'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-terminal-green/20 text-terminal-green border-terminal-green'
+              : 'bg-gray-800 text-gray-400 border-gray-700 hover:border-gray-600'
           }`}
         >
-          Hot
+          <TrendingUp size={14} />
+          <span>Hot</span>
         </button>
         <button
           onClick={() => setSortBy('new')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-4 py-2 rounded font-mono text-sm transition-all border flex items-center space-x-2 ${
             sortBy === 'new'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-terminal-green/20 text-terminal-green border-terminal-green'
+              : 'bg-gray-800 text-gray-400 border-gray-700 hover:border-gray-600'
           }`}
         >
-          New
+          <Clock size={14} />
+          <span>New</span>
         </button>
         <button
           onClick={() => setSortBy('top')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-4 py-2 rounded font-mono text-sm transition-all border flex items-center space-x-2 ${
             sortBy === 'top'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-terminal-green/20 text-terminal-green border-terminal-green'
+              : 'bg-gray-800 text-gray-400 border-gray-700 hover:border-gray-600'
           }`}
         >
-          Top
+          <BarChart size={14} />
+          <span>Top</span>
         </button>
       </div>
 
       <div className="space-y-4">
         {posts.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No posts yet. Be the first to create one!</p>
+          <div className="text-center py-12 bg-gray-900 border border-gray-700 rounded-lg">
+            <p className="text-gray-500 font-mono">No posts yet. Be the first to create one!</p>
           </div>
         ) : (
           <>
@@ -270,31 +309,29 @@ export function PostList({ postType, onPostClick }: PostListProps) {
               />
             ))}
 
+            {/* Infinite scroll trigger */}
             {hasMore && (
-              <div className="flex justify-center py-8">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loadingMore}
-                  className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {loadingMore ? (
-                    <>
-                      <Loader2 className="animate-spin" size={20} />
-                      <span>Loading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown size={20} />
-                      <span>Load More Posts</span>
-                    </>
-                  )}
-                </button>
+              <div ref={loadMoreRef} className="flex justify-center py-8">
+                {loadingMore ? (
+                  <div className="flex items-center space-x-2 text-terminal-green font-mono">
+                    <Loader2 className="animate-spin" size={20} />
+                    <span>Loading more posts...</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleLoadMore}
+                    className="flex items-center space-x-2 px-6 py-3 bg-gray-800 text-gray-100 rounded border border-gray-700 font-mono hover:border-terminal-green hover:bg-gray-750 transition-all"
+                  >
+                    <ChevronDown size={20} />
+                    <span>Load More Posts</span>
+                  </button>
+                )}
               </div>
             )}
 
             {!hasMore && posts.length > 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">You've reached the end!</p>
+              <div className="text-center py-8 bg-gray-900 border border-gray-700 rounded-lg">
+                <p className="text-gray-500 font-mono">$ end of feed</p>
               </div>
             )}
           </>

@@ -1,21 +1,30 @@
 import { useState } from 'react';
-import { ArrowUp, ArrowDown, MessageCircle, User, ChevronDown, ChevronUp } from 'lucide-react';
-import { Comment } from '../../lib/supabase';
+import { ArrowUp, ArrowDown, MessageCircle, User, ChevronDown, ChevronUp, Flag, Pin } from 'lucide-react';
+import { Comment, supabase } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { CommentForm } from './CommentForm';
 import { sanitizeURL } from '../../utils/security';
+import { ReportModal } from '../moderation/ReportModal';
+import { useAuth } from '../../contexts/AuthContext';
 
 type CommentItemProps = {
   comment: Comment;
   userVote?: 1 | -1 | null;
   onVote: (commentId: string, voteType: 1 | -1) => void;
   onReply: (parentId: string, content: string) => Promise<void>;
+  onPinToggle?: () => void;
+  postAuthorId?: string;
   depth: number;
 };
 
-export function CommentItem({ comment, userVote, onVote, onReply, depth }: CommentItemProps) {
+export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, postAuthorId, depth }: CommentItemProps) {
+  const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [isPinning, setIsPinning] = useState(false);
+
+  const isPostAuthor = user && postAuthorId && user.id === postAuthorId;
 
   const handleVote = (voteType: 1 | -1) => {
     onVote(comment.id, voteType);
@@ -24,6 +33,32 @@ export function CommentItem({ comment, userVote, onVote, onReply, depth }: Comme
   const handleReply = async (content: string) => {
     await onReply(comment.id, content);
     setShowReplyForm(false);
+  };
+
+  const handleReport = () => {
+    setReportModalOpen(true);
+  };
+
+  const handlePinToggle = async () => {
+    if (!isPostAuthor || isPinning) return;
+
+    setIsPinning(true);
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .update({ is_pinned: !comment.is_pinned })
+        .eq('id', comment.id);
+
+      if (error) throw error;
+
+      if (onPinToggle) {
+        onPinToggle();
+      }
+    } catch (error) {
+      console.error('Error toggling pin:', error);
+    } finally {
+      setIsPinning(false);
+    }
   };
 
   const marginLeft = Math.min(depth * 24, 96);
@@ -62,6 +97,12 @@ export function CommentItem({ comment, userVote, onVote, onReply, depth }: Comme
             <span className="text-sm font-mono text-terminal-blue">
               {comment.profiles?.username || 'anonymous'}
             </span>
+            {comment.is_pinned && (
+              <span className="flex items-center space-x-1 text-xs bg-terminal-purple/20 text-terminal-purple px-2 py-0.5 rounded font-mono border border-terminal-purple/30">
+                <Pin size={10} />
+                <span>Pinned</span>
+              </span>
+            )}
             <span className="text-xs text-gray-600 font-mono">
               {formatDistanceToNow(comment.created_at)}
             </span>
@@ -103,6 +144,30 @@ export function CommentItem({ comment, userVote, onVote, onReply, depth }: Comme
                   <MessageCircle size={14} />
                   <span>reply</span>
                 </button>
+
+                {isPostAuthor && (
+                  <button
+                    onClick={handlePinToggle}
+                    disabled={isPinning}
+                    className={`flex items-center space-x-1 transition-colors disabled:opacity-50 ${
+                      comment.is_pinned
+                        ? 'text-terminal-purple hover:text-terminal-pink'
+                        : 'text-gray-500 hover:text-terminal-purple'
+                    }`}
+                    title={comment.is_pinned ? 'Unpin comment' : 'Pin comment'}
+                  >
+                    <Pin size={14} />
+                    <span>{comment.is_pinned ? 'unpin' : 'pin'}</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={handleReport}
+                  className="flex items-center space-x-1 text-gray-500 hover:text-red-500 transition-colors"
+                  title="Report comment"
+                >
+                  <Flag size={14} />
+                </button>
               </div>
 
               {showReplyForm && (
@@ -124,6 +189,8 @@ export function CommentItem({ comment, userVote, onVote, onReply, depth }: Comme
                       userVote={userVote}
                       onVote={onVote}
                       onReply={onReply}
+                      onPinToggle={onPinToggle}
+                      postAuthorId={postAuthorId}
                       depth={depth + 1}
                     />
                   ))}
@@ -139,6 +206,14 @@ export function CommentItem({ comment, userVote, onVote, onReply, depth }: Comme
           )}
         </div>
       </div>
+
+      <ReportModal
+        isOpen={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+        contentType="comment"
+        contentId={comment.id}
+        reportedUserId={comment.author_id}
+      />
     </div>
   );
 }

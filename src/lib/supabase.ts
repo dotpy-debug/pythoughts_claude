@@ -73,6 +73,7 @@ export type Comment = {
   depth: number;
   vote_count: number;
   is_deleted: boolean;
+  is_pinned: boolean;
   created_at: string;
   updated_at: string;
   profiles?: Profile;
@@ -350,10 +351,13 @@ export type Tag = {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  follower_count: number;
-  post_count: number;
+  description: string | null;
+  color: string;
+  usage_count: number;
+  follower_count?: number;
+  post_count?: number;
   created_at: string;
+  updated_at: string;
 };
 
 export type PostTag = {
@@ -386,6 +390,38 @@ export type ReadingProgress = {
   updated_at: string;
   profiles?: Profile;
   posts?: Post;
+};
+
+export type Bookmark = {
+  id: string;
+  user_id: string;
+  post_id: string;
+  created_at: string;
+  profiles?: Profile;
+  posts?: Post;
+};
+
+export type ReadingList = {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  is_public: boolean;
+  slug: string | null;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+  items?: ReadingListItem[];
+};
+
+export type ReadingListItem = {
+  id: string;
+  reading_list_id: string;
+  post_id: string;
+  added_at: string;
+  notes: string | null;
+  posts?: Post;
+  reading_lists?: ReadingList;
 };
 
 export type PostView = {

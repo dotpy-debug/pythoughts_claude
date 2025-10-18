@@ -1,64 +1,53 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase, ReadingList } from '../../lib/supabase';
+import { useState, useEffect } from 'react';
+import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Bookmark as BookmarkIcon, BookmarkCheck } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 type BookmarkButtonProps = {
   postId: string;
-  variant?: 'icon' | 'button';
+  variant?: 'default' | 'compact';
+  showLabel?: boolean;
 };
 
-export function BookmarkButton({ postId, variant = 'icon' }: BookmarkButtonProps) {
+export function BookmarkButton({ postId, variant = 'default', showLabel = false }: BookmarkButtonProps) {
   const { user } = useAuth();
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [showListSelector, setShowListSelector] = useState(false);
-  const [readingLists, setReadingLists] = useState<ReadingList[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const checkBookmark = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      const { data } = await supabase
-        .from('bookmarks')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('post_id', postId)
-        .maybeSingle();
-
-      setIsBookmarked(!!data);
-    } catch (error) {
-      console.error('Error checking bookmark:', error);
+  useEffect(() => {
+    if (user) {
+      checkBookmarkStatus();
     }
   }, [user, postId]);
 
-  const loadReadingLists = useCallback(async () => {
+  const checkBookmarkStatus = async () => {
     if (!user) return;
 
-    try {
-      const { data, error } = await supabase
-        .from('reading_lists')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('bookmarks')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('post_id', postId)
+      .single();
 
-      if (error) throw error;
-      setReadingLists(data || []);
-    } catch (error) {
-      console.error('Error loading reading lists:', error);
+    if (!error && data) {
+      setIsBookmarked(true);
+    } else {
+      setIsBookmarked(false);
     }
-  }, [user]);
+  };
 
-  useEffect(() => {
-    checkBookmark();
-  }, [checkBookmark]);
+  const handleToggleBookmark = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
 
-  const handleBookmark = async (readingListId?: string) => {
     if (!user) return;
 
     setLoading(true);
+
     try {
       if (isBookmarked) {
+        // Remove bookmark
         await supabase
           .from('bookmarks')
           .delete()
@@ -66,15 +55,13 @@ export function BookmarkButton({ postId, variant = 'icon' }: BookmarkButtonProps
           .eq('post_id', postId);
         setIsBookmarked(false);
       } else {
+        // Add bookmark
         await supabase.from('bookmarks').insert({
           user_id: user.id,
           post_id: postId,
-          reading_list_id: readingListId || null,
-          notes: '',
         });
         setIsBookmarked(true);
       }
-      setShowListSelector(false);
     } catch (error) {
       console.error('Error toggling bookmark:', error);
     } finally {
@@ -82,114 +69,41 @@ export function BookmarkButton({ postId, variant = 'icon' }: BookmarkButtonProps
     }
   };
 
-  const handleClick = async () => {
-    if (!user) return;
+  if (!user) return null;
 
-    if (isBookmarked) {
-      handleBookmark();
-    } else {
-      await loadReadingLists();
-      if (readingLists.length > 0) {
-        setShowListSelector(true);
-      } else {
-        handleBookmark();
-      }
-    }
-  };
-
-  if (variant === 'icon') {
+  if (variant === 'compact') {
     return (
-      <div className="relative">
-        <button
-          onClick={handleClick}
-          disabled={!user || loading}
-          className={`p-2 rounded-lg transition-colors ${
-            isBookmarked
-              ? 'text-terminal-blue bg-terminal-blue/20'
-              : 'text-gray-400 hover:text-terminal-blue hover:bg-gray-800'
-          } ${!user ? 'cursor-not-allowed opacity-50' : ''}`}
-          title={isBookmarked ? 'Remove bookmark' : 'Bookmark this post'}
-        >
-          {isBookmarked ? (
-            <BookmarkCheck size={20} className="fill-current" />
-          ) : (
-            <BookmarkIcon size={20} />
-          )}
-        </button>
-
-        {showListSelector && (
-          <div className="absolute top-full right-0 mt-2 w-64 bg-gray-900 border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden">
-            <div className="p-3 border-b border-gray-700">
-              <p className="text-sm font-semibold text-gray-100 font-mono">
-                Save to reading list
-              </p>
-            </div>
-            <div className="max-h-64 overflow-y-auto">
-              <button
-                onClick={() => handleBookmark()}
-                className="w-full px-4 py-3 text-left hover:bg-gray-800 transition-colors text-gray-300 text-sm font-mono"
-              >
-                No list (default)
-              </button>
-              {readingLists.map((list) => (
-                <button
-                  key={list.id}
-                  onClick={() => handleBookmark(list.id)}
-                  className="w-full px-4 py-3 text-left hover:bg-gray-800 transition-colors border-t border-gray-800"
-                >
-                  <div className="text-sm font-medium text-gray-100 font-mono">
-                    {list.name}
-                  </div>
-                  {list.description && (
-                    <div className="text-xs text-gray-500 mt-1 font-mono">
-                      {list.description}
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-            <div className="p-3 border-t border-gray-700">
-              <button
-                onClick={() => setShowListSelector(false)}
-                className="w-full px-3 py-2 text-sm text-gray-400 hover:text-gray-300 transition-colors font-mono"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+      <button
+        onClick={handleToggleBookmark}
+        disabled={loading}
+        className="p-1.5 rounded hover:bg-gray-800 transition-colors group disabled:opacity-50"
+        title={isBookmarked ? 'Remove bookmark' : 'Bookmark this post'}
+      >
+        {isBookmarked ? (
+          <BookmarkCheck size={16} className="text-terminal-purple" />
+        ) : (
+          <Bookmark size={16} className="text-gray-500 group-hover:text-gray-300" />
         )}
-
-        {showListSelector && (
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowListSelector(false)}
-          />
-        )}
-      </div>
+      </button>
     );
   }
 
   return (
     <button
-      onClick={handleClick}
-      disabled={!user || loading}
-      className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-mono transition-colors ${
+      onClick={handleToggleBookmark}
+      disabled={loading}
+      className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-mono border transition-all disabled:opacity-50 ${
         isBookmarked
-          ? 'bg-terminal-blue/20 text-terminal-blue border border-terminal-blue'
-          : 'bg-gray-800 text-gray-300 border border-gray-700 hover:border-terminal-blue hover:text-terminal-blue'
-      } ${!user ? 'cursor-not-allowed opacity-50' : ''}`}
+          ? 'border-terminal-purple bg-terminal-purple/20 text-terminal-purple'
+          : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600 hover:text-gray-300'
+      }`}
     >
       {isBookmarked ? (
-        <>
-          <BookmarkCheck size={18} className="fill-current" />
-          <span>Bookmarked</span>
-        </>
+        <BookmarkCheck size={14} />
       ) : (
-        <>
-          <BookmarkIcon size={18} />
-          <span>Bookmark</span>
-        </>
+        <Bookmark size={14} />
       )}
+      {showLabel && <span>{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>}
     </button>
   );
 }
