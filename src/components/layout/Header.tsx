@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User, LogOut, SquarePen as PenSquare, Terminal } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthModal } from '../auth/AuthModal';
@@ -6,12 +7,12 @@ import { NotificationBell } from '../notifications/NotificationBell';
 import { TypewriterText } from '../animations/TypewriterText';
 
 type HeaderProps = {
-  currentTab: 'newsfeed' | 'blogs' | 'tasks';
-  onTabChange: (tab: 'newsfeed' | 'blogs' | 'tasks') => void;
   onCreatePost: () => void;
 };
 
-export function Header({ currentTab, onTabChange, onCreatePost }: HeaderProps) {
+export function Header({ onCreatePost }: HeaderProps) {
+  const location = useLocation();
+  const currentTab = location.pathname === '/blogs' ? 'blogs' : location.pathname === '/tasks' ? 'tasks' : 'newsfeed';
   const { user, profile, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -45,8 +46,8 @@ export function Header({ currentTab, onTabChange, onCreatePost }: HeaderProps) {
               </div>
 
               <nav className="hidden md:flex space-x-1">
-                <button
-                  onClick={() => onTabChange('newsfeed')}
+                <Link
+                  to="/"
                   className={`px-4 py-2 rounded font-mono transition-colors ${
                     currentTab === 'newsfeed'
                       ? 'bg-terminal-green text-gray-900 font-semibold'
@@ -54,9 +55,9 @@ export function Header({ currentTab, onTabChange, onCreatePost }: HeaderProps) {
                   }`}
                 >
                   newsfeed
-                </button>
-                <button
-                  onClick={() => onTabChange('blogs')}
+                </Link>
+                <Link
+                  to="/blogs"
                   className={`px-4 py-2 rounded font-mono transition-colors ${
                     currentTab === 'blogs'
                       ? 'bg-terminal-blue text-gray-900 font-semibold'
@@ -64,9 +65,9 @@ export function Header({ currentTab, onTabChange, onCreatePost }: HeaderProps) {
                   }`}
                 >
                   blogs
-                </button>
-                <button
-                  onClick={() => onTabChange('tasks')}
+                </Link>
+                <Link
+                  to="/tasks"
                   className={`px-4 py-2 rounded font-mono transition-colors ${
                     currentTab === 'tasks'
                       ? 'bg-terminal-purple text-gray-900 font-semibold'
@@ -74,7 +75,7 @@ export function Header({ currentTab, onTabChange, onCreatePost }: HeaderProps) {
                   }`}
                 >
                   tasks
-                </button>
+                </Link>
               </nav>
             </div>
 
@@ -152,45 +153,39 @@ export function Header({ currentTab, onTabChange, onCreatePost }: HeaderProps) {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-700 bg-gray-900">
             <nav className="px-4 py-4 space-y-2">
-              <button
-                onClick={() => {
-                  onTabChange('newsfeed');
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2 rounded font-mono ${
+              <Link
+                to="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block w-full text-left px-4 py-2 rounded font-mono ${
                   currentTab === 'newsfeed'
                     ? 'bg-terminal-green text-gray-900'
                     : 'text-gray-400 hover:bg-gray-800'
                 }`}
               >
                 newsfeed
-              </button>
-              <button
-                onClick={() => {
-                  onTabChange('blogs');
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2 rounded font-mono ${
+              </Link>
+              <Link
+                to="/blogs"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block w-full text-left px-4 py-2 rounded font-mono ${
                   currentTab === 'blogs'
                     ? 'bg-terminal-blue text-gray-900'
                     : 'text-gray-400 hover:bg-gray-800'
                 }`}
               >
                 blogs
-              </button>
-              <button
-                onClick={() => {
-                  onTabChange('tasks');
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full text-left px-4 py-2 rounded font-mono ${
+              </Link>
+              <Link
+                to="/tasks"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block w-full text-left px-4 py-2 rounded font-mono ${
                   currentTab === 'tasks'
                     ? 'bg-terminal-purple text-gray-900'
                     : 'text-gray-400 hover:bg-gray-800'
                 }`}
               >
                 tasks
-              </button>
+              </Link>
 
               {user ? (
                 <>

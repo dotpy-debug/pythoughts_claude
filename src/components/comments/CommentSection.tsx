@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase, Comment, Vote } from '../../lib/supabase';
+import { supabase, Comment } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { CommentItem } from './CommentItem';
 import { CommentForm } from './CommentForm';
