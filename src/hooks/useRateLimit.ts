@@ -62,7 +62,7 @@ export function useRateLimit(limitKey: ClientRateLimitKey) {
         const now = Date.now();
         const validTimestamps = data.timestamps.filter(ts => now - ts < config.windowMs);
 
-        setRemaining(Math.max(0, config.maxRequests - validTimestamps.length));
+        setRemaining(Math.max(0, config.maxRequests - validTimestamps.length) as typeof remaining);
 
         if (validTimestamps.length > 0) {
           const oldestTimestamp = Math.min(...validTimestamps);
@@ -105,7 +105,7 @@ export function useRateLimit(limitKey: ClientRateLimitKey) {
         const oldestTimestamp = Math.min(...validTimestamps);
         const currentResetTime = oldestTimestamp + config.windowMs;
 
-        setRemaining(0);
+        setRemaining(0 as typeof remaining);
         setResetTime(currentResetTime);
 
         logger.warn('Client-side rate limit exceeded', {
@@ -134,7 +134,7 @@ export function useRateLimit(limitKey: ClientRateLimitKey) {
       const oldestTimestamp = Math.min(...validTimestamps);
       const currentResetTime = oldestTimestamp + config.windowMs;
 
-      setRemaining(newRemaining);
+      setRemaining(newRemaining as typeof remaining);
       setResetTime(currentResetTime);
 
       return {

@@ -135,7 +135,7 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
                 .insert({
                   name: tag.name,
                   slug: tag.slug,
-                  color: tag.color,
+                  description: '',
                 })
                 .select('id')
                 .single();

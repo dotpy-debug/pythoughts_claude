@@ -73,7 +73,7 @@ export function TagBadge({ tag, onClick, showFollowButton = false }: TagBadgePro
     >
       <span className="text-terminal-purple">#</span>
       <span className="text-gray-300">{tag.name}</span>
-      {tag.post_count > 0 && (
+      {tag.post_count !== undefined && tag.post_count > 0 && (
         <span className="text-xs text-gray-500">({tag.post_count})</span>
       )}
       {showFollowButton && user && (

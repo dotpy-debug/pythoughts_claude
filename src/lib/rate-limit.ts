@@ -113,7 +113,6 @@ export async function checkRateLimit(
     }
 
     const count = currentCount ? parseInt(currentCount, 10) : 0;
-    const remaining = Math.max(0, limit.points - count - points);
     const reset = ttl > 0 ? now + ttl : now + limit.duration;
 
     // Check if limit is exceeded
@@ -178,7 +177,7 @@ export async function checkRateLimit(
     logger.warn('Rate limit check failed, allowing request', {
       limitKey,
       identifier,
-      error,
+      error: error instanceof Error ? error : new Error(String(error)),
     });
 
     return {

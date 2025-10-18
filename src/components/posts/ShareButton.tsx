@@ -26,7 +26,6 @@ export function ShareButton({ post, variant = 'default' }: ShareButtonProps) {
 
   const postUrl = `${window.location.origin}/post/${post.id}`;
   const postTitle = post.title || 'Check out this post on Pythoughts';
-  const postDescription = post.subtitle || post.content?.substring(0, 200) || '';
 
   const handleCopyLink = async () => {
     try {

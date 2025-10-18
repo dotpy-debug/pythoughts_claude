@@ -1,10 +1,9 @@
 import { lazy, Suspense, useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Loader2, UserPlus, UserMinus, Users, FileText } from 'lucide-react';
+import { Loader2, UserPlus, UserMinus, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Profile, Post } from '../lib/supabase';
 import { ShadcnButton } from '../components/ui/ShadcnButton';
-import { ShadcnCard, ShadcnCardContent } from '../components/ui/ShadcnCard';
 
 const PostList = lazy(() => import('../components/posts/PostList').then(mod => ({ default: mod.PostList })));
 
