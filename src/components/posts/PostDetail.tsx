@@ -1,5 +1,5 @@
 import { lazy, Suspense, useRef, useState } from 'react';
-import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal, Clock, Highlighter, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal, Clock, Highlighter, TrendingUp, History } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { CommentSection } from '../comments/CommentSection';
@@ -11,6 +11,7 @@ import { RecommendedPosts } from '../recommendations/RecommendedPosts';
 import { ShareButton } from './ShareButton';
 import { TextHighlighter } from '../highlights/TextHighlighter';
 import { HighlightsModal } from '../highlights/HighlightsModal';
+import { VersionHistoryModal } from '../versions/VersionHistoryModal';
 import { FeaturedToggle } from './FeaturedToggle';
 import { useTextHighlight } from '../../hooks/useTextHighlight';
 import { useAuth } from '../../contexts/AuthContext';
@@ -30,6 +31,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const [showHighlightsModal, setShowHighlightsModal] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
   const { highlights, updateHighlight, deleteHighlight } = useTextHighlight(post.id);
 
   const handleVote = (voteType: 1 | -1) => {
@@ -202,6 +204,14 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                           <span>{highlights.length}</span>
                         </button>
                       )}
+                      <button
+                        onClick={() => setShowVersionHistory(true)}
+                        className="flex items-center space-x-2 px-3 py-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:bg-gray-750 hover:border-gray-600 transition-all font-mono text-sm"
+                        title="View version history"
+                      >
+                        <History size={16} />
+                        <span>History</span>
+                      </button>
                       <ShareButton post={post} variant="default" />
                     </div>
                   </div>
@@ -235,6 +245,18 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
           onDeleteHighlight={deleteHighlight}
         />
       )}
+
+      {/* Version History Modal */}
+      <VersionHistoryModal
+        isOpen={showVersionHistory}
+        onClose={() => setShowVersionHistory(false)}
+        postId={post.id}
+        postAuthorId={post.author_id}
+        onVersionRestored={() => {
+          // Optionally reload the page or refetch the post
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }

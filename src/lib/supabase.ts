@@ -438,3 +438,19 @@ export type PostStats = {
   engagement_score: number;
   updated_at: string;
 };
+
+export type PostVersion = {
+  id: string;
+  post_id: string;
+  version_number: number;
+  title: string;
+  content: string;
+  subtitle: string;
+  image_url: string;
+  category: string;
+  changed_by: string;
+  change_description: string;
+  is_major_edit: boolean;
+  created_at: string;
+  profiles?: Profile;
+};
