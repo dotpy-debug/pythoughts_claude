@@ -98,7 +98,10 @@ export function ReadingListsPage() {
 
   const getItemCount = (list: ReadingList) => {
     if (list.items && Array.isArray(list.items)) {
-      return list.items[0]?.count || 0;
+      return list.items.length;
+    }
+    if (list.bookmarks && Array.isArray(list.bookmarks)) {
+      return list.bookmarks.length;
     }
     return 0;
   };
@@ -253,9 +256,9 @@ export function ReadingListsPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   {list.is_public ? (
-                    <Globe size={14} className="text-terminal-green" title="Public" />
+                    <Globe size={14} className="text-terminal-green" />
                   ) : (
-                    <Lock size={14} className="text-gray-500" title="Private" />
+                    <Lock size={14} className="text-gray-500" />
                   )}
                 </div>
               </div>

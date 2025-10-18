@@ -244,29 +244,6 @@ export type Clap = {
   profiles?: Profile;
 };
 
-export type ReadingList = {
-  id: string;
-  user_id: string;
-  name: string;
-  description: string;
-  is_public: boolean;
-  created_at: string;
-  updated_at: string;
-  profiles?: Profile;
-  bookmarks?: Bookmark[];
-};
-
-export type Bookmark = {
-  id: string;
-  user_id: string;
-  post_id: string;
-  reading_list_id: string | null;
-  notes: string;
-  created_at: string;
-  profiles?: Profile;
-  posts?: Post;
-  reading_lists?: ReadingList;
-};
 
 export type Highlight = {
   id: string;
@@ -351,13 +328,10 @@ export type Tag = {
   id: string;
   name: string;
   slug: string;
-  description: string | null;
-  color: string;
-  usage_count: number;
-  follower_count?: number;
-  post_count?: number;
+  description: string;
+  follower_count: number;
+  post_count: number;
   created_at: string;
-  updated_at: string;
 };
 
 export type PostTag = {
@@ -396,22 +370,26 @@ export type Bookmark = {
   id: string;
   user_id: string;
   post_id: string;
+  reading_list_id: string | null;
+  notes: string;
   created_at: string;
   profiles?: Profile;
   posts?: Post;
+  reading_lists?: ReadingList;
 };
 
 export type ReadingList = {
   id: string;
   user_id: string;
   name: string;
-  description: string | null;
+  description: string;
   is_public: boolean;
-  slug: string | null;
+  slug?: string;
   created_at: string;
   updated_at: string;
   profiles?: Profile;
-  items?: ReadingListItem[];
+  items?: Bookmark[];
+  bookmarks?: Bookmark[];
 };
 
 export type ReadingListItem = {

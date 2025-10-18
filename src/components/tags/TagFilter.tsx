@@ -21,7 +21,7 @@ export function TagFilter({ selectedTags, onTagsChange }: TagFilterProps) {
       const { data, error } = await supabase
         .from('tags')
         .select('*')
-        .order('usage_count', { ascending: false })
+        .order('post_count', { ascending: false })
         .limit(20);
 
       if (!error && data) {
@@ -97,22 +97,10 @@ export function TagFilter({ selectedTags, onTagsChange }: TagFilterProps) {
                     ? 'border-terminal-green bg-terminal-green/20 text-terminal-green'
                     : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600 hover:text-gray-300'
                 }`}
-                style={
-                  isSelected
-                    ? {
-                        borderColor: tag.color,
-                        backgroundColor: `${tag.color}20`,
-                        color: tag.color,
-                      }
-                    : undefined
-                }
               >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: tag.color }}
-                />
+                <span className="text-terminal-purple">#</span>
                 <span>{tag.name}</span>
-                <span className="text-[10px] opacity-70">({tag.usage_count})</span>
+                <span className="text-[10px] opacity-70">({tag.post_count})</span>
               </button>
             );
           })}

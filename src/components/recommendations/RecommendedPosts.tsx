@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Sparkles } from 'lucide-react';
-import { supabase, Post } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 type RecommendedPostsProps = {
@@ -9,6 +9,16 @@ type RecommendedPostsProps = {
   currentPostCategory?: string;
   currentPostTags?: string[];
   limit?: number;
+};
+
+type RecommendedPost = {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  category: string | null;
+  vote_count: number;
+  comment_count: number;
+  created_at: string;
 };
 
 export function RecommendedPosts({
@@ -19,7 +29,7 @@ export function RecommendedPosts({
 }: RecommendedPostsProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [recommendations, setRecommendations] = useState<Post[]>([]);
+  const [recommendations, setRecommendations] = useState<RecommendedPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -85,23 +95,30 @@ export function RecommendedPosts({
           .in('tag_id', currentPostTags)
           .limit(limit);
 
-        if (taggedPosts) {
-          const taggedPostsData = taggedPosts
-            .map(item => item.posts)
-            .filter(post => post && post.id !== currentPostId);
+        if (taggedPosts && taggedPosts.length > 0) {
+          const taggedPostsData: RecommendedPost[] = [];
+
+          for (const item of taggedPosts) {
+            if (item.posts && !Array.isArray(item.posts)) {
+              const post = item.posts as any;
+              if (post && post.id && post.id !== currentPostId) {
+                taggedPostsData.push(post as RecommendedPost);
+              }
+            }
+          }
 
           // Merge and deduplicate recommendations
-          const allRecommendations = [...(data || []), ...taggedPostsData];
+          const allRecommendations = [...(data || []), ...taggedPostsData] as RecommendedPost[];
           const uniqueRecommendations = Array.from(
             new Map(allRecommendations.map(post => [post.id, post])).values()
           );
 
           setRecommendations(uniqueRecommendations.slice(0, limit));
         } else {
-          setRecommendations(data || []);
+          setRecommendations((data || []) as RecommendedPost[]);
         }
       } else {
-        setRecommendations(data || []);
+        setRecommendations((data || []) as RecommendedPost[]);
       }
     } catch (error) {
       console.error('Error loading recommendations:', error);

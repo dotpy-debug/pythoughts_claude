@@ -30,7 +30,7 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
           .from('tags')
           .select('*')
           .or(`name.ilike.%${input}%,slug.ilike.%${input}%`)
-          .order('usage_count', { ascending: false })
+          .order('post_count', { ascending: false })
           .limit(10);
 
         if (!error && data) {
@@ -71,14 +71,13 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
   const createTag = (tagName: string): Tag => {
     const slug = tagName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return {
-      id: '', // Will be generated on save
+      id: '',
       name: tagName,
       slug,
-      description: null,
-      color: '#6B7280',
-      usage_count: 0,
+      description: '',
+      follower_count: 0,
+      post_count: 0,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     };
   };
 
@@ -120,12 +119,7 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
         {selectedTags.map((tag) => (
           <span
             key={tag.id || tag.name}
-            className="inline-flex items-center space-x-1 px-2 py-1 rounded text-xs font-mono border transition-colors"
-            style={{
-              backgroundColor: `${tag.color}20`,
-              borderColor: tag.color,
-              color: tag.color,
-            }}
+            className="inline-flex items-center space-x-1 px-2 py-1 rounded text-xs font-mono border border-terminal-purple bg-terminal-purple/20 text-terminal-purple transition-colors"
           >
             <span>{tag.name}</span>
             <button
@@ -172,14 +166,11 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
                       className="w-full px-3 py-2 text-left hover:bg-gray-800 transition-colors border-b border-gray-800 last:border-b-0 flex items-center justify-between"
                     >
                       <div className="flex items-center space-x-2">
-                        <span
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: tag.color }}
-                        />
+                        <span className="text-terminal-purple">#</span>
                         <span className="text-sm font-mono text-gray-100">{tag.name}</span>
                       </div>
                       <span className="text-xs text-gray-500 font-mono">
-                        {tag.usage_count} posts
+                        {tag.post_count} posts
                       </span>
                     </button>
                   ))
