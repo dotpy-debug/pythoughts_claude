@@ -6,6 +6,7 @@ import { sanitizeURL } from '../../utils/security';
 import { ShareButton } from './ShareButton';
 import { BookmarkButton } from '../bookmarks/BookmarkButton';
 import { ReportModal } from '../moderation/ReportModal';
+import { FeaturedToggle } from './FeaturedToggle';
 import { getVoteAriaLabel, getCommentAriaLabel, getTimeAgoAriaLabel } from '../../utils/accessibility';
 
 type PostCardProps = {
@@ -117,6 +118,12 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
                 </span>
               </>
             )}
+            <FeaturedToggle
+              postId={post.id}
+              postAuthorId={post.author_id}
+              initialFeatured={post.featured || false}
+              size="sm"
+            />
           </div>
 
           <h3 className="text-lg font-semibold text-gray-100 mb-2 hover:text-terminal-green transition-colors">

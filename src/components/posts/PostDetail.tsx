@@ -11,6 +11,7 @@ import { RecommendedPosts } from '../recommendations/RecommendedPosts';
 import { ShareButton } from './ShareButton';
 import { TextHighlighter } from '../highlights/TextHighlighter';
 import { HighlightsModal } from '../highlights/HighlightsModal';
+import { FeaturedToggle } from './FeaturedToggle';
 import { useTextHighlight } from '../../hooks/useTextHighlight';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeURL } from '../../utils/security';
@@ -120,11 +121,20 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                     {formatDistanceToNow(post.created_at)}
                   </p>
                 </div>
-                {post.category && (
-                  <span className="ml-auto bg-terminal-purple/20 text-terminal-purple text-xs font-semibold px-3 py-1 rounded-full border border-terminal-purple/30 font-mono">
-                    {post.category}
-                  </span>
-                )}
+                <div className="ml-auto flex items-center space-x-3">
+                  {post.category && (
+                    <span className="bg-terminal-purple/20 text-terminal-purple text-xs font-semibold px-3 py-1 rounded-full border border-terminal-purple/30 font-mono">
+                      {post.category}
+                    </span>
+                  )}
+                  <FeaturedToggle
+                    postId={post.id}
+                    postAuthorId={post.author_id}
+                    initialFeatured={post.featured || false}
+                    size="md"
+                    showLabel={true}
+                  />
+                </div>
               </div>
 
               <h1 className="text-3xl font-bold text-gray-100 mb-4 font-mono">
