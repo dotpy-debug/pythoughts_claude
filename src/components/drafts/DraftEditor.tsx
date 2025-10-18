@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Terminal, Save, Eye, Send, X, Clock, Calendar } from 'lucide-react';
+import { Terminal, Save, Eye, Send, X, Clock, Calendar, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { TagInput } from '../tags/TagBadge';
+import { ImageUpload } from '../uploads/ImageUpload';
 import { sanitizeInput, sanitizeURL, isValidContentLength } from '../../utils/security';
+import { useDraftRecovery } from '../../hooks/useDraftRecovery';
 
 type DraftEditorProps = {
   draftId?: string;
@@ -34,6 +36,17 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
 
   const autoSaveTimerRef = useRef<NodeJS.Timeout>();
   const currentDraftIdRef = useRef<string | undefined>(draftId);
+
+  // Draft recovery system
+  const {
+    saveDraftBackup,
+    loadDraftBackup,
+    clearDraftBackup,
+    hasRecoverableDraft,
+    getRecoveryMessage,
+    hasShownRecoveryPrompt,
+  } = useDraftRecovery(postType, draftId);
+  const [showRecoveryPrompt, setShowRecoveryPrompt] = useState(false);
 
   const loadDraft = useCallback(async () => {
     if (!draftId || !user) return;
@@ -79,6 +92,14 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
       loadDraft();
     }
   }, [draftId, loadDraft]);
+
+  // Check for recoverable draft on mount
+  useEffect(() => {
+    if (!draftId && !hasShownRecoveryPrompt.current && hasRecoverableDraft()) {
+      setShowRecoveryPrompt(true);
+      hasShownRecoveryPrompt.current = true;
+    }
+  }, [draftId, hasRecoverableDraft]);
 
   const saveDraft = useCallback(async (autoSave = false) => {
     if (!user) return;
@@ -134,7 +155,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
         setSaving(false);
       }
     }
-  }, [user, title, content, imageUrl, category, tags, postType]);
+  }, [user, title, content, subtitle, imageUrl, category, tags, postType, schedulePublish, scheduledDateTime]);
 
   useEffect(() => {
     if (content.length > 0 || title.length > 0) {
@@ -144,6 +165,15 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
 
       autoSaveTimerRef.current = setTimeout(() => {
         saveDraft(true);
+        // Also backup to localStorage
+        saveDraftBackup({
+          title,
+          content,
+          subtitle,
+          imageUrl,
+          category,
+          tags,
+        });
       }, 30000);
     }
 
@@ -152,7 +182,25 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
         clearTimeout(autoSaveTimerRef.current);
       }
     };
-  }, [title, content, saveDraft]);
+  }, [title, content, subtitle, imageUrl, category, tags, saveDraft, saveDraftBackup]);
+
+  const handleRecoverDraft = useCallback(() => {
+    const recoveredDraft = loadDraftBackup();
+    if (recoveredDraft) {
+      setTitle(recoveredDraft.title);
+      setContent(recoveredDraft.content);
+      setSubtitle(recoveredDraft.subtitle || '');
+      setImageUrl(recoveredDraft.imageUrl || '');
+      setCategory(recoveredDraft.category || '');
+      setTags(recoveredDraft.tags || []);
+    }
+    setShowRecoveryPrompt(false);
+  }, [loadDraftBackup]);
+
+  const handleDismissRecovery = useCallback(() => {
+    clearDraftBackup();
+    setShowRecoveryPrompt(false);
+  }, [clearDraftBackup]);
 
   const handlePublish = async () => {
     if (!user) return;
@@ -272,6 +320,9 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
           .eq('author_id', user.id);
       }
 
+      // Clear localStorage backup after successful publish
+      clearDraftBackup();
+
       onPublish?.();
       onClose();
     } catch (err) {
@@ -328,6 +379,36 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
           </div>
         </div>
 
+        {/* Recovery Prompt */}
+        {showRecoveryPrompt && (
+          <div className="mx-6 mt-4 p-4 bg-orange-900/20 border border-orange-500/50 rounded-lg flex items-start space-x-3">
+            <AlertCircle className="text-orange-400 flex-shrink-0 mt-0.5" size={20} />
+            <div className="flex-1">
+              <p className="text-sm text-orange-100 font-mono mb-3">
+                {getRecoveryMessage()}
+              </p>
+              <div className="flex items-center space-x-2">
+                <Button
+                  onClick={handleRecoverDraft}
+                  variant="terminal"
+                  size="sm"
+                  className="font-mono text-xs"
+                >
+                  Recover Draft
+                </Button>
+                <Button
+                  onClick={handleDismissRecovery}
+                  variant="ghost"
+                  size="sm"
+                  className="font-mono text-xs"
+                >
+                  Dismiss
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {showPreview ? (
             <div className="prose prose-invert max-w-none">
@@ -377,13 +458,10 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
                 </select>
               </div>
 
-              <Input
-                id="imageUrl"
-                label="Cover Image URL"
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
+              <ImageUpload
+                currentImageUrl={imageUrl}
+                onImageChange={setImageUrl}
+                maxSizeMB={5}
               />
 
               {postType === 'blog' && (
