@@ -5,6 +5,8 @@ import { ShadcnCard, ShadcnCardContent, ShadcnCardHeader } from '../ui/ShadcnCar
 import { ShadcnButton } from '../ui/ShadcnButton';
 import { ShadcnBadge } from '../ui/ShadcnBadge';
 import { sanitizeURL } from '../../utils/security';
+import { ReputationBadge } from '../reputation/ReputationBadge';
+import { BadgeGallery } from '../badges/BadgeGallery';
 
 type UserProfileCardProps = {
   profile: Profile;
@@ -191,6 +193,12 @@ export function UserProfileCard({
             </div>
           </div>
         )}
+
+        {/* Reputation Badge */}
+        <ReputationBadge userId={profile.id} variant="full" showProgress={true} />
+
+        {/* Badge Gallery */}
+        <BadgeGallery userId={profile.id} variant="full" />
 
         {skills.length > 0 && (
           <div>

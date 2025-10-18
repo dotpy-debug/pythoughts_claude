@@ -8,6 +8,8 @@ import { BookmarkButton } from '../bookmarks/BookmarkButton';
 import { ReportModal } from '../moderation/ReportModal';
 import { FeaturedToggle } from './FeaturedToggle';
 import { getVoteAriaLabel, getCommentAriaLabel, getTimeAgoAriaLabel } from '../../utils/accessibility';
+import { ReputationBadge } from '../reputation/ReputationBadge';
+import { BadgeGallery } from '../badges/BadgeGallery';
 
 type PostCardProps = {
   post: Post;
@@ -90,7 +92,7 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
         </div>
 
         <div className="flex-1 p-4">
-          <div className="flex items-center space-x-2 mb-2">
+          <div className="flex items-center space-x-2 mb-2 flex-wrap">
             {post.profiles?.avatar_url ? (
               <img
                 src={sanitizeURL(post.profiles.avatar_url)}
@@ -106,6 +108,8 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
             <span className="text-sm font-mono text-terminal-blue">
               {post.profiles?.username || 'anonymous'}
             </span>
+            <ReputationBadge userId={post.author_id} variant="inline" />
+            <BadgeGallery userId={post.author_id} variant="compact" />
             <span className="text-gray-600">•</span>
             <time className="text-xs text-gray-500 font-mono" dateTime={post.created_at} aria-label={getTimeAgoAriaLabel(post.created_at)}>
               {formatDistanceToNow(post.created_at)}
