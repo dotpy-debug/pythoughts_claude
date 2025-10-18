@@ -1,4 +1,4 @@
-name: PR Preview Deployment
+﻿name: PR Preview Deployment
 
 on:
   pull_request:
@@ -54,20 +54,20 @@ jobs:
         with:
           script: |
             const previewUrl = '${{ steps.deploy.outputs.preview-url }}';
-            const comment = `## 🚀 Preview Deployment Ready!
+            const comment = `## ðŸš€ Preview Deployment Ready!
 
             Your preview deployment is ready for review.
 
             **Preview URL:** ${previewUrl}
 
             ### Quick Links
-            - 🔍 [View Preview](${previewUrl})
-            - 📊 [View Build Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            - ðŸ” [View Preview](${previewUrl})
+            - ðŸ“Š [View Build Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             ### What's Included
-            - ✅ Latest code changes
-            - ✅ Production build
-            - ✅ Connected to development database
+            - âœ… Latest code changes
+            - âœ… Production build
+            - âœ… Connected to development database
 
             **Note:** This preview will be automatically updated with each commit to this PR.
             `;
@@ -85,3 +85,4 @@ jobs:
           urls: ${{ steps.deploy.outputs.preview-url }}
           uploadArtifacts: true
         continue-on-error: true
+

@@ -1,4 +1,4 @@
-name: Production Deployment
+﻿name: Production Deployment
 
 on:
   push:
@@ -123,7 +123,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '🚀 Deployed to: ${{ steps.deploy.outputs.url }}'
+              body: 'Deployment URL: ${{ steps.deploy.outputs.url }}'
             })
 
   # Job 4: Deploy to Railway (Alternative)
@@ -238,7 +238,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '⚠️ Deployment failed and was rolled back automatically.'
+              body: 'Deployment failed and was rolled back automatically.'
             })
 
   # Job 8: Deployment notification
@@ -281,3 +281,4 @@ jobs:
               environment_url: '${{ secrets.PRODUCTION_URL }}',
               description: 'Deployment completed successfully'
             });
+
