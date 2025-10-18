@@ -10,6 +10,7 @@ import { FeaturedToggle } from './FeaturedToggle';
 import { getVoteAriaLabel, getCommentAriaLabel, getTimeAgoAriaLabel } from '../../utils/accessibility';
 import { ReputationBadge } from '../reputation/ReputationBadge';
 import { BadgeGallery } from '../badges/BadgeGallery';
+import { LazyImage } from '../performance/LazyImage';
 
 type PostCardProps = {
   post: Post;
@@ -135,11 +136,11 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
           </h3>
 
           {post.image_url && (
-            <img
+            <LazyImage
               src={sanitizeURL(post.image_url)}
               alt={post.title}
-              loading="lazy"
-              className="w-full h-48 object-cover rounded border border-gray-700 mb-3"
+              className="w-full h-48 object-cover rounded border border-gray-700"
+              placeholderClassName="w-full h-48 rounded border border-gray-700 mb-3"
             />
           )}
 

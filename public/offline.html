@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Pythoughts</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Monaco', 'Courier New', monospace;
+      background-color: #08121a;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .terminal {
+      background-color: #0f1c28;
+      border: 1px solid: #374151;
+      border-radius: 8px;
+      padding: 32px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .title {
+      color: #10b981;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .message {
+      color: #9ca3af;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .ascii-art {
+      color: #6366f1;
+      font-size: 12px;
+      line-height: 1.2;
+      margin: 24px 0;
+      white-space: pre;
+    }
+
+    .button {
+      background-color: #10b981;
+      color: #08121a;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .button:hover {
+      background-color: #059669;
+    }
+
+    .status {
+      margin-top: 24px;
+      padding: 12px;
+      background-color: #1f2937;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #d1d5db;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="terminal">
+      <div class="title">$ connection_lost</div>
+
+      <div class="ascii-art">
+   ___  __  __ _ _
+  / _ \|  \/  | (_)_ __   ___
+ | | | | |\/| | | | '_ \ / _ \
+ | |_| | |  | | | | | | |  __/
+  \___/|_|  |_|_|_|_| |_|\___|
+      </div>
+
+      <div class="message">
+        <p>You appear to be offline. Please check your internet connection and try again.</p>
+        <p style="margin-top: 12px;">Some cached content may still be available for reading.</p>
+      </div>
+
+      <button class="button" onclick="window.location.reload()">
+        Retry Connection
+      </button>
+
+      <div class="status" id="status">
+        Status: <span style="color: #ef4444;">Disconnected</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Monitor connection status
+    function updateStatus() {
+      const statusEl = document.getElementById('status');
+      if (navigator.onLine) {
+        statusEl.innerHTML = 'Status: <span style="color: #10b981;">Connected</span>';
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        statusEl.innerHTML = 'Status: <span style="color: #ef4444;">Disconnected</span>';
+      }
+    }
+
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+
+    // Check connection every 5 seconds
+    setInterval(updateStatus, 5000);
+  </script>
+</body>
+</html>

@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase, Post } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { PostCard } from './PostCard';
-import { Loader2, ChevronDown, TrendingUp, Clock, BarChart } from 'lucide-react';
+import { TrendingUp, Clock, BarChart } from 'lucide-react';
+import { InfiniteScroll } from '../performance/InfiniteScroll';
+import { PostCardSkeleton } from '../performance/SkeletonLoaders';
 
 type PostListProps = {
   postType: 'news' | 'blog';
@@ -24,7 +26,6 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
   const [sortBy, setSortBy] = useState<SortOption>('hot');
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const loadPosts = useCallback(async (pageNum: number = 0, append: boolean = false) => {
     if (append) {
@@ -217,38 +218,12 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
     loadPosts(nextPage, true);
   };
 
-  // Infinite scroll with Intersection Observer
-  useEffect(() => {
-    if (!hasMore || loadingMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !loadingMore) {
-          handleLoadMore();
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '100px',
-      }
-    );
-
-    const currentRef = loadMoreRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
-    };
-  }, [hasMore, loadingMore, page]);
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="animate-spin text-terminal-green" size={32} />
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <PostCardSkeleton key={i} />
+        ))}
       </div>
     );
   }
@@ -292,13 +267,17 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
         </button>
       </div>
 
-      <div className="space-y-4">
-        {posts.length === 0 ? (
-          <div className="text-center py-12 bg-gray-900 border border-gray-700 rounded-lg">
-            <p className="text-gray-500 font-mono">No posts yet. Be the first to create one!</p>
-          </div>
-        ) : (
-          <>
+      {posts.length === 0 ? (
+        <div className="text-center py-12 bg-gray-900 border border-gray-700 rounded-lg">
+          <p className="text-gray-500 font-mono">No posts yet. Be the first to create one!</p>
+        </div>
+      ) : (
+        <InfiniteScroll
+          onLoadMore={handleLoadMore}
+          hasMore={hasMore}
+          loading={loadingMore}
+        >
+          <div className="space-y-4">
             {posts.map((post) => (
               <PostCard
                 key={post.id}
@@ -308,35 +287,9 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
                 onClick={() => onPostClick(post)}
               />
             ))}
-
-            {/* Infinite scroll trigger */}
-            {hasMore && (
-              <div ref={loadMoreRef} className="flex justify-center py-8">
-                {loadingMore ? (
-                  <div className="flex items-center space-x-2 text-terminal-green font-mono">
-                    <Loader2 className="animate-spin" size={20} />
-                    <span>Loading more posts...</span>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleLoadMore}
-                    className="flex items-center space-x-2 px-6 py-3 bg-gray-800 text-gray-100 rounded border border-gray-700 font-mono hover:border-terminal-green hover:bg-gray-750 transition-all"
-                  >
-                    <ChevronDown size={20} />
-                    <span>Load More Posts</span>
-                  </button>
-                )}
-              </div>
-            )}
-
-            {!hasMore && posts.length > 0 && (
-              <div className="text-center py-8 bg-gray-900 border border-gray-700 rounded-lg">
-                <p className="text-gray-500 font-mono">$ end of feed</p>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+          </div>
+        </InfiniteScroll>
+      )}
     </div>
   );
 }
