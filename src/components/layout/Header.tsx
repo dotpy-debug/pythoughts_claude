@@ -4,7 +4,7 @@ import { Menu, X, User, LogOut, SquarePen as PenSquare, Terminal, Search, Users,
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthModal } from '../auth/AuthModal';
 import { NotificationBell } from '../notifications/NotificationBell';
-import { TypewriterText } from '../animations/TypewriterText';
+import { ShimmerText } from '../animations/ShimmerText';
 import { supabase } from '../../lib/supabase';
 
 type SearchSuggestion = {
@@ -143,7 +143,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                 </div>
                 <div className="font-mono">
                   <span className="text-terminal-green">$ </span>
-                  <TypewriterText text="pythoughts" className="text-xl font-bold text-gray-100" speed={150} />
+                  <ShimmerText text="pythoughts" className="text-xl font-bold" />
                 </div>
               </div>
 
