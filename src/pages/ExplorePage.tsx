@@ -2,6 +2,8 @@ import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, TrendingUp, Tag, Users } from 'lucide-react';
 import { Post } from '../lib/supabase';
+import { TagExploration } from '../components/tags/TagExploration';
+import { AuthorRecommendations } from '../components/discovery/AuthorRecommendations';
 
 const PostList = lazy(() => import('../components/posts/PostList').then(mod => ({ default: mod.PostList })));
 
@@ -82,19 +84,9 @@ export function ExplorePage() {
           </div>
         )}
 
-        {activeTab === 'tags' && (
-          <div className="text-center py-20">
-            <Tag size={48} className="text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">Tag exploration coming soon...</p>
-          </div>
-        )}
+        {activeTab === 'tags' && <TagExploration />}
 
-        {activeTab === 'users' && (
-          <div className="text-center py-20">
-            <Users size={48} className="text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">User discovery coming soon...</p>
-          </div>
-        )}
+        {activeTab === 'users' && <AuthorRecommendations />}
       </Suspense>
     </div>
   );
