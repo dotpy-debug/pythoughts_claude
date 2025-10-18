@@ -1,10 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, TrendingUp, Eye, Heart, MessageCircle, Users, FileText, Calendar } from 'lucide-react';
+import { Loader2, TrendingUp, Eye, Heart, MessageCircle, Users, FileText, Calendar, Clock, ExternalLink, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Post } from '../lib/supabase';
 import { ShadcnCard, ShadcnCardContent } from '../components/ui/ShadcnCard';
 import { formatDistanceToNow } from '../utils/dateUtils';
+import { LineChart } from '../components/charts/LineChart';
+import { BarChart } from '../components/charts/BarChart';
+import { DonutChart } from '../components/charts/DonutChart';
+import {
+  getEngagementTimeSeries,
+  getTrafficSources,
+  getTopReferrers,
+  getReadingMetrics,
+  type TimeSeriesData,
+  type TrafficSource,
+  type TopReferrer,
+  type ReadingMetrics,
+} from '../utils/analytics';
 
 type AnalyticsData = {
   totalPosts: number;
@@ -14,6 +27,10 @@ type AnalyticsData = {
   totalFollowers: number;
   topPosts: Post[];
   recentActivity: ActivityItem[];
+  engagementTimeSeries: TimeSeriesData[];
+  trafficSources: TrafficSource[];
+  topReferrers: TopReferrer[];
+  readingMetrics: ReadingMetrics;
 };
 
 type ActivityItem = {
@@ -36,6 +53,10 @@ export function AnalyticsPage() {
     totalFollowers: 0,
     topPosts: [],
     recentActivity: [],
+    engagementTimeSeries: [],
+    trafficSources: [],
+    topReferrers: [],
+    readingMetrics: { avgReadTime: 0, completionRate: 0, totalReads: 0 },
   });
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
@@ -114,6 +135,15 @@ export function AnalyticsPage() {
           created_at: post.created_at,
         }));
 
+      // Fetch enhanced analytics data
+      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
+      const [engagementTimeSeries, trafficSources, topReferrers, readingMetrics] = await Promise.all([
+        getEngagementTimeSeries(user.id, days),
+        getTrafficSources(user.id),
+        getTopReferrers(user.id, 10),
+        getReadingMetrics(user.id),
+      ]);
+
       setAnalytics({
         totalPosts: posts?.length || 0,
         totalViews,
@@ -122,6 +152,10 @@ export function AnalyticsPage() {
         totalFollowers: followersData?.length || 0,
         topPosts,
         recentActivity,
+        engagementTimeSeries,
+        trafficSources,
+        topReferrers,
+        readingMetrics,
       });
     } catch (error) {
       console.error('Error loading analytics:', error);
@@ -310,6 +344,149 @@ export function AnalyticsPage() {
           </ShadcnCardContent>
         </ShadcnCard>
       </div>
+
+      {/* Engagement Trends */}
+      <ShadcnCard className="bg-gray-900 border-gray-700">
+        <ShadcnCardContent className="p-6">
+          <div className="flex items-center space-x-2 mb-6">
+            <TrendingUp className="text-terminal-green" size={20} />
+            <h2 className="text-lg font-bold text-gray-100 font-mono">
+              Engagement Over Time
+            </h2>
+          </div>
+
+          {analytics.engagementTimeSeries.length === 0 ? (
+            <p className="text-gray-400 text-sm font-mono">No engagement data yet</p>
+          ) : (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-300 mb-3 font-mono">Views</h3>
+                <LineChart
+                  data={analytics.engagementTimeSeries.slice(-14).map(d => ({
+                    label: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    value: d.views,
+                  }))}
+                  height={180}
+                  color="#3b82f6"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-gray-300 mb-3 font-mono">Engagement Score</h3>
+                <LineChart
+                  data={analytics.engagementTimeSeries.slice(-14).map(d => ({
+                    label: new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                    value: d.engagement,
+                  }))}
+                  height={180}
+                  color="#00ff9f"
+                />
+              </div>
+            </div>
+          )}
+        </ShadcnCardContent>
+      </ShadcnCard>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Traffic Sources */}
+        <ShadcnCard className="bg-gray-900 border-gray-700">
+          <ShadcnCardContent className="p-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <Eye className="text-terminal-blue" size={20} />
+              <h2 className="text-lg font-bold text-gray-100 font-mono">
+                Traffic Sources
+              </h2>
+            </div>
+
+            {analytics.trafficSources.length === 0 ? (
+              <p className="text-gray-400 text-sm font-mono">No traffic data yet</p>
+            ) : (
+              <DonutChart
+                data={analytics.trafficSources.map(s => ({
+                  label: s.source,
+                  value: s.count,
+                }))}
+                centerLabel="Total Views"
+                centerValue={analytics.totalViews.toString()}
+              />
+            )}
+          </ShadcnCardContent>
+        </ShadcnCard>
+
+        {/* Reading Metrics */}
+        <ShadcnCard className="bg-gray-900 border-gray-700">
+          <ShadcnCardContent className="p-6">
+            <div className="flex items-center space-x-2 mb-6">
+              <BookOpen className="text-terminal-purple" size={20} />
+              <h2 className="text-lg font-bold text-gray-100 font-mono">
+                Reading Metrics
+              </h2>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-400 font-mono">Avg. Read Time</span>
+                  <span className="text-2xl font-bold text-terminal-green font-mono">
+                    {Math.floor(analytics.readingMetrics.avgReadTime / 60)}m {analytics.readingMetrics.avgReadTime % 60}s
+                  </span>
+                </div>
+                <div className="w-full bg-gray-800 rounded-full h-2">
+                  <div
+                    className="bg-terminal-green h-full rounded-full"
+                    style={{ width: `${Math.min((analytics.readingMetrics.avgReadTime / 300) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-400 font-mono">Completion Rate</span>
+                  <span className="text-2xl font-bold text-terminal-blue font-mono">
+                    {analytics.readingMetrics.completionRate.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-800 rounded-full h-2">
+                  <div
+                    className="bg-terminal-blue h-full rounded-full"
+                    style={{ width: `${analytics.readingMetrics.completionRate}%` }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-400 font-mono">Total Reads</span>
+                  <span className="text-2xl font-bold text-gray-100 font-mono">
+                    {analytics.readingMetrics.totalReads}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </ShadcnCardContent>
+        </ShadcnCard>
+      </div>
+
+      {/* Top Referrers */}
+      {analytics.topReferrers.length > 0 && (
+        <ShadcnCard className="bg-gray-900 border-gray-700">
+          <ShadcnCardContent className="p-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <ExternalLink className="text-terminal-pink" size={20} />
+              <h2 className="text-lg font-bold text-gray-100 font-mono">
+                Top Referrers
+              </h2>
+            </div>
+
+            <BarChart
+              data={analytics.topReferrers.map(r => ({
+                label: new URL(r.referrer).hostname.replace('www.', ''),
+                value: r.count,
+              }))}
+            />
+          </ShadcnCardContent>
+        </ShadcnCard>
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowUp, ArrowDown, MessageCircle, User, Terminal, Flag } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageCircle, User, Terminal, Flag, TrendingUp } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { sanitizeURL } from '../../utils/security';
@@ -27,6 +27,17 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
     e.stopPropagation();
     setReportModalOpen(true);
   };
+
+  // Format engagement score for display
+  const getEngagementLevel = (score: number): { level: string; color: string } => {
+    if (score >= 100) return { level: 'Hot', color: 'text-orange-400' };
+    if (score >= 50) return { level: 'Trending', color: 'text-terminal-green' };
+    if (score >= 20) return { level: 'Active', color: 'text-terminal-blue' };
+    return { level: 'New', color: 'text-gray-500' };
+  };
+
+  const engagementScore = post.post_stats?.engagement_score || 0;
+  const engagementLevel = getEngagementLevel(engagementScore);
 
   return (
     <article
@@ -131,6 +142,16 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
                 <MessageCircle size={14} aria-hidden="true" />
                 <span>{post.comment_count}</span>
               </div>
+              {engagementScore > 0 && (
+                <div
+                  className={`flex items-center space-x-1 ${engagementLevel.color} transition-colors`}
+                  title={`Engagement score: ${engagementScore.toFixed(1)}`}
+                  aria-label={`${engagementLevel.level} engagement`}
+                >
+                  <TrendingUp size={14} aria-hidden="true" />
+                  <span className="text-xs font-semibold">{engagementLevel.level}</span>
+                </div>
+              )}
             </div>
             <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
               <BookmarkButton postId={post.id} variant="compact" />

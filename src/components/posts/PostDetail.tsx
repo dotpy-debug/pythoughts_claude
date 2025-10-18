@@ -1,5 +1,5 @@
-import { lazy, Suspense, useRef } from 'react';
-import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal, Clock } from 'lucide-react';
+import { lazy, Suspense, useRef, useState } from 'react';
+import { ArrowLeft, ArrowUp, ArrowDown, User, Terminal, Clock, Highlighter, TrendingUp } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { CommentSection } from '../comments/CommentSection';
@@ -9,6 +9,9 @@ import { BookmarkButton } from '../bookmarks/BookmarkButton';
 import { ReadingProgressBar } from '../reading/ReadingProgressBar';
 import { RecommendedPosts } from '../recommendations/RecommendedPosts';
 import { ShareButton } from './ShareButton';
+import { TextHighlighter } from '../highlights/TextHighlighter';
+import { HighlightsModal } from '../highlights/HighlightsModal';
+import { useTextHighlight } from '../../hooks/useTextHighlight';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeURL } from '../../utils/security';
 
@@ -25,12 +28,25 @@ type PostDetailProps = {
 export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) {
   const { user } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
+  const [showHighlightsModal, setShowHighlightsModal] = useState(false);
+  const { highlights, updateHighlight, deleteHighlight } = useTextHighlight(post.id);
 
   const handleVote = (voteType: 1 | -1) => {
     if (user) {
       onVote(post.id, voteType);
     }
   };
+
+  // Calculate engagement level for display
+  const getEngagementLevel = (score: number): { level: string; color: string; bgColor: string; borderColor: string } => {
+    if (score >= 100) return { level: 'Hot', color: 'text-orange-400', bgColor: 'bg-orange-500/20', borderColor: 'border-orange-500/30' };
+    if (score >= 50) return { level: 'Trending', color: 'text-terminal-green', bgColor: 'bg-terminal-green/20', borderColor: 'border-terminal-green/30' };
+    if (score >= 20) return { level: 'Active', color: 'text-terminal-blue', bgColor: 'bg-terminal-blue/20', borderColor: 'border-terminal-blue/30' };
+    return { level: 'New', color: 'text-gray-500', bgColor: 'bg-gray-500/20', borderColor: 'border-gray-500/30' };
+  };
+
+  const engagementScore = post.post_stats?.engagement_score || 0;
+  const engagement = getEngagementLevel(engagementScore);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -121,12 +137,22 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                 </p>
               )}
 
-              {post.reading_time_minutes > 0 && (
-                <div className="flex items-center space-x-2 text-sm text-gray-500 mb-6 font-mono">
-                  <Clock size={16} />
-                  <span>{post.reading_time_minutes} min read</span>
-                </div>
-              )}
+              <div className="flex items-center space-x-4 mb-6">
+                {post.reading_time_minutes > 0 && (
+                  <div className="flex items-center space-x-2 text-sm text-gray-500 font-mono">
+                    <Clock size={16} />
+                    <span>{post.reading_time_minutes} min read</span>
+                  </div>
+                )}
+
+                {engagementScore > 0 && (
+                  <div className={`flex items-center space-x-2 px-3 py-1 ${engagement.bgColor} ${engagement.color} border ${engagement.borderColor} rounded-full font-mono text-sm`}>
+                    <TrendingUp size={16} />
+                    <span className="font-semibold">{engagement.level}</span>
+                    <span className="text-xs opacity-70">({engagementScore.toFixed(1)})</span>
+                  </div>
+                )}
+              </div>
 
               {post.image_url && (
                 <img
@@ -137,17 +163,19 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                 />
               )}
 
-              <div ref={contentRef} className="prose prose-invert max-w-none mb-6 text-gray-300 text-base leading-relaxed font-mono">
-                <Suspense fallback={
-                  <div className="animate-pulse space-y-2">
-                    <div className="h-4 bg-gray-800 rounded w-full"></div>
-                    <div className="h-4 bg-gray-800 rounded w-5/6"></div>
-                    <div className="h-4 bg-gray-800 rounded w-4/6"></div>
-                  </div>
-                }>
-                  <MarkdownRenderer content={post.content} />
-                </Suspense>
-              </div>
+              <TextHighlighter postId={post.id} content={post.content} enabled={post.post_type === 'blog'}>
+                <div ref={contentRef} className="prose prose-invert max-w-none mb-6 text-gray-300 text-base leading-relaxed font-mono">
+                  <Suspense fallback={
+                    <div className="animate-pulse space-y-2">
+                      <div className="h-4 bg-gray-800 rounded w-full"></div>
+                      <div className="h-4 bg-gray-800 rounded w-5/6"></div>
+                      <div className="h-4 bg-gray-800 rounded w-4/6"></div>
+                    </div>
+                  }>
+                    <MarkdownRenderer content={post.content} />
+                  </Suspense>
+                </div>
+              </TextHighlighter>
 
               <div className="border-t border-gray-700 pt-6 mt-6 space-y-6">
                 {post.post_type === 'blog' && (
@@ -155,6 +183,15 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
                     <ClapButton postId={post.id} />
                     <div className="flex items-center space-x-3">
                       <BookmarkButton postId={post.id} variant="compact" />
+                      {user && highlights.length > 0 && (
+                        <button
+                          onClick={() => setShowHighlightsModal(true)}
+                          className="flex items-center space-x-2 px-3 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg hover:bg-purple-500/30 hover:border-purple-500/50 transition-all font-mono text-sm"
+                        >
+                          <Highlighter size={16} />
+                          <span>{highlights.length}</span>
+                        </button>
+                      )}
                       <ShareButton post={post} variant="default" />
                     </div>
                   </div>
@@ -178,6 +215,16 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
           <CommentSection postId={post.id} postAuthorId={post.author_id} />
         </div>
       </div>
+
+      {/* Highlights Modal */}
+      {showHighlightsModal && (
+        <HighlightsModal
+          highlights={highlights}
+          onClose={() => setShowHighlightsModal(false)}
+          onUpdateHighlight={(id, updates) => updateHighlight(id, updates)}
+          onDeleteHighlight={deleteHighlight}
+        />
+      )}
     </div>
   );
 }

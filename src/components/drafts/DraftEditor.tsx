@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Terminal, Save, Eye, Send, X } from 'lucide-react';
+import { Terminal, Save, Eye, Send, X, Clock, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Input } from '../ui/Input';
@@ -29,6 +29,8 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
   const [showPreview, setShowPreview] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [error, setError] = useState('');
+  const [schedulePublish, setSchedulePublish] = useState(false);
+  const [scheduledDateTime, setScheduledDateTime] = useState('');
 
   const autoSaveTimerRef = useRef<NodeJS.Timeout>();
   const currentDraftIdRef = useRef<string | undefined>(draftId);
@@ -49,10 +51,22 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
       if (data) {
         setTitle(data.title);
         setContent(data.content);
+        setSubtitle(data.subtitle || '');
         setImageUrl(data.image_url);
         setCategory(data.category);
         setTags(data.tags || []);
         setLastSaved(new Date(data.updated_at));
+        if (data.scheduled_publish_at) {
+          setSchedulePublish(true);
+          // Convert UTC to local datetime-local format
+          const localDate = new Date(data.scheduled_publish_at);
+          const year = localDate.getFullYear();
+          const month = String(localDate.getMonth() + 1).padStart(2, '0');
+          const day = String(localDate.getDate()).padStart(2, '0');
+          const hours = String(localDate.getHours()).padStart(2, '0');
+          const minutes = String(localDate.getMinutes()).padStart(2, '0');
+          setScheduledDateTime(`${year}-${month}-${day}T${hours}:${minutes}`);
+        }
       }
     } catch (error) {
       console.error('Error loading draft:', error);
@@ -76,6 +90,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
     try {
       const draftData = {
         title: title.trim() || 'Untitled Draft',
+        subtitle: subtitle.trim(),
         content: content,
         author_id: user.id,
         post_type: postType,
@@ -83,6 +98,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
         category: category,
         tags: tags,
         auto_saved_at: new Date().toISOString(),
+        scheduled_publish_at: schedulePublish && scheduledDateTime ? new Date(scheduledDateTime).toISOString() : null,
       };
 
       if (currentDraftIdRef.current) {
@@ -157,6 +173,24 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
         return;
       }
 
+      // Validate scheduled datetime if scheduling
+      if (schedulePublish) {
+        if (!scheduledDateTime) {
+          setError('Please select a date and time for scheduled publishing');
+          setPublishing(false);
+          return;
+        }
+
+        const scheduledDate = new Date(scheduledDateTime);
+        const now = new Date();
+
+        if (scheduledDate <= now) {
+          setError('Scheduled time must be in the future');
+          setPublishing(false);
+          return;
+        }
+      }
+
       let sanitizedImageUrl = '';
       if (imageUrl.trim()) {
         sanitizedImageUrl = sanitizeURL(imageUrl.trim());
@@ -169,6 +203,13 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
 
       const sanitizedTitle = sanitizeInput(title.trim());
       const sanitizedSubtitle = sanitizeInput(subtitle.trim());
+
+      // If scheduling, save the draft with scheduled time instead of publishing
+      if (schedulePublish) {
+        await saveDraft(false);
+        onClose();
+        return;
+      }
 
       const { data: post, error: postError } = await supabase
         .from('posts')
@@ -367,6 +408,50 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
                   </p>
                 </div>
               </div>
+
+              {/* Scheduled Publishing */}
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                <div className="flex items-center space-x-3 mb-3">
+                  <Clock size={18} className="text-terminal-green" />
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={schedulePublish}
+                      onChange={(e) => {
+                        setSchedulePublish(e.target.checked);
+                        if (!e.target.checked) {
+                          setScheduledDateTime('');
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-terminal-green focus:ring-terminal-green focus:ring-2"
+                    />
+                    <span className="text-sm font-mono text-gray-300">Schedule for later</span>
+                  </label>
+                </div>
+
+                {schedulePublish && (
+                  <div className="space-y-2 pl-7">
+                    <label className="block text-xs font-mono text-gray-400">
+                      Publish on
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <Calendar size={16} className="text-gray-500" />
+                      <input
+                        type="datetime-local"
+                        value={scheduledDateTime}
+                        onChange={(e) => setScheduledDateTime(e.target.value)}
+                        min={new Date().toISOString().slice(0, 16)}
+                        className="flex-1 px-3 py-2 rounded border border-gray-700 bg-gray-900 text-gray-100 focus:border-terminal-green focus:ring-2 focus:ring-terminal-green/20 transition-all duration-200 outline-none font-mono text-sm"
+                      />
+                    </div>
+                    {scheduledDateTime && (
+                      <p className="text-xs text-gray-500 font-mono pl-5">
+                        Will publish on {new Date(scheduledDateTime).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </>
           )}
 
@@ -402,8 +487,17 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
               variant="terminal"
               className="font-mono"
             >
-              <Send size={16} className="mr-2" />
-              {publishing ? 'Publishing...' : 'Publish'}
+              {schedulePublish ? (
+                <>
+                  <Clock size={16} className="mr-2" />
+                  {publishing ? 'Scheduling...' : 'Schedule Post'}
+                </>
+              ) : (
+                <>
+                  <Send size={16} className="mr-2" />
+                  {publishing ? 'Publishing...' : 'Publish Now'}
+                </>
+              )}
             </Button>
           </div>
         </div>
