@@ -2,12 +2,14 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Terminal, Save, Eye, Send, X, Clock, Calendar, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { Category } from '../../lib/supabase';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { TagInput } from '../tags/TagBadge';
 import { ImageUpload } from '../uploads/ImageUpload';
 import { sanitizeInput, sanitizeURL, isValidContentLength } from '../../utils/security';
 import { useDraftRecovery } from '../../hooks/useDraftRecovery';
+import { getActiveCategories } from '../../actions/categories';
 
 type DraftEditorProps = {
   draftId?: string;
@@ -16,8 +18,6 @@ type DraftEditorProps = {
   onPublish?: () => void;
 };
 
-const categories = ['Tech', 'Product', 'Design', 'Engineering', 'Culture', 'Other'];
-
 export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEditorProps) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
@@ -25,6 +25,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
   const [subtitle, setSubtitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -100,6 +101,15 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
       hasShownRecoveryPrompt.current = true;
     }
   }, [draftId, hasRecoverableDraft]);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const cats = await getActiveCategories();
+      setCategories(cats);
+    };
+    fetchCategories();
+  }, []);
 
   const saveDraft = useCallback(async (autoSave = false) => {
     if (!user) return;
@@ -451,8 +461,8 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
+                    <option key={cat.id} value={cat.slug}>
+                      {cat.icon} {cat.name}
                     </option>
                   ))}
                 </select>

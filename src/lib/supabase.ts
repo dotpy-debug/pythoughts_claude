@@ -352,6 +352,20 @@ export type TagFollow = {
   tags?: Tag;
 };
 
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  color: string;
+  icon: string;
+  post_count: number;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ReadingProgress = {
   id: string;
   user_id: string;
