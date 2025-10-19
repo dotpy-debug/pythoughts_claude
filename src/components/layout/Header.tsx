@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, SquarePen as PenSquare, Search, Users, TrendingUp, Shield } from 'lucide-react';
+import { Menu, X, User, LogOut, SquarePen as PenSquare, Search, Users, TrendingUp, Shield, Settings } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthModal } from '../auth/AuthModal';
 import { NotificationBell } from '../notifications/NotificationBell';
@@ -33,6 +33,7 @@ export function Header({ onCreatePost }: HeaderProps) {
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
     await signOut();
@@ -55,6 +56,26 @@ export function Header({ onCreatePost }: HeaderProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [userMenuOpen]);
+
+  // Close user menu when location changes
+  useEffect(() => {
+    setUserMenuOpen(false);
+  }, [location]);
 
   // Fetch autocomplete suggestions
   useEffect(() => {
@@ -243,7 +264,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                     <span>{currentTab === 'tasks' ? 'new_task' : 'new_post'}</span>
                   </button>
 
-                  <div className="relative">
+                  <div className="relative" ref={userMenuRef}>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
                       className="flex items-center space-x-2 text-gray-300 hover:text-terminal-green transition-colors"
@@ -263,7 +284,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                     </button>
 
                     {userMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl py-1">
+                      <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl py-1 z-50">
                         <Link
                           to="/profile"
                           onClick={() => setUserMenuOpen(false)}
@@ -301,7 +322,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                           onClick={() => setUserMenuOpen(false)}
                           className="w-full px-4 py-2 text-left text-gray-300 hover:bg-gray-800 hover:text-terminal-purple flex items-center space-x-2 font-mono text-sm transition-colors"
                         >
-                          <Terminal size={16} />
+                          <Settings size={16} />
                           <span>settings</span>
                         </Link>
                         <button
@@ -506,7 +527,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                       onClick={() => setMobileMenuOpen(false)}
                       className="block w-full text-left px-4 py-2 rounded text-gray-400 hover:bg-gray-800 hover:text-terminal-purple flex items-center space-x-2 font-mono text-sm transition-colors"
                     >
-                      <Terminal size={16} />
+                      <Settings size={16} />
                       <span>settings</span>
                     </Link>
                     <button

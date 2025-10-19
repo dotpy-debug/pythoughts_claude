@@ -11,6 +11,7 @@ import { LogoLoopVertical } from './components/animations/LogoLoopVertical';
 import { Loader2 } from 'lucide-react';
 import { useKeyboardShortcuts, SkipNavLink } from './hooks/useKeyboardNavigation';
 import { initFocusVisible } from './utils/accessibility';
+import { useScheduledPostsPublisher } from './hooks/useScheduledPostsPublisher';
 
 // Lazy load page components
 const LandingPage = lazy(() => import('./pages/LandingPage').then(mod => ({ default: mod.LandingPage })));
@@ -66,6 +67,9 @@ function AppContent() {
     const cleanup = initFocusVisible();
     return cleanup;
   }, []);
+
+  // Enable scheduled posts publisher (runs every 1 minute)
+  useScheduledPostsPublisher(1, true);
 
   // Global keyboard shortcuts
   useKeyboardShortcuts([

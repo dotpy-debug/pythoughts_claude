@@ -113,6 +113,8 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
           author_id: user.id,
           post_type: postType,
           is_published: true,
+          is_draft: false,
+          published_at: new Date().toISOString(),
         })
         .select('id')
         .single();
