@@ -7,6 +7,10 @@ type AuthContextType = {
   profile: Profile | null;
   session: Session | null;
   loading: boolean;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
+  isModerator: boolean;
+  isEditor: boolean;
   signUp: (email: string, password: string, username: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
@@ -120,6 +124,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   };
 
+  // Compute admin flags based on profile
+  const isAdmin = profile?.is_admin ?? false;
+  const isSuperAdmin = profile?.role === 'super_admin';
+  const isModerator = profile?.role === 'moderator' || profile?.role === 'admin' || profile?.role === 'super_admin';
+  const isEditor = profile?.role === 'editor' || profile?.role === 'admin' || profile?.role === 'super_admin';
+
   return (
     <AuthContext.Provider
       value={{
@@ -127,6 +137,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         profile,
         session,
         loading,
+        isAdmin,
+        isSuperAdmin,
+        isModerator,
+        isEditor,
         signUp,
         signIn,
         signOut,

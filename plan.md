@@ -1,187 +1,130 @@
-Plan: Complete Feature Enhancement and Production Readiness for Pythoughts Social Blogging Platform
-Last audit: 2025-10-18 (Build runbook refresh)
+Plan: Comprehensive Admin Dashboard with Full Platform Management
 
-## Build & Delivery Runbook (2025-10-18)
+1. Admin Authentication and Access Control
 
-**Scope**
-- Plan sections 1-10 share a single Vite + React frontend (`src/`) backed by Supabase/PostgreSQL schemas (`supabase/migrations`, `postgres/migrations`) with Redis-powered features.
-- The steps below document how to assemble, validate, and ship those capabilities end-to-end.
+Add admin role verification middleware to protect admin routes
+Create AdminRoute component wrapper to restrict access to admin pages only
+Update AuthContext to include isAdmin flag from profiles table
+Add admin privilege checks on the backend for all sensitive operations
+Create super-admin designation for managing other admin users
+Build admin activity logging system to track all admin actions
+2. Admin Dashboard Core Interface
 
-### 1. Toolchain & Prerequisites
-- Node.js 20.x and npm 10.x (matches GitHub Actions `NODE_VERSION`); pin locally via `.nvmrc`/Volta to avoid drift.
-- Optional CLIs: Supabase CLI (database migrations), Docker & Docker Compose (container workflows), Nixpacks (deployments).
-- Global utilities referenced in docs/workflows: `@lhci/cli@0.14.x`, `pa11y-ci`, `wait-on`, `npx playwright install --with-deps`.
-- External services required by roadmap items: Supabase project, Resend account, Better-Auth instance, Redis cache.
+Create new AdminDashboard main page with sidebar navigation
+Design admin-specific header with quick actions and admin status indicator
+Build dashboard overview section with key platform metrics and statistics
+Add real-time statistics cards for total users, posts, comments, tasks, and reports
+Create activity timeline showing recent platform events
+Implement data visualization charts for user growth, content creation trends, and engagement metrics
+Add quick access buttons to common admin tasks
+3. User Management Module
 
-### 2. Environment Configuration
-- Copy `.env.example` to `.env`; populate `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for plan sections 1-4 and 10.
-- Enable server-side features (sections 5-8) by setting `REDIS_URL`, `BETTER_AUTH_SECRET`, `RESEND_API_KEY` as needed.
-- Production builds derive from `.env.production.template` plus Docker secrets in `docker-compose.prod.yml`.
+Build comprehensive user list view with search, filter, and sort capabilities
+Create user detail view showing full profile, activity history, and content
+Add functionality to edit user profiles including username, email, bio, and avatar
+Implement user role management to grant or revoke admin privileges
+Create user suspension and ban system with reason tracking
+Build user deletion functionality with cascade options for their content
+Add bulk actions for managing multiple users simultaneously
+Create user analytics showing post count, engagement, reputation, and badges
+Implement email verification status management
+Add ability to reset user passwords and force password changes
+4. Content Moderation and Management
 
-### 3. Local Database & Services
-- Supabase-hosted path (sections 1-4 and 10): run migrations in `supabase/migrations` using Supabase CLI (`supabase db push`) or SQL client. NOTE: no helper script yet; see enhancements.
-- Self-hosted stack (sections 5-6 and 9): `npm run docker:dev` starts Postgres + Redis + dev app; apply SQL from `postgres/migrations` to mirror schema.
-- Redis is optional for basic browsing but required to exercise caching/rate limiting/trending work (section 6).
+Expand existing moderation queue with enhanced admin controls
+Create posts management section with advanced filtering by status, type, category, and author
+Build comments management interface with bulk moderation actions
+Add ability to edit any post or comment content directly
+Implement content pinning and unpinning for featured content
+Create bulk delete functionality for spam or policy-violating content
+Add content quarantine system for temporary content removal pending review
+Build automated flagging review system with AI-generated insights
+Create moderation templates for common responses
+Add content restoration functionality for mistakenly removed items
+5. Direct Database Access Interface
 
-### 4. Dependency Installation
-- `npm ci --prefer-offline --no-audit` (mirrors CI). Run after cloning or when lockfile changes.
+Build table browser showing all database tables with row counts
+Create data grid view for each table with pagination and search
+Implement inline editing for database records with validation
+Add ability to create new records directly through admin interface
+Build SQL query executor with safety restrictions and result display
+Create database backup and export functionality
+Add column management to view schema and data types
+Implement bulk import/export for CSV data
+Create data integrity checker to identify orphaned records
+Add database statistics and performance metrics view
+6. Categories and Tags Management
 
-### 5. Running the Application
-- `npm run dev -- --host` => http://localhost:5173 (hot reload, uses current `.env`).
-- `npm run preview` after a build to inspect production bundle locally (`npm run preview -- --host 0.0.0.0` for device testing).
+Build category management interface to create, edit, and delete categories
+Add category ordering and visibility controls
+Create tag management system with merge and rename capabilities
+Implement tag cleanup tools to remove unused or duplicate tags
+Add category and tag analytics showing post counts and engagement
+Build tag suggestion system based on content analysis
+Create featured tags section management
+7. Publications and Series Administration
 
-### 6. Quality Gates & Test Matrix
-- Static checks: `npm run lint`, `npm run typecheck` (CI job `quality`).
-- Unit/component coverage (sections 1-7): `npm run test:unit`; `npm run test:coverage` produces `coverage/` with 70% thresholds defined in `vitest.config.ts`.
-- End-to-end flows (sections 1-5 and 10): `npm run test:e2e` (ensure `npx playwright install --with-deps` beforehand; config auto-starts dev server).
-- Accessibility: `pa11y-ci --config .pa11yci.json` against `npm run preview`.
-- Performance: `npm run build` then `lhci autorun` (settings in `lighthouserc.json`; scripts `scripts/run-performance-tests.*` wrap this & Pa11y).
-- Optional tooling: `npm run test:ui`, `npm run test:watch`, `npm run test:e2e:ui/headed/debug` for scenario debugging; `scripts/generate-seo-files.ts` refreshes SEO metadata.
+Build publications directory with all publications across platform
+Add ability to manage publication members and their roles
+Create publication submission review and approval workflow
+Implement series management to edit or remove any series
+Add series reordering capabilities
+Create publication analytics dashboard
+Build publication verification system for official publications
+8. Reports and Moderation Queue Enhancement
 
-### 7. Production Build & Distribution
-- `npm run build` emits optimized assets to `dist/`; verify via `npm run preview`.
-- Container images: `npm run docker:build` / `docker build -t pythoughts:latest .` (multi-stage targets `development` + `production`).
-- Full-stack deployment: `npm run docker:prod` (`docker-compose -f docker-compose.prod.yml up -d`) after provisioning secrets, volumes, and TLS assets per compose comments.
-- Alternative hosting: `nixpacks.toml` preconfigures Railway/Render deployments (`npm run preview` entrypoint, cached static headers).
+Enhance existing reports page with admin-specific features
+Add automated report prioritization based on severity and user history
+Create moderator assignment system for distributing reports
+Build report resolution workflows with predefined actions
+Implement user warning system with escalation tracking
+Add report analytics showing trends and moderator performance
+Create appeal system for disputed moderation decisions
+9. Blog TOC Auto-Generation Feature
 
-### 8. CI/CD & Hosting Pipelines
-- `.github/workflows/ci.yml` runs lint, typecheck, unit coverage, Playwright e2e, build verification, security, and Lighthouse checks.
-- `.github/workflows/performance.yml` separates Lighthouse, Pa11y, and npm audit artifacts.
-- `.github/workflows/deploy.yml` builds production artifact, deploys to Vercel (`deploy-vercel`), and reserves slots for migrations and smoke tests.
-- `.github/workflows/pr-preview.yml` generates Vercel previews per pull request (comments currently contain mojibake; see findings).
+Build markdown parser to extract all heading tags from blog content
+Create TOC generation algorithm that creates hierarchical structure
+Implement anchor link generation for smooth scrolling navigation
+Add TOC positioning options for sidebar or inline display
+Create TOC styling options matching platform design
+Build TOC preview in post editor before publishing
+Add option to manually edit or disable TOC per post
+Implement TOC depth control to limit heading levels included
+Create sticky TOC navigation for long posts
+Add progress indicator showing current reading position in TOC
+10. Platform Analytics and Insights
 
-### 9. Key Findings from Build Audit
-- `deploy.yml` references `npm run migrate` / `npm run migrate:status`, but no scripts exist, so automated migrations will fail.
-- Workflow comments in `deploy.yml` and `pr-preview.yml` include non-ASCII artifacts, leading to unreadable deployment notifications.
-- Dual migration trees (`postgres/migrations` vs `supabase/migrations`) lack a documented sync strategy, risking schema drift across plan sections.
+Create comprehensive analytics dashboard with customizable date ranges
+Build user growth and retention charts
+Add content creation metrics by type, category, and time period
+Implement engagement analytics for votes, comments, claps, and shares
+Create trending content analysis with algorithm insights
+Build user demographics and behavior analysis
+Add conversion funnel visualization for user onboarding
+Create report generation system for weekly and monthly summaries
+Implement export functionality for all analytics data
+11. System Configuration and Settings
 
-### 10. Recommended Build Enhancements
-1. Add executable migration scripts (e.g., Supabase CLI or knex wrapper) so CI/CD steps invoking `npm run migrate*` succeed.
-2. Introduce `.nvmrc` or `package.json` `"engines"` to enforce Node.js 20.x across contributors.
-3. Provide a composite `npm run check` (lint + typecheck + test) or task runner to mirror CI locally before advancing plan milestones.
-4. Publish data seeding fixtures for blogs, comments, tasks, and publications to stabilize local/e2e scenarios.
-5. Document and automate Supabase vs self-hosted database flows to keep `supabase/` and `postgres/` migrations synchronized.
-6. Clean up workflow notification strings to human-readable ASCII and align messaging with collaboration goals in section 10.
+Build platform settings page for global configuration
+Add email notification template management
+Create system announcement banner controls
+Implement feature flag management for gradual rollouts
+Add rate limiting configuration interface
+Build maintenance mode toggle with custom messaging
+Create backup scheduling and management interface
+Add security settings for authentication and session management
+Implement content policy configuration and guidelines editor
+12. Permissions and Roles Management
 
----
+Create granular permission system beyond admin/user distinction
+Build role creation interface with custom permission sets
+Add moderator role with limited admin capabilities
+Implement editor role for content management without user access
+Create permission templates for common role configurations
+Build permission audit log showing who has access to what
+Add temporary permission grants with expiration dates
+Summary
 
-1. Core Medium-Style Blogging Features Implementation
+This comprehensive plan transforms your platform with a full-featured admin dashboard that provides complete control over every aspect of the system. The dashboard centralizes user management, content moderation, database access, and platform configuration into one powerful interface. The addition of auto-generated Table of Contents for blogs enhances reader experience and content navigation. With direct database access, admins can troubleshoot issues, perform bulk operations, and maintain data integrity. The granular permission system ensures secure delegation of responsibilities to moderators and editors. This admin system will give you enterprise-level control while maintaining security and auditability of all administrative actions.
 
-Implement draft autosave system with scheduled publishing functionality
-Build clap button component with animation and count display up to 50 claps
-Create bookmark management system with reading lists organization
-Develop text highlighting feature with color options and private notes
-Build series management interface for grouping related blog posts with ordering
-Create publication system for collaborative blogging with member roles
-Implement tag-based content discovery with follow/unfollow functionality
-Add reading progress tracking with position persistence and completion status
-Build post view analytics dashboard for authors showing traffic sources
-Create engagement score calculation and display in post statistics
-2. Enhanced Content Creation and Management
-
-Build rich markdown editor with live preview for blog posts
-Add image upload functionality with drag-and-drop support
-Implement draft recovery system to prevent content loss
-Create SEO optimization fields for titles, descriptions, and canonical URLs
-Build content scheduling interface with timezone support
-Add reading time calculator displayed on all posts
-Implement subtitle/excerpt editor for better content summaries
-Create featured post selection system for homepage highlights
-Build category management with custom category creation
-Add content versioning to track post edit history
-3. Advanced User Interaction Features
-
-Build nested comment system with threading and reply chains
-Implement comment voting and reaction system
-Create user profile pages with extended bio and social links
-Add follower/following system with activity feeds
-Build user skill showcase with proficiency levels
-Implement user blocking functionality for content control
-Create notification preferences panel with granular controls
-Add mention system with autocomplete for users and tags
-Build reputation system based on engagement metrics
-Implement user badges for achievements and milestones
-4. Discovery and Feed Optimization
-
-Build personalized feed based on followed tags and users
-Implement trending algorithm with time decay and engagement scoring
-Create tag exploration page with popular tags and descriptions
-Add search functionality with full-text search across posts
-Build related posts recommendation engine
-Create "For You" feed using collaborative filtering
-Implement reading list suggestions based on interests
-Add topic clustering for content organization
-Build trending topics sidebar with real-time updates
-Create author recommendation system
-5. Task Management System Enhancement
-
-Build infinite canvas for visual task organization with pan and zoom
-Add task assignment functionality to team members
-Implement task activity logging and audit trail
-Create task comment system for collaboration
-Add task filtering by status, priority, assignee, and tags
-Build kanban board view with drag-and-drop between columns
-Implement task due date reminders and notifications
-Create task templates for recurring workflows
-Add task time tracking with start/stop functionality
-Build task dependencies and blocking relationships
-6. Performance and Optimization
-
-Implement lazy loading for images and content
-Add infinite scroll for post lists with pagination fallback
-Optimize database queries with proper indexing
-Implement caching strategy using Redis for trending content
-Add image optimization and CDN integration
-Build service worker for offline reading capability
-Implement code splitting for faster initial page loads
-Add skeleton loaders for better perceived performance
-Optimize bundle size by removing unused dependencies
-Implement database connection pooling
-7. User Experience and Design Polish
-
-Enhance mobile responsiveness across all components
-Add dark/light theme toggle with preference persistence
-Implement smooth page transitions and animations
-Create loading states for all async operations
-Add empty states with helpful guidance for new users
-Build onboarding flow for first-time users
-Implement keyboard shortcuts for power users
-Add accessibility improvements including ARIA labels and keyboard navigation
-Create print-friendly post layouts
-Build social sharing with Open Graph meta tags
-8. Security and Data Protection
-
-Implement rate limiting for API endpoints
-Add CSRF protection for form submissions
-Create content moderation queue for reported posts
-Implement spam detection for comments and posts
-Add email verification for new accounts
-Build two-factor authentication system
-Implement session management with secure token rotation
-Add content security policy headers
-Create automated backup system for user data
-Implement audit logging for sensitive operations
-9. Analytics and Insights
-
-Build author analytics dashboard with views, reads, and engagement
-Create reading time analytics to understand audience behavior
-Implement referral tracking to identify traffic sources
-Add post performance comparisons over time
-Build audience demographics insights
-Create export functionality for analytics data
-Implement A/B testing framework for features
-Add conversion tracking for call-to-action buttons
-Build cohort analysis for user retention
-Create custom event tracking for key interactions
-10. Publication and Collaboration Features
-
-Build publication creation wizard with branding customization
-Implement publication member invitation system via email
-Create submission workflow with approval/rejection process
-Add publication analytics separate from personal analytics
-Build publication homepage with custom layout
-Implement publication newsletter functionality
-Create publication style guide editor
-Add publication revenue sharing configuration
-Build publication moderation tools
-Implement cross-posting between personal blog and publications
+Important Reminder: Since you are in Plan mode, I cannot implement these changes. To proceed with building this admin dashboard, please switch back to Build mode using the "Implement this plan" button or by clicking the Plan button again.

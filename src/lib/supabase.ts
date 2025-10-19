@@ -33,6 +33,12 @@ export type Profile = {
   username: string;
   avatar_url: string;
   bio: string;
+  role: 'user' | 'moderator' | 'editor' | 'admin' | 'super_admin';
+  is_admin: boolean;
+  is_suspended: boolean;
+  is_banned: boolean;
+  admin_notes: string;
+  last_active_at: string;
   created_at: string;
   updated_at: string;
 };
@@ -453,4 +459,77 @@ export type PostVersion = {
   is_major_edit: boolean;
   created_at: string;
   profiles?: Profile;
+};
+
+export type AdminRole = {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Record<string, boolean | unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AdminActivityLog = {
+  id: string;
+  admin_id: string;
+  action_type: string;
+  target_type: string;
+  target_id: string | null;
+  details: Record<string, unknown>;
+  ip_address: string;
+  user_agent: string;
+  created_at: string;
+  profiles?: Profile;
+};
+
+export type UserSuspension = {
+  id: string;
+  user_id: string;
+  suspended_by: string;
+  reason: string;
+  suspension_type: 'warning' | 'temporary' | 'permanent';
+  starts_at: string;
+  expires_at: string | null;
+  is_active: boolean;
+  appeal_status: 'none' | 'pending' | 'approved' | 'rejected';
+  appeal_notes: string;
+  created_at: string;
+  updated_at: string;
+  user_profile?: Profile;
+  admin_profile?: Profile;
+};
+
+export type SystemSetting = {
+  id: string;
+  key: string;
+  value: Record<string, unknown>;
+  category: string;
+  description: string;
+  is_public: boolean;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+  profiles?: Profile;
+};
+
+export type ContentReport = {
+  id: string;
+  reporter_id: string;
+  reported_user_id: string | null;
+  post_id: string | null;
+  comment_id: string | null;
+  report_type: 'spam' | 'harassment' | 'inappropriate' | 'misinformation' | 'copyright' | 'other';
+  reason: string;
+  status: 'pending' | 'reviewing' | 'resolved' | 'dismissed';
+  assigned_to: string | null;
+  resolution_notes: string;
+  created_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+  reporter_profile?: Profile;
+  reported_user_profile?: Profile;
+  assigned_admin_profile?: Profile;
+  posts?: Post;
+  comments?: Comment;
 };
