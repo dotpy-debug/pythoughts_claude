@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, User, LogOut, SquarePen as PenSquare, Terminal, Search, Users, TrendingUp, Shield } from 'lucide-react';
+import { Menu, X, User, LogOut, SquarePen as PenSquare, Search, Users, TrendingUp, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthModal } from '../auth/AuthModal';
 import { NotificationBell } from '../notifications/NotificationBell';
-import { TypewriterText } from '../animations/TypewriterText';
+import { ShimmerLogo } from '../animations/ShimmerLogo';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 
@@ -138,15 +138,9 @@ export function Header({ onCreatePost }: HeaderProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-terminal-green via-terminal-blue to-terminal-purple rounded-lg flex items-center justify-center shadow-lg">
-                  <Terminal size={20} className="text-gray-900" />
-                </div>
-                <div className="font-mono">
-                  <span className="text-terminal-green">$ </span>
-                  <TypewriterText text="pythoughts" className="text-xl font-bold text-gray-100" speed={150} />
-                </div>
-              </div>
+              <Link to="/" className="flex items-center">
+                <ShimmerLogo showText={true} size="md" />
+              </Link>
 
               <nav className="hidden md:flex space-x-1">
                 <Link
