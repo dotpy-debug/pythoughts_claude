@@ -6,6 +6,7 @@ import { AuthModal } from '../auth/AuthModal';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { TypewriterText } from '../animations/TypewriterText';
 import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 
 type SearchSuggestion = {
   id: string;
@@ -103,8 +104,8 @@ export function Header({ onCreatePost }: HeaderProps) {
         }
 
         setSuggestions(suggestions.slice(0, 5));
-      } catch (error) {
-        console.error('Error fetching suggestions:', error);
+      } catch (err) {
+        logger.error('Error fetching search suggestions', { searchQuery, errorMessage: err instanceof Error ? err.message : String(err) });
       }
     };
 

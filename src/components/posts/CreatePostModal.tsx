@@ -9,6 +9,7 @@ import { TagInput } from '../tags/TagInput';
 import { sanitizeInput, sanitizeURL, isValidContentLength } from '../../utils/security';
 import { checkContentSafety, shouldAutoBlock } from '../../utils/contentFilter';
 import { autoFlagContent } from '../../utils/autoFlag';
+import { logger } from '../../lib/logger';
 
 const MarkdownEditor = lazy(() => import('../blog/MarkdownEditor').then(mod => ({ default: mod.MarkdownEditor })));
 
@@ -95,8 +96,11 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
 
       // Warn about content that has issues but allow posting
       if (!safetyCheck.isSafe && safetyCheck.severity !== 'critical') {
-        console.warn('Content safety issues detected:', safetyCheck.issues);
-        // In production, you might want to flag this for review or notify moderators
+        logger.warn('Content safety issues detected', {
+          userId: user.id,
+          issues: safetyCheck.issues,
+          severity: safetyCheck.severity
+        });
       }
 
       const { data: newPost, error: insertError } = await supabase
@@ -141,7 +145,11 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
                 .single();
 
               if (tagError) {
-                console.error('Error creating tag:', tagError);
+                logger.error('Error creating tag', {
+                  tagName: tag.name,
+                  errorMessage: tagError.message,
+                  userId: user.id
+                });
                 continue;
               }
               tagId = newTag.id;
@@ -161,6 +169,8 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
         await autoFlagContent(newPost.id, 'post', combinedContent, user.id);
       }
 
+      logger.info('Post created successfully', { postId: newPost.id, userId: user.id, postType });
+
       setTitle('');
       setContent('');
       setImageUrl('');
@@ -168,7 +178,13 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
       setSelectedTags([]);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create post');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create post';
+      logger.error('Failed to create post', {
+        errorMessage,
+        userId: user.id,
+        postType
+      });
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }

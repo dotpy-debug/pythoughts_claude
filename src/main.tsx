@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
+import { logger } from './lib/logger';
 
 // Register Service Worker for PWA functionality
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
@@ -10,15 +11,15 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
-        console.log('[PWA] Service Worker registered:', registration.scope);
+        logger.info('Service Worker registered successfully', { scope: registration.scope });
 
         // Check for updates periodically
         setInterval(() => {
           registration.update();
         }, 60000); // Check every minute
       })
-      .catch((error) => {
-        console.error('[PWA] Service Worker registration failed:', error);
+      .catch((err) => {
+        logger.error('Service Worker registration failed', { errorMessage: err instanceof Error ? err.message : String(err) });
       });
   });
 }

@@ -33,6 +33,7 @@ export type Profile = {
   username: string;
   avatar_url: string;
   bio: string;
+  is_admin: boolean;
   created_at: string;
   updated_at: string;
 };
