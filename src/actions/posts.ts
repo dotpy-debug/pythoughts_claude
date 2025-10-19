@@ -18,7 +18,7 @@ export async function toggleFeaturedPost(
       .single();
 
     if (postError) {
-      logger.error('Error fetching post for featured toggle', { error: postError, postId });
+      logger.error('Error fetching post for featured toggle', error as Error, { postError, postId });
       return { success: false, error: 'Post not found' };
     }
 
@@ -30,7 +30,7 @@ export async function toggleFeaturedPost(
       .single();
 
     if (profileError) {
-      logger.error('Error fetching user profile', { error: profileError, userId });
+      logger.error('Error fetching user profile', error as Error, { profileError, userId });
       return { success: false, error: 'User not found' };
     }
 
@@ -52,7 +52,7 @@ export async function toggleFeaturedPost(
       .eq('id', postId);
 
     if (updateError) {
-      logger.error('Error updating featured status', { error: updateError, postId });
+      logger.error('Error updating featured status', error as Error, { updateError, postId });
       return { success: false, error: 'Failed to update featured status' };
     }
 
@@ -60,7 +60,7 @@ export async function toggleFeaturedPost(
 
     return { success: true, featured: newFeaturedStatus };
   } catch (error) {
-    logger.error('Unexpected error in toggleFeaturedPost', { error, postId, userId });
+    logger.error('Unexpected error in toggleFeaturedPost', error as Error, { postId, userId });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -94,13 +94,13 @@ export async function getFeaturedPosts(limit: number = 10) {
       .limit(limit);
 
     if (error) {
-      logger.error('Error fetching featured posts', { error });
+      logger.error('Error fetching featured posts', error as Error);
       return [];
     }
 
     return posts || [];
   } catch (error) {
-    logger.error('Unexpected error in getFeaturedPosts', { error });
+    logger.error('Unexpected error in getFeaturedPosts', error as Error);
     return [];
   }
 }

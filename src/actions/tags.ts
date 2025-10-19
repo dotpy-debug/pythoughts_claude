@@ -26,7 +26,7 @@ export async function getPopularTags(limit: number = 50, userId?: string): Promi
       .limit(limit);
 
     if (error) {
-      logger.error('Error fetching popular tags', { error });
+      logger.error('Error fetching popular tags', error as Error);
       return [];
     }
 
@@ -53,7 +53,7 @@ export async function getPopularTags(limit: number = 50, userId?: string): Promi
 
     return enrichedTags;
   } catch (error) {
-    logger.error('Unexpected error in getPopularTags', { error });
+    logger.error('Unexpected error in getPopularTags', error as Error);
     return [];
   }
 }
@@ -90,7 +90,7 @@ export async function getTrendingTags(limit: number = 10, days: number = 7): Pro
       .eq('posts.is_published', true);
 
     if (error) {
-      logger.error('Error fetching trending tags', { error });
+      logger.error('Error fetching trending tags', error as Error);
       return [];
     }
 
@@ -137,7 +137,7 @@ export async function getTrendingTags(limit: number = 10, days: number = 7): Pro
 
     return trendingTags;
   } catch (error) {
-    logger.error('Unexpected error in getTrendingTags', { error });
+    logger.error('Unexpected error in getTrendingTags', error as Error);
     return [];
   }
 }
@@ -154,7 +154,7 @@ export async function getTagDetails(tagSlug: string, userId?: string): Promise<T
       .single();
 
     if (error || !tag) {
-      logger.error('Error fetching tag details', { error, tagSlug });
+      logger.error('Error fetching tag details', error as Error, { tagSlug });
       return null;
     }
 
@@ -226,7 +226,7 @@ export async function getTagDetails(tagSlug: string, userId?: string): Promise<T
       top_authors,
     };
   } catch (error) {
-    logger.error('Unexpected error in getTagDetails', { error, tagSlug });
+    logger.error('Unexpected error in getTagDetails', error as Error, { tagSlug });
     return null;
   }
 }
@@ -245,7 +245,7 @@ export async function followTag(tagId: string, userId: string): Promise<{ succes
         // Already following
         return { success: true };
       }
-      logger.error('Error following tag', { error, tagId, userId });
+      logger.error('Error following tag', error as Error, { tagId, userId });
       return { success: false, error: 'Failed to follow tag' };
     }
 
@@ -254,7 +254,7 @@ export async function followTag(tagId: string, userId: string): Promise<{ succes
 
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in followTag', { error, tagId, userId });
+    logger.error('Unexpected error in followTag', error as Error, { tagId, userId });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -271,7 +271,7 @@ export async function unfollowTag(tagId: string, userId: string): Promise<{ succ
       .eq('tag_id', tagId);
 
     if (error) {
-      logger.error('Error unfollowing tag', { error, tagId, userId });
+      logger.error('Error unfollowing tag', error as Error, { tagId, userId });
       return { success: false, error: 'Failed to unfollow tag' };
     }
 
@@ -280,7 +280,7 @@ export async function unfollowTag(tagId: string, userId: string): Promise<{ succ
 
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in unfollowTag', { error, tagId, userId });
+    logger.error('Unexpected error in unfollowTag', error as Error, { tagId, userId });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -307,7 +307,7 @@ export async function getUserFollowedTags(userId: string): Promise<Tag[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      logger.error('Error fetching user followed tags', { error, userId });
+      logger.error('Error fetching user followed tags', error as Error, { userId });
       return [];
     }
 
@@ -317,7 +317,7 @@ export async function getUserFollowedTags(userId: string): Promise<Tag[]> {
       .map(item => (item.tags && !Array.isArray(item.tags) ? (item.tags as Tag) : null))
       .filter((tag): tag is Tag => tag !== null);
   } catch (error) {
-    logger.error('Unexpected error in getUserFollowedTags', { error, userId });
+    logger.error('Unexpected error in getUserFollowedTags', error as Error, { userId });
     return [];
   }
 }
@@ -335,13 +335,13 @@ export async function searchTags(query: string, limit: number = 20): Promise<Tag
       .limit(limit);
 
     if (error) {
-      logger.error('Error searching tags', { error, query });
+      logger.error('Error searching tags', error as Error, { query });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in searchTags', { error, query });
+    logger.error('Unexpected error in searchTags', error as Error, { query });
     return [];
   }
 }

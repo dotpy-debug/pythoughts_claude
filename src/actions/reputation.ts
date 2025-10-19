@@ -46,13 +46,13 @@ export async function getUserReputation(userId: string): Promise<UserReputation 
       .single();
 
     if (error) {
-      logger.error('Error fetching user reputation', { error, userId });
+      logger.error('Error fetching user reputation', error as Error, { userId });
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error('Unexpected error in getUserReputation', { error, userId });
+    logger.error('Unexpected error in getUserReputation', error as Error, { userId });
     return null;
   }
 }
@@ -83,13 +83,13 @@ export async function getUserBadges(userId: string): Promise<UserBadge[]> {
       .order('earned_at', { ascending: false });
 
     if (error) {
-      logger.error('Error fetching user badges', { error, userId });
+      logger.error('Error fetching user badges', error as Error, { userId });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getUserBadges', { error, userId });
+    logger.error('Unexpected error in getUserBadges', error as Error, { userId });
     return [];
   }
 }
@@ -122,13 +122,13 @@ export async function getFeaturedBadges(userId: string): Promise<UserBadge[]> {
       .limit(3);
 
     if (error) {
-      logger.error('Error fetching featured badges', { error, userId });
+      logger.error('Error fetching featured badges', error as Error, { userId });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getFeaturedBadges', { error, userId });
+    logger.error('Unexpected error in getFeaturedBadges', error as Error, { userId });
     return [];
   }
 }
@@ -151,7 +151,7 @@ export async function toggleBadgeFeatured(
       .single();
 
     if (fetchError || !userBadge) {
-      logger.error('Error fetching user badge', { error: fetchError, userId, badgeId });
+      logger.error('Error fetching user badge', error as Error, { fetchError, userId, badgeId });
       return { success: false, error: 'Badge not found' };
     }
 
@@ -166,7 +166,7 @@ export async function toggleBadgeFeatured(
         .eq('is_featured', true);
 
       if (countError) {
-        logger.error('Error counting featured badges', { error: countError, userId });
+        logger.error('Error counting featured badges', error as Error, { countError, userId });
         return { success: false, error: 'Failed to check featured badges' };
       }
 
@@ -183,14 +183,14 @@ export async function toggleBadgeFeatured(
       .eq('badge_id', badgeId);
 
     if (updateError) {
-      logger.error('Error toggling badge featured status', { error: updateError, userId, badgeId });
+      logger.error('Error toggling badge featured status', error as Error, { updateError, userId, badgeId });
       return { success: false, error: 'Failed to update badge' };
     }
 
     logger.info('Badge featured status toggled', { userId, badgeId, is_featured: newFeaturedStatus });
     return { success: true, is_featured: newFeaturedStatus };
   } catch (error) {
-    logger.error('Unexpected error in toggleBadgeFeatured', { error, userId, badgeId });
+    logger.error('Unexpected error in toggleBadgeFeatured', error as Error, { userId, badgeId });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -208,13 +208,13 @@ export async function getAllBadges(): Promise<Badge[]> {
       .order('requirement_value');
 
     if (error) {
-      logger.error('Error fetching all badges', { error });
+      logger.error('Error fetching all badges', error as Error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getAllBadges', { error });
+    logger.error('Unexpected error in getAllBadges', error as Error);
     return [];
   }
 }
@@ -240,13 +240,13 @@ export async function getTopUsersByReputation(limit: number = 10): Promise<Array
       .limit(limit);
 
     if (error) {
-      logger.error('Error fetching top users by reputation', { error });
+      logger.error('Error fetching top users by reputation', error as Error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getTopUsersByReputation', { error });
+    logger.error('Unexpected error in getTopUsersByReputation', error as Error);
     return [];
   }
 }
