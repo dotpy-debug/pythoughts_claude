@@ -1,0 +1,56 @@
+# Pythoughts - Terminal Blog Platform
+# Robots.txt - Crawler directives
+
+# Allow all well-behaved bots
+User-agent: *
+Allow: /
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Block AI crawlers that don't respect robots.txt
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# Disallow admin and private areas
+Disallow: /settings
+Disallow: /drafts
+Disallow: /moderation
+Disallow: /analytics
+
+# Disallow API endpoints
+Disallow: /api/
+Disallow: /_next/
+
+# Allow public content
+Allow: /post/
+Allow: /user/
+Allow: /publication/
+Allow: /series/
+Allow: /blogs
+Allow: /explore
+Allow: /trending
+
+# Sitemap location
+Sitemap: https://pythoughts.com/sitemap.xml
+
+# RSS Feed location
+Sitemap: https://pythoughts.com/rss.xml

@@ -33,6 +33,8 @@ export type Profile = {
   username: string;
   avatar_url: string;
   bio: string;
+  // Minimal field set from upstream; include optional role for compatibility
+  role?: 'user' | 'moderator' | 'editor' | 'admin' | 'super_admin';
   is_admin: boolean;
   created_at: string;
   updated_at: string;
@@ -75,6 +77,7 @@ export type Comment = {
   vote_count: number;
   is_deleted: boolean;
   is_pinned: boolean;
+  reaction_counts?: Record<string, number>;
   created_at: string;
   updated_at: string;
   profiles?: Profile;

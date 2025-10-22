@@ -4,7 +4,8 @@ import { Loader2, FileText, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Post } from '../lib/supabase';
 import { usePostView } from '../hooks/usePostView';
-import { generateBlogPostSchema, StructuredData, updateMetaTags } from '../utils/seo';
+import { generateBlogPostSchema, StructuredData } from '../utils/seo';
+import { SEOHead } from '../components/seo/SEOHead';
 
 const PostDetail = lazy(() => import('../components/posts/PostDetail').then(mod => ({ default: mod.PostDetail })));
 
@@ -65,18 +66,7 @@ export function PostDetailPage() {
     loadUserVote();
   }, [loadPost, loadUserVote]);
 
-  // Update meta tags and SEO when post is loaded
-  useEffect(() => {
-    if (post) {
-      updateMetaTags({
-        title: post.title,
-        description: post.content.substring(0, 160),
-        url: `/post/${post.id}`,
-        type: 'article',
-        image: post.image_url || undefined,
-      });
-    }
-  }, [post]);
+  // SEO meta tags are now handled by SEOHead component in the JSX return
 
   const loadRelatedPosts = useCallback(async () => {
     if (!post) return;
@@ -176,6 +166,20 @@ export function PostDetailPage() {
 
   return (
     <>
+      {/* SEO Meta Tags */}
+      <SEOHead
+        title={post.seo_title || `${post.title} - Pythoughts`}
+        description={post.seo_description || post.content.substring(0, 160).replace(/[#*`]/g, '')}
+        canonicalUrl={post.canonical_url || `https://pythoughts.com/post/${post.id}`}
+        type="article"
+        image={post.image_url || undefined}
+        author={post.author_id}
+        publishedTime={post.created_at}
+        modifiedTime={post.updated_at}
+        section={post.category}
+        keywords={`${post.category}, ${post.tags?.join(', ') || 'blog, tech, programming'}`}
+      />
+
       {/* Structured Data for SEO */}
       <StructuredData data={generateBlogPostSchema(post)} />
 

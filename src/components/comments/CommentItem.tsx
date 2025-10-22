@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { ArrowUp, ArrowDown, MessageCircle, User, ChevronDown, ChevronUp, Flag, Pin } from 'lucide-react';
+import { ArrowUp, ArrowDown, MessageCircle, User, ChevronDown, ChevronUp, Flag, Pin, Edit2 } from 'lucide-react';
 import { Comment, supabase } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { CommentForm } from './CommentForm';
+import { CommentEditForm } from './CommentEditForm';
+import { CommentReactions } from './CommentReactions';
 import { sanitizeURL } from '../../utils/security';
 import { ReportModal } from '../moderation/ReportModal';
 import { useAuth } from '../../contexts/AuthContext';
@@ -21,10 +23,12 @@ export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, p
   const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
 
   const isPostAuthor = user && postAuthorId && user.id === postAuthorId;
+  const isCommentAuthor = user && user.id === comment.author_id;
 
   const handleVote = (voteType: 1 | -1) => {
     onVote(comment.id, voteType);
@@ -58,6 +62,29 @@ export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, p
       console.error('Error toggling pin:', error);
     } finally {
       setIsPinning(false);
+    }
+  };
+
+  const handleEdit = async (newContent: string) => {
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .update({
+          content: newContent,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', comment.id);
+
+      if (error) throw error;
+
+      // Update local comment object
+      comment.content = newContent;
+      comment.updated_at = new Date().toISOString();
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      throw error;
     }
   };
 
@@ -110,7 +137,18 @@ export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, p
 
           {!isCollapsed && (
             <>
-              <p className="text-gray-300 text-sm mb-2 font-mono">{comment.content}</p>
+              {/* Comment Content or Edit Form */}
+              {isEditing ? (
+                <div className="mb-2">
+                  <CommentEditForm
+                    initialContent={comment.content}
+                    onSubmit={handleEdit}
+                    onCancel={() => setIsEditing(false)}
+                  />
+                </div>
+              ) : (
+                <p className="text-gray-300 text-sm mb-2 font-mono">{comment.content}</p>
+              )}
 
               <div className="flex items-center space-x-4 text-xs font-mono">
                 <div className="flex items-center space-x-1">
@@ -145,6 +183,17 @@ export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, p
                   <span>reply</span>
                 </button>
 
+                {isCommentAuthor && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center space-x-1 text-gray-500 hover:text-terminal-green transition-colors"
+                    title="Edit comment"
+                  >
+                    <Edit2 size={14} />
+                    <span>edit</span>
+                  </button>
+                )}
+
                 {isPostAuthor && (
                   <button
                     onClick={handlePinToggle}
@@ -168,6 +217,14 @@ export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, p
                 >
                   <Flag size={14} />
                 </button>
+              </div>
+
+              {/* Comment Reactions */}
+              <div className="mt-2">
+                <CommentReactions
+                  commentId={comment.id}
+                  reactionCounts={comment.reaction_counts || {}}
+                />
               </div>
 
               {showReplyForm && (
