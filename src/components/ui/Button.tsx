@@ -13,13 +13,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-terminal-blue text-gray-900 hover:bg-terminal-green shadow-sm hover:shadow-md',
-  secondary: 'bg-gray-800 text-gray-100 hover:bg-gray-700 border border-gray-700',
-  outline: 'border-2 border-terminal-green text-terminal-green hover:bg-terminal-green/10',
-  ghost: 'text-gray-400 hover:bg-gray-800 hover:text-terminal-green',
-  gradient: 'bg-gradient-purple text-white hover:shadow-glow-purple',
-  danger: 'bg-red-500 text-white hover:bg-red-600',
-  terminal: 'bg-terminal-green text-gray-900 hover:bg-terminal-blue font-mono font-semibold',
+  primary: 'bg-terminal-blue text-gray-900 hover:bg-terminal-green shadow-sm hover:shadow-md hover:scale-105 active:scale-95',
+  secondary: 'bg-gray-800 text-gray-100 hover:bg-gray-700 border border-gray-700 hover:scale-105 active:scale-95',
+  outline: 'border-2 border-terminal-green text-terminal-green hover:bg-terminal-green/10 hover:scale-105 active:scale-95',
+  ghost: 'text-gray-400 hover:bg-gray-800 hover:text-terminal-green hover:scale-105 active:scale-95',
+  gradient: 'bg-gradient-purple text-white hover:shadow-glow-purple hover:scale-105 active:scale-95',
+  danger: 'bg-red-500 text-white hover:bg-red-600 hover:scale-105 active:scale-95',
+  terminal: 'bg-terminal-green text-gray-900 hover:bg-terminal-blue font-mono font-semibold hover:scale-105 active:scale-95',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

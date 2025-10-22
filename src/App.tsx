@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { TooltipProvider } from './components/ui/Tooltip';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { FloatingBubbles } from './components/animations/FloatingBubbles';
@@ -209,7 +210,9 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <NotificationProvider>
-          <AppContent />
+          <TooltipProvider delayDuration={500} skipDelayDuration={300}>
+            <AppContent />
+          </TooltipProvider>
         </NotificationProvider>
       </ThemeProvider>
     </BrowserRouter>

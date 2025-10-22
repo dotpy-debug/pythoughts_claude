@@ -40,6 +40,24 @@ export default function MarkdownRenderer({ content, showToc = true }: MarkdownRe
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, rehypeSanitize]}
             components={{
+              h1: ({ node, ...props }) => (
+                <h1 {...props} style={{ scrollMarginTop: '80px' }} />
+              ),
+              h2: ({ node, ...props }) => (
+                <h2 {...props} style={{ scrollMarginTop: '80px' }} />
+              ),
+              h3: ({ node, ...props }) => (
+                <h3 {...props} style={{ scrollMarginTop: '80px' }} />
+              ),
+              h4: ({ node, ...props }) => (
+                <h4 {...props} style={{ scrollMarginTop: '80px' }} />
+              ),
+              h5: ({ node, ...props }) => (
+                <h5 {...props} style={{ scrollMarginTop: '80px' }} />
+              ),
+              h6: ({ node, ...props }) => (
+                <h6 {...props} style={{ scrollMarginTop: '80px' }} />
+              ),
               img: ({ node, ...props }) => (
                 <img
                   {...props}

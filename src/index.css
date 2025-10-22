@@ -101,6 +101,72 @@
   }
 }
 
+/* Logo shimmer animations */
+@keyframes shimmer-logo {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(45deg);
+  }
+}
+
+@keyframes shimmer-text {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.shimmer-container {
+  position: relative;
+}
+
+.shimmer-overlay {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  width: 100%;
+  height: 200%;
+  animation: shimmer-logo 3s infinite;
+  transform: translateX(-100%) rotate(45deg);
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #00ff00 0%,
+    #00ffff 25%,
+    #ffffff 50%,
+    #00ffff 75%,
+    #00ff00 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-text 4s linear infinite;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-overlay,
+  .shimmer-text {
+    animation: none;
+  }
+  .shimmer-text {
+    background: #00ff00;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
 /* Print Styles */
 @media print {
   @page {
