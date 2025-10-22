@@ -30,6 +30,9 @@ export interface EnvConfig {
   // Better Auth URL (client-safe)
   VITE_BETTER_AUTH_URL?: string;
 
+  // Pexels API (client-safe)
+  VITE_PEXELS_API_KEY?: string;
+
   // Optional feature flags (client-safe)
   VITE_ENABLE_ANALYTICS?: string;
   VITE_ENABLE_DEBUG?: string;
@@ -222,6 +225,7 @@ function validateEnv(): EnvConfig {
     VITE_SUPABASE_URL: supabaseUrl,
     VITE_SUPABASE_ANON_KEY: supabaseAnonKey,
     VITE_BETTER_AUTH_URL: betterAuthUrl,
+    VITE_PEXELS_API_KEY: import.meta.env.VITE_PEXELS_API_KEY,
     VITE_ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS,
     VITE_ENABLE_DEBUG: import.meta.env.VITE_ENABLE_DEBUG,
   };
@@ -449,6 +453,7 @@ export function getSafeEnvConfig(): Record<string, string> {
     VITE_SUPABASE_URL: env.VITE_SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY: maskSecret(env.VITE_SUPABASE_ANON_KEY),
     VITE_BETTER_AUTH_URL: env.VITE_BETTER_AUTH_URL || 'not set',
+    VITE_PEXELS_API_KEY: env.VITE_PEXELS_API_KEY ? maskSecret(env.VITE_PEXELS_API_KEY) : 'not set',
     VITE_ENABLE_ANALYTICS: env.VITE_ENABLE_ANALYTICS || 'false',
     VITE_ENABLE_DEBUG: env.VITE_ENABLE_DEBUG || 'false',
   };

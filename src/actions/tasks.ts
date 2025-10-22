@@ -83,13 +83,13 @@ export async function getTasks(filters?: TaskFilters): Promise<TaskWithDetails[]
     const { data, error } = await query;
 
     if (error) {
-      logger.error('Error fetching tasks', { error, filters });
+      logger.error('Error fetching tasks', error as Error, { filters });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getTasks', { error, filters });
+    logger.error('Unexpected error in getTasks', error as Error, { filters });
     return [];
   }
 }
@@ -118,13 +118,13 @@ export async function getTask(taskId: string): Promise<TaskWithDetails | null> {
       .single();
 
     if (error) {
-      logger.error('Error fetching task', { error, taskId });
+      logger.error('Error fetching task', error as Error, { taskId });
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error('Unexpected error in getTask', { error, taskId });
+    logger.error('Unexpected error in getTask', error as Error, { taskId });
     return null;
   }
 }
@@ -159,13 +159,13 @@ export async function createTask(
       .single();
 
     if (error) {
-      logger.error('Error creating task', { error, task });
+      logger.error('Error creating task', error as Error, { task });
       return { success: false, error: 'Failed to create task' };
     }
 
     return { success: true, task: data };
   } catch (error) {
-    logger.error('Unexpected error in createTask', { error, task });
+    logger.error('Unexpected error in createTask', error as Error, { task });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -202,13 +202,13 @@ export async function updateTask(
       .single();
 
     if (error) {
-      logger.error('Error updating task', { error, taskId, updates });
+      logger.error('Error updating task', error as Error, { taskId, updates });
       return { success: false, error: 'Failed to update task' };
     }
 
     return { success: true, task: data };
   } catch (error) {
-    logger.error('Unexpected error in updateTask', { error, taskId, updates });
+    logger.error('Unexpected error in updateTask', error as Error, { taskId, updates });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -242,13 +242,13 @@ export async function deleteTask(
       .eq('id', taskId);
 
     if (error) {
-      logger.error('Error deleting task', { error, taskId });
+      logger.error('Error deleting task', error as Error, { taskId });
       return { success: false, error: 'Failed to delete task' };
     }
 
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in deleteTask', { error, taskId });
+    logger.error('Unexpected error in deleteTask', error as Error, { taskId });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -283,7 +283,7 @@ export async function assignTask(
 
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in assignTask', { error, taskId, assigneeId });
+    logger.error('Unexpected error in assignTask', error as Error, { taskId, assigneeId });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -307,13 +307,13 @@ export async function getTaskComments(taskId: string): Promise<TaskComment[]> {
       .order('created_at', { ascending: true });
 
     if (error) {
-      logger.error('Error fetching task comments', { error, taskId });
+      logger.error('Error fetching task comments', error as Error, { taskId });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getTaskComments', { error, taskId });
+    logger.error('Unexpected error in getTaskComments', error as Error, { taskId });
     return [];
   }
 }
@@ -345,13 +345,13 @@ export async function createTaskComment(
       .single();
 
     if (error) {
-      logger.error('Error creating task comment', { error, taskId, content });
+      logger.error('Error creating task comment', error as Error, { taskId, content });
       return { success: false, error: 'Failed to create comment' };
     }
 
     return { success: true, comment: data };
   } catch (error) {
-    logger.error('Unexpected error in createTaskComment', { error, taskId, content });
+    logger.error('Unexpected error in createTaskComment', error as Error, { taskId, content });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -375,13 +375,13 @@ export async function getTaskActivity(taskId: string): Promise<TaskActivity[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      logger.error('Error fetching task activity', { error, taskId });
+      logger.error('Error fetching task activity', error as Error, { taskId });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getTaskActivity', { error, taskId });
+    logger.error('Unexpected error in getTaskActivity', error as Error, { taskId });
     return [];
   }
 }
@@ -408,7 +408,7 @@ export async function getTasksByStatus(filters?: Omit<TaskFilters, 'status'>): P
 
     return grouped;
   } catch (error) {
-    logger.error('Unexpected error in getTasksByStatus', { error, filters });
+    logger.error('Unexpected error in getTasksByStatus', error as Error, { filters });
     return { todo: [], in_progress: [], completed: [], archived: [] };
   }
 }
@@ -433,7 +433,7 @@ export async function getTaskStats(userId?: string): Promise<{
     const { data, error } = await query;
 
     if (error) {
-      logger.error('Error fetching task stats', { error, userId });
+      logger.error('Error fetching task stats', error as Error, { userId });
       return { total: 0, todo: 0, in_progress: 0, completed: 0, overdue: 0 };
     }
 
@@ -458,7 +458,7 @@ export async function getTaskStats(userId?: string): Promise<{
 
     return stats;
   } catch (error) {
-    logger.error('Unexpected error in getTaskStats', { error, userId });
+    logger.error('Unexpected error in getTaskStats', error as Error, { userId });
     return { total: 0, todo: 0, in_progress: 0, completed: 0, overdue: 0 };
   }
 }

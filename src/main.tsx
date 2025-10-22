@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { AuthProvider } from './contexts/AuthContext';
+import { logger } from './lib/logger';
 
 // Register Service Worker for PWA functionality and offline support
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
@@ -10,28 +11,15 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
     navigator.serviceWorker
       .register('/service-worker.js')
       .then((registration) => {
-        console.log('[Service Worker] Registered successfully:', registration.scope);
-
-        // Listen for updates
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('[Service Worker] New version available. Refresh to update.');
-                // Optionally show a notification to the user
-              }
-            });
-          }
-        });
+        logger.info('Service Worker registered successfully', { scope: registration.scope });
 
         // Check for updates periodically
         setInterval(() => {
           registration.update();
         }, 60000); // Check every minute
       })
-      .catch((error) => {
-        console.error('[Service Worker] Registration failed:', error);
+      .catch((err) => {
+        logger.error('Service Worker registration failed', { errorMessage: err instanceof Error ? err.message : String(err) });
       });
   });
 }

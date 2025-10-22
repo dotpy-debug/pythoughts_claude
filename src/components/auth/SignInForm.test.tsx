@@ -5,19 +5,22 @@ import { SignInForm } from './SignInForm';
 
 // Mock the auth context
 const mockSignIn = vi.fn();
-vi.mock('../../contexts/AuthContext', () => ({
-  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
-  useAuth: () => ({
-    signIn: mockSignIn,
-    user: null,
-    profile: null,
-    session: null,
-    loading: false,
-    signUp: vi.fn(),
-    signOut: vi.fn(),
-    updateProfile: vi.fn(),
-  }),
-}));
+vi.mock('../../contexts/AuthContext', () => {
+  const AuthProvider = ({ children }: { children: React.ReactNode }) => children;
+  return {
+    AuthProvider,
+    useAuth: () => ({
+      signIn: mockSignIn,
+      user: null,
+      profile: null,
+      session: null,
+      loading: false,
+      signUp: vi.fn(),
+      signOut: vi.fn(),
+      updateProfile: vi.fn(),
+    }),
+  };
+});
 
 // Mock security utilities to avoid rate limiting in tests
 vi.mock('../../utils/security', () => ({

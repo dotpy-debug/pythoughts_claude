@@ -14,13 +14,13 @@ export async function getActiveCategories(): Promise<Category[]> {
       .order('display_order', { ascending: true });
 
     if (error) {
-      logger.error('Error fetching active categories', { error });
+      logger.error('Error fetching active categories', error as Error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getActiveCategories', { error });
+    logger.error('Unexpected error in getActiveCategories', error as Error);
     return [];
   }
 }
@@ -48,13 +48,13 @@ export async function getAllCategories(userId: string): Promise<Category[]> {
       .order('display_order', { ascending: true });
 
     if (error) {
-      logger.error('Error fetching all categories', { error });
+      logger.error('Error fetching all categories', error as Error);
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getAllCategories', { error });
+    logger.error('Unexpected error in getAllCategories', error as Error);
     return [];
   }
 }
@@ -106,7 +106,7 @@ export async function createCategory(
       .single();
 
     if (error) {
-      logger.error('Error creating category', { error, category });
+      logger.error('Error creating category', error as Error, { category });
       if (error.code === '23505') {
         return { success: false, error: 'Category name or slug already exists' };
       }
@@ -116,7 +116,7 @@ export async function createCategory(
     logger.info('Category created successfully', { categoryId: data.id, userId });
     return { success: true, category: data };
   } catch (error) {
-    logger.error('Unexpected error in createCategory', { error });
+    logger.error('Unexpected error in createCategory', error as Error);
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -163,7 +163,7 @@ export async function updateCategory(
       .single();
 
     if (error) {
-      logger.error('Error updating category', { error, categoryId, updates });
+      logger.error('Error updating category', error as Error, { categoryId, updates });
       if (error.code === '23505') {
         return { success: false, error: 'Category name or slug already exists' };
       }
@@ -173,7 +173,7 @@ export async function updateCategory(
     logger.info('Category updated successfully', { categoryId, userId });
     return { success: true, category: data };
   } catch (error) {
-    logger.error('Unexpected error in updateCategory', { error });
+    logger.error('Unexpected error in updateCategory', error as Error);
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -220,14 +220,14 @@ export async function deleteCategory(
       .eq('id', categoryId);
 
     if (error) {
-      logger.error('Error deleting category', { error, categoryId });
+      logger.error('Error deleting category', error as Error, { categoryId });
       return { success: false, error: 'Failed to delete category' };
     }
 
     logger.info('Category deleted successfully', { categoryId, userId });
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in deleteCategory', { error });
+    logger.error('Unexpected error in deleteCategory', error as Error);
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -263,7 +263,7 @@ export async function reorderCategories(
     logger.info('Categories reordered successfully', { userId, count: categoryOrders.length });
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in reorderCategories', { error });
+    logger.error('Unexpected error in reorderCategories', error as Error);
     return { success: false, error: 'An unexpected error occurred' };
   }
 }

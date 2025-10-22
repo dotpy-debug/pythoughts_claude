@@ -22,13 +22,13 @@ export async function getPostVersions(postId: string): Promise<PostVersion[]> {
       .order('version_number', { ascending: false });
 
     if (error) {
-      logger.error('Error fetching post versions', { error, postId });
+      logger.error('Error fetching post versions', error as Error, { postId });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error in getPostVersions', { error, postId });
+    logger.error('Unexpected error in getPostVersions', error as Error, { postId });
     return [];
   }
 }
@@ -57,13 +57,13 @@ export async function getPostVersion(
       .single();
 
     if (error) {
-      logger.error('Error fetching post version', { error, postId, versionNumber });
+      logger.error('Error fetching post version', error as Error, { postId, versionNumber });
       return null;
     }
 
     return data;
   } catch (error) {
-    logger.error('Unexpected error in getPostVersion', { error, postId, versionNumber });
+    logger.error('Unexpected error in getPostVersion', error as Error, { postId, versionNumber });
     return null;
   }
 }
@@ -79,13 +79,13 @@ export async function getPostVersionCount(postId: string): Promise<number> {
       .eq('post_id', postId);
 
     if (error) {
-      logger.error('Error counting post versions', { error, postId });
+      logger.error('Error counting post versions', error as Error, { postId });
       return 0;
     }
 
     return count || 0;
   } catch (error) {
-    logger.error('Unexpected error in getPostVersionCount', { error, postId });
+    logger.error('Unexpected error in getPostVersionCount', error as Error, { postId });
     return 0;
   }
 }
@@ -108,7 +108,7 @@ export async function restorePostVersion(
       .single();
 
     if (postError || !post) {
-      logger.error('Error fetching post for version restore', { error: postError, postId });
+      logger.error('Error fetching post for version restore', error as Error, { postError, postId });
       return { success: false, error: 'Post not found' };
     }
 
@@ -126,7 +126,7 @@ export async function restorePostVersion(
       .single();
 
     if (versionError || !version) {
-      logger.error('Error fetching version for restore', { error: versionError, postId, versionNumber });
+      logger.error('Error fetching version for restore', error as Error, { versionError, postId, versionNumber });
       return { success: false, error: 'Version not found' };
     }
 
@@ -145,14 +145,14 @@ export async function restorePostVersion(
       .eq('id', postId);
 
     if (updateError) {
-      logger.error('Error restoring post version', { error: updateError, postId, versionNumber });
+      logger.error('Error restoring post version', error as Error, { updateError, postId, versionNumber });
       return { success: false, error: 'Failed to restore version' };
     }
 
     logger.info('Post version restored successfully', { postId, versionNumber, userId });
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in restorePostVersion', { error, postId, versionNumber });
+    logger.error('Unexpected error in restorePostVersion', error as Error, { postId, versionNumber });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -186,7 +186,7 @@ export async function comparePostVersions(
       .order('version_number', { ascending: true });
 
     if (error || !versions || versions.length !== 2) {
-      logger.error('Error fetching versions for comparison', { error, postId, version1, version2 });
+      logger.error('Error fetching versions for comparison', error as Error, { postId, version1, version2 });
       return { success: false, error: 'Could not fetch versions for comparison' };
     }
 
@@ -220,7 +220,7 @@ export async function comparePostVersions(
 
     return { success: true, changes };
   } catch (error) {
-    logger.error('Unexpected error in comparePostVersions', { error, postId });
+    logger.error('Unexpected error in comparePostVersions', error as Error, { postId });
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -260,13 +260,13 @@ export async function addVersionDescription(
       .eq('id', versionId);
 
     if (updateError) {
-      logger.error('Error adding version description', { error: updateError, versionId });
+      logger.error('Error adding version description', error as Error, { updateError, versionId });
       return { success: false, error: 'Failed to add description' };
     }
 
     return { success: true };
   } catch (error) {
-    logger.error('Unexpected error in addVersionDescription', { error });
+    logger.error('Unexpected error in addVersionDescription', error as Error);
     return { success: false, error: 'An unexpected error occurred' };
   }
 }

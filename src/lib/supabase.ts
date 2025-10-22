@@ -33,12 +33,7 @@ export type Profile = {
   username: string;
   avatar_url: string;
   bio: string;
-  role: 'user' | 'moderator' | 'editor' | 'admin' | 'super_admin';
   is_admin: boolean;
-  is_suspended: boolean;
-  is_banned: boolean;
-  admin_notes: string;
-  last_active_at: string;
   created_at: string;
   updated_at: string;
 };

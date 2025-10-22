@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, Profile } from '../lib/supabase';
+import { logger } from '../lib/logger';
 
 type AuthContextType = {
   user: User | null;
@@ -33,10 +34,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('id', userId)
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        logger.error('Failed to load user profile', { userId, errorMessage: error.message });
+        throw error;
+      }
       setProfile(data);
-    } catch (error) {
-      console.error('Error loading profile:', error);
+    } catch (err) {
+      logger.error('Error loading profile', { userId, errorMessage: err instanceof Error ? err.message : String(err) });
     } finally {
       setLoading(false);
     }
@@ -77,8 +81,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
       });
 
-      if (authError) return { error: authError };
-      if (!authData.user) return { error: null }; // AuthError type from Supabase
+      if (authError) {
+        logger.error('Sign up failed', { email, errorMessage: authError.message });
+        return { error: authError };
+      }
+
+      if (!authData.user) {
+        logger.error('Sign up succeeded but no user returned', { email });
+        return { error: { message: 'Sign up failed - no user returned', name: 'AuthError', status: 500 } as AuthError };
+      }
 
       const { error: profileError } = await supabase.from('profiles').insert({
         id: authData.user.id,
@@ -87,12 +98,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         bio: '',
       });
 
-      if (profileError) return { error: null }; // Convert to AuthError | null
+      if (profileError) {
+        logger.error('Profile creation failed', { userId: authData.user.id, username, errorMessage: profileError.message });
+        return { error: { message: `Failed to create profile: ${profileError.message}`, name: 'ProfileError', status: 500 } as AuthError };
+      }
 
+      logger.info('User signed up successfully', { userId: authData.user.id, username });
       return { error: null };
-    } catch {
-      // Return null for errors - Supabase already handles auth errors via the error property
-      return { error: null };
+    } catch (err) {
+      logger.error('Unexpected error during sign up', { email, errorMessage: err instanceof Error ? err.message : String(err) });
+      return { error: { message: 'An unexpected error occurred during sign up', name: 'UnknownError', status: 500 } as AuthError };
     }
   };
 

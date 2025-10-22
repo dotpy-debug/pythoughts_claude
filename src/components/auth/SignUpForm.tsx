@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { isValidUsername, isValidEmail, isStrongPassword, checkRateLimit } from '../../utils/security';
+import { PasswordStrengthMeter } from './PasswordStrengthMeter';
+import { isValidUsername, isValidEmail, checkRateLimit } from '../../utils/security';
 
 type SignUpFormProps = {
   onSuccess: () => void;
@@ -42,9 +43,20 @@ export function SignUpForm({ onSuccess, onToggleMode }: SignUpFormProps) {
       return;
     }
 
-    // Validate password strength
-    if (!isStrongPassword(password)) {
-      setPasswordError('Password must be at least 8 characters and contain uppercase, lowercase, number, and special character');
+    // Validate password strength (minimum requirements)
+    if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      setLoading(false);
+      return;
+    }
+
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+
+    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+      setPasswordError('Password must contain uppercase, lowercase, number, and special character');
       setLoading(false);
       return;
     }
@@ -92,16 +104,21 @@ export function SignUpForm({ onSuccess, onToggleMode }: SignUpFormProps) {
         error={emailError}
       />
 
-      <Input
-        id="password"
-        label="Password"
-        type="password"
-        required
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Min 8 chars, uppercase, lowercase, number, special"
-        error={passwordError}
-      />
+      <div>
+        <Input
+          id="password"
+          label="Password"
+          type="password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Create a strong password"
+          error={passwordError}
+        />
+        <div className="mt-2">
+          <PasswordStrengthMeter password={password} showRequirements={true} />
+        </div>
+      </div>
 
       {error && (
         <div className="p-3 bg-red-900/30 border border-red-500/50 rounded text-red-400 text-sm font-mono">

@@ -7,9 +7,10 @@ import { checkRateLimit } from '../../utils/security';
 type SignInFormProps = {
   onSuccess: () => void;
   onToggleMode: () => void;
+  onForgotPassword: () => void;
 };
 
-export function SignInForm({ onSuccess, onToggleMode }: SignInFormProps) {
+export function SignInForm({ onSuccess, onToggleMode, onForgotPassword }: SignInFormProps) {
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,15 +53,24 @@ export function SignInForm({ onSuccess, onToggleMode }: SignInFormProps) {
         placeholder="you@example.com"
       />
 
-      <Input
-        id="password"
-        label="Password"
-        type="password"
-        required
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Your password"
-      />
+      <div>
+        <Input
+          id="password"
+          label="Password"
+          type="password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Your password"
+        />
+        <button
+          type="button"
+          onClick={onForgotPassword}
+          className="text-xs text-terminal-blue hover:text-terminal-green transition-colors font-mono mt-1"
+        >
+          Forgot password?
+        </button>
+      </div>
 
       {error && (
         <div className="p-3 bg-red-900/30 border border-red-500/50 rounded text-red-400 text-sm font-mono">

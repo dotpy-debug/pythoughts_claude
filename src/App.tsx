@@ -11,8 +11,10 @@ import { LogoLoopVertical } from './components/animations/LogoLoopVertical';
 import { Loader2 } from 'lucide-react';
 import { useKeyboardShortcuts, SkipNavLink } from './hooks/useKeyboardNavigation';
 import { initFocusVisible } from './utils/accessibility';
+import { useScheduledPostsPublisher } from './hooks/useScheduledPostsPublisher';
 
 // Lazy load page components
+const LandingPage = lazy(() => import('./pages/LandingPage').then(mod => ({ default: mod.LandingPage })));
 const HomePage = lazy(() => import('./pages/HomePage').then(mod => ({ default: mod.HomePage })));
 const BlogsPage = lazy(() => import('./pages/BlogsPage').then(mod => ({ default: mod.BlogsPage })));
 const TasksPage = lazy(() => import('./pages/TasksPage').then(mod => ({ default: mod.TasksPage })));
@@ -49,6 +51,7 @@ function AppContent() {
   const [createTaskModalOpen, setCreateTaskModalOpen] = useState(false);
 
   const currentTab = location.pathname === '/blogs' ? 'blogs' : location.pathname === '/tasks' ? 'tasks' : 'newsfeed';
+  const isLandingPage = !user && location.pathname === '/';
 
   const handleCreatePost = () => {
     if (!user) return;
@@ -64,6 +67,9 @@ function AppContent() {
     const cleanup = initFocusVisible();
     return cleanup;
   }, []);
+
+  // Enable scheduled posts publisher (runs every 1 minute)
+  useScheduledPostsPublisher(1, true);
 
   // Global keyboard shortcuts
   useKeyboardShortcuts([
@@ -121,21 +127,24 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-950 relative overflow-hidden">
-      <SkipNavLink />
-      <FloatingBubbles />
-      <LogoLoopHorizontal />
-      <LogoLoopVertical />
+      {!isLandingPage && (
+        <>
+          <SkipNavLink />
+          <FloatingBubbles />
+          <LogoLoopHorizontal />
+          <LogoLoopVertical />
+          <Header onCreatePost={handleCreatePost} />
+        </>
+      )}
 
-      <Header onCreatePost={handleCreatePost} />
-
-      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 lg:pr-20 relative z-10 outline-none">
+      <main id="main-content" tabIndex={-1} className={isLandingPage ? "" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32 lg:pr-20 relative z-10 outline-none"}>
         <Suspense fallback={
           <div className="flex items-center justify-center py-20">
             <Loader2 className="animate-spin text-terminal-green" size={48} />
           </div>
         }>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={user ? <HomePage /> : <LandingPage />} />
             <Route path="/blogs" element={<BlogsPage />} />
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/post/:postId" element={<PostDetailPage />} />
@@ -166,7 +175,7 @@ function AppContent() {
         </Suspense>
       </main>
 
-      <Footer />
+      {!isLandingPage && <Footer />}
 
       <Suspense fallback={null}>
         <CreatePostModal
