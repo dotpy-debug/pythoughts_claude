@@ -11,7 +11,8 @@ import { checkContentSafety, shouldAutoBlock } from '../../utils/contentFilter';
 import { autoFlagContent } from '../../utils/autoFlag';
 import { logger } from '../../lib/logger';
 
-const MarkdownEditor = lazy(() => import('../blog/MarkdownEditor').then(mod => ({ default: mod.MarkdownEditor })));
+const TipTapEditor = lazy(() => import('../editor/TipTapEditor').then(mod => ({ default: mod.TipTapEditor })));
+const PexelsSearchModal = lazy(() => import('../editor/PexelsSearchModal').then(mod => ({ default: mod.PexelsSearchModal })));
 
 type CreatePostModalProps = {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
   const [titleError, setTitleError] = useState('');
   const [contentError, setContentError] = useState('');
   const [imageUrlError, setImageUrlError] = useState('');
+  const [showPexelsModal, setShowPexelsModal] = useState(false);
 
   if (!isOpen) return null;
 
@@ -279,10 +281,12 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
                   <Loader2 className="animate-spin text-terminal-green" size={32} />
                 </div>
               }>
-                <MarkdownEditor
-                  value={content}
+                <TipTapEditor
+                  content={content}
                   onChange={setContent}
-                  placeholder="Write your blog post in markdown..."
+                  placeholder="Write your blog post..."
+                  onPexelsClick={() => setShowPexelsModal(true)}
+                  maxLength={50000}
                 />
               </Suspense>
             ) : (
@@ -334,6 +338,21 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
             </Button>
           </div>
         </form>
+
+        {showPexelsModal && (
+          <Suspense fallback={null}>
+            <PexelsSearchModal
+              isOpen={showPexelsModal}
+              onClose={() => setShowPexelsModal(false)}
+              onImageSelect={(url, photographer, photographerUrl) => {
+                setContent(
+                  content +
+                    `\n<img src="${url}" alt="Photo by ${photographer}" />\n<p class="text-sm text-gray-400">Photo by <a href="${photographerUrl}" target="_blank">${photographer}</a> on <a href="https://www.pexels.com" target="_blank">Pexels</a></p>\n`
+                );
+              }}
+            />
+          </Suspense>
+        )}
       </div>
     </div>
   );
