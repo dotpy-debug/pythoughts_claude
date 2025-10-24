@@ -165,27 +165,62 @@ export function injectHeadingIds(html: string): string {
 export function scrollToHeading(headingId: string, behavior: ScrollBehavior = 'smooth'): void {
   const element = document.getElementById(headingId);
   if (element) {
-    const offset = 80;
-    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
-    const offsetPosition = elementPosition - offset;
+    // Account for fixed header height (typically 64-80px) plus some padding
+    const headerHeight = 80;
+    const additionalPadding = 20;
+    const offset = headerHeight + additionalPadding;
+
+    // Get the element's position relative to the viewport
+    const elementPosition = element.getBoundingClientRect().top;
+    // Add current scroll position to get absolute position
+    const absolutePosition = elementPosition + window.pageYOffset;
+    // Subtract offset to position element below fixed header
+    const targetPosition = absolutePosition - offset;
 
     window.scrollTo({
-      top: offsetPosition,
+      top: targetPosition,
       behavior,
     });
+
+    // Update URL hash without triggering scroll
+    if (window.history.pushState) {
+      window.history.pushState(null, '', `#${headingId}`);
+    } else {
+      // Fallback for older browsers
+      window.location.hash = headingId;
+    }
   }
 }
 
 export function getActiveHeading(items: TocItem[]): string | null {
   const flatList = flattenToc(items);
-  const scrollPosition = window.scrollY + 100;
 
-  for (let i = flatList.length - 1; i >= 0; i--) {
+  // Account for header height when determining active section
+  const headerOffset = 150;
+  const scrollPosition = window.scrollY + headerOffset;
+
+  // Find the last heading that's above the current scroll position
+  let activeId: string | null = null;
+
+  for (let i = 0; i < flatList.length; i++) {
     const element = document.getElementById(flatList[i].id);
-    if (element && element.offsetTop <= scrollPosition) {
-      return flatList[i].id;
+    if (element) {
+      const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+
+      // If this heading is above the scroll threshold, it's a candidate
+      if (elementTop <= scrollPosition) {
+        activeId = flatList[i].id;
+      } else {
+        // Once we find a heading below the threshold, stop searching
+        break;
+      }
     }
   }
 
-  return flatList.length > 0 ? flatList[0].id : null;
+  // If no heading is active yet, default to the first one if we've scrolled at all
+  if (!activeId && flatList.length > 0 && window.scrollY > 0) {
+    activeId = flatList[0].id;
+  }
+
+  return activeId;
 }

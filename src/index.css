@@ -17,6 +17,64 @@
     scroll-behavior: smooth;
   }
 
+  /* Ensure smooth scroll respects reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* Scroll margin for anchor links to account for fixed header */
+  :target {
+    scroll-margin-top: 100px;
+  }
+
+  /* Highlight effect when heading is targeted via anchor link */
+  h1:target,
+  h2:target,
+  h3:target,
+  h4:target,
+  h5:target,
+  h6:target {
+    animation: highlight-heading 2s ease-out;
+  }
+
+  @keyframes highlight-heading {
+    0% {
+      background-color: rgba(0, 255, 159, 0.2);
+      box-shadow: 0 0 0 4px rgba(0, 255, 159, 0.3);
+    }
+    100% {
+      background-color: transparent;
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  /* Anchor link hover effect for headings */
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .prose h1:hover::before,
+  .prose h2:hover::before,
+  .prose h3:hover::before,
+  .prose h4:hover::before,
+  .prose h5:hover::before,
+  .prose h6:hover::before {
+    content: '#';
+    position: absolute;
+    left: -1.5rem;
+    color: rgba(0, 255, 159, 0.5);
+    font-weight: 400;
+    opacity: 0.7;
+  }
+
   /* Font Size Variables */
   :root[data-font-size="small"] {
     --reading-font-size: 14px;

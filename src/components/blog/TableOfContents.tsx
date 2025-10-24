@@ -19,11 +19,23 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
       setActiveId(active);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Throttle scroll events for better performance
+    let ticking = false;
+    const optimizedHandleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', optimizedHandleScroll, { passive: true });
     handleScroll();
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', optimizedHandleScroll);
     };
   }, [items]);
 
@@ -69,10 +81,10 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
           )}
           <button
             onClick={() => handleItemClick(item.id)}
-            className={`flex-1 text-left py-1.5 px-2 rounded transition-colors text-sm ${
+            className={`flex-1 text-left py-1.5 px-2 rounded transition-all duration-200 text-sm relative ${
               isActive
-                ? 'bg-blue-600/20 text-blue-400 font-medium'
-                : 'text-gray-300 hover:bg-gray-700 hover:text-gray-100'
+                ? 'bg-terminal-green/20 text-terminal-green font-semibold border-l-2 border-terminal-green pl-3'
+                : 'text-gray-300 hover:bg-gray-700 hover:text-gray-100 hover:pl-3'
             } ${!hasChildren ? 'ml-5' : ''}`}
             type="button"
           >

@@ -2,9 +2,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { generateTocData, injectHeadingIds } from '../../utils/toc-generator';
 import { TableOfContents } from '../blog/TableOfContents';
+import { showToast } from '../../utils/toast';
 
 type MarkdownRendererProps = {
   content: string;
@@ -12,29 +13,86 @@ type MarkdownRendererProps = {
 };
 
 export default function MarkdownRenderer({ content, showToc = true }: MarkdownRendererProps) {
-  const [processedContent, setProcessedContent] = useState(content);
   const [tocData, setTocData] = useState<ReturnType<typeof generateTocData> | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleHeadingClick = (e: React.MouseEvent<HTMLHeadingElement>) => {
+    const target = e.currentTarget;
+    if (target.id) {
+      const url = `${window.location.origin}${window.location.pathname}#${target.id}`;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('Link copied to clipboard');
+      });
+      window.history.pushState(null, '', `#${target.id}`);
+    }
+  };
 
   useEffect(() => {
     try {
+      // Generate TOC data from markdown
       const toc = generateTocData(content, 'markdown');
       setTocData(toc);
-
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = content;
-      const withIds = injectHeadingIds(tempDiv.innerHTML);
-      setProcessedContent(withIds);
     } catch (error) {
-      setProcessedContent(content);
+      console.error('Error generating TOC:', error);
       setTocData(null);
     }
   }, [content]);
+
+  // Inject IDs into rendered headings after React renders the markdown
+  useEffect(() => {
+    if (contentRef.current && tocData) {
+      const headings = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      const flatItems = [];
+
+      // Flatten TOC items to match with headings
+      const flatten = (items: typeof tocData.items) => {
+        items.forEach(item => {
+          flatItems.push(item);
+          if (item.children.length > 0) {
+            flatten(item.children);
+          }
+        });
+      };
+      flatten(tocData.items);
+
+      // Assign IDs to headings based on their text content matching TOC items
+      headings.forEach((heading) => {
+        const text = heading.textContent?.trim() || '';
+        const tocItem = flatItems.find(item => item.text === text);
+        if (tocItem) {
+          heading.id = tocItem.id;
+        }
+      });
+
+      // Handle URL hash on page load
+      const hash = window.location.hash.slice(1);
+      if (hash) {
+        // Use setTimeout to ensure DOM is fully rendered
+        setTimeout(() => {
+          const element = document.getElementById(hash);
+          if (element) {
+            const headerHeight = 80;
+            const additionalPadding = 20;
+            const offset = headerHeight + additionalPadding;
+            const elementPosition = element.getBoundingClientRect().top;
+            const absolutePosition = elementPosition + window.pageYOffset;
+            const targetPosition = absolutePosition - offset;
+
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth',
+            });
+          }
+        }, 100);
+      }
+    }
+  }, [tocData, content]);
 
   const hasToc = showToc && tocData && tocData.headingCount > 0;
 
   return (
     <div className={`flex gap-8 ${hasToc ? 'lg:grid lg:grid-cols-[1fr_250px]' : ''}`}>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0" ref={contentRef}>
         <article className="prose prose-invert prose-lg max-w-none">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
@@ -113,9 +171,27 @@ export default function MarkdownRenderer({ content, showToc = true }: MarkdownRe
               td: ({ node, ...props }) => (
                 <td className="border border-gray-700 px-4 py-2" {...props} />
               ),
+              h1: ({ node, ...props }) => (
+                <h1 className="scroll-mt-20 group" onClick={handleHeadingClick} {...props} />
+              ),
+              h2: ({ node, ...props }) => (
+                <h2 className="scroll-mt-20 group" onClick={handleHeadingClick} {...props} />
+              ),
+              h3: ({ node, ...props }) => (
+                <h3 className="scroll-mt-20 group" onClick={handleHeadingClick} {...props} />
+              ),
+              h4: ({ node, ...props }) => (
+                <h4 className="scroll-mt-20 group" onClick={handleHeadingClick} {...props} />
+              ),
+              h5: ({ node, ...props }) => (
+                <h5 className="scroll-mt-20 group" onClick={handleHeadingClick} {...props} />
+              ),
+              h6: ({ node, ...props }) => (
+                <h6 className="scroll-mt-20 group" onClick={handleHeadingClick} {...props} />
+              ),
             }}
           >
-            {processedContent}
+            {content}
           </ReactMarkdown>
         </article>
       </div>
