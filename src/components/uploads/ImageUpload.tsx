@@ -1,6 +1,8 @@
 import { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import { Upload, X, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { uploadFile, STORAGE_BUCKETS } from '../../lib/storage';
+import { logger } from '../../lib/logger';
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -54,7 +56,7 @@ export function ImageUpload({
     setUploading(true);
 
     try {
-      // Create a local preview immediately
+      // Create a local preview immediately for better UX
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
@@ -62,22 +64,42 @@ export function ImageUpload({
       };
       reader.readAsDataURL(file);
 
-      // TODO: Upload to actual storage (Supabase Storage, Cloudinary, etc.)
-      // For now, we'll use the base64 data URL
-      // In production, replace this with actual upload logic:
-      // const { data, error } = await supabase.storage.from('images').upload(fileName, file);
+      // Upload to Supabase Storage
+      const result = await uploadFile(file, {
+        bucket: STORAGE_BUCKETS.IMAGES,
+        path: 'uploads',
+        maxSize: maxSizeMB * 1024 * 1024,
+        allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+      });
 
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!result.success || !result.url) {
+        setError(result.error || 'Failed to upload image');
+        setPreview('');
+        logger.error('Image upload failed', {
+          error: result.error,
+          fileName: file.name,
+        });
+        return;
+      }
 
-      // For now, use the base64 URL
-      // In production, use the actual uploaded URL
-      const imageUrl = preview || URL.createObjectURL(file);
-      onImageChange(imageUrl);
+      // Use the uploaded URL
+      setPreview(result.url);
+      onImageChange(result.url);
+
+      logger.info('Image uploaded successfully', {
+        fileName: file.name,
+        url: result.url,
+      });
 
     } catch (err) {
-      setError('Failed to upload image. Please try again.');
-      console.error('Image upload error:', err);
+      const errorMessage = 'Failed to upload image. Please try again.';
+      setError(errorMessage);
+      setPreview('');
+      logger.error('Image upload error', {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+        fileName: file.name,
+      });
     } finally {
       setUploading(false);
     }

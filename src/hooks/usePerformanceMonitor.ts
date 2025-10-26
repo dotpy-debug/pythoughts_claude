@@ -147,6 +147,16 @@ export function usePerformanceMonitor(
         warnings: [...prev.warnings, warning],
       }));
 
+      const logData = {
+        type: warning.type,
+        message: warning.message,
+        severity: warning.severity,
+        metric: warning.metric,
+      };
+
+      // Log to logger
+      logger.warn(`Performance warning in ${componentName}`, logData);
+
       if (logWarnings) {
         const severityLabel =
           warning.severity === 'high'
@@ -154,23 +164,15 @@ export function usePerformanceMonitor(
             : warning.severity === 'medium'
               ? '🟡'
               : '🟢';
-        console.warn(
+        logger.warn(
           `${severityLabel} [Performance Warning] ${componentName}: ${warning.message}`,
-          warning.metric ? `(${warning.metric.toFixed(2)}ms)` : ''
+          warning.metric ? { metric: `${warning.metric.toFixed(2)}ms` } : undefined
         );
       }
 
       if (onWarning) {
         onWarning(warning);
       }
-
-      // Log to logger
-      logger.warn(`Performance warning in ${componentName}`, {
-        type: warning.type,
-        message: warning.message,
-        severity: warning.severity,
-        metric: warning.metric,
-      });
     },
     [componentName, logWarnings, onWarning]
   );
@@ -275,7 +277,9 @@ export function usePerformanceMonitor(
     (label: string) => {
       const startTime = customMeasures.current.get(label);
       if (!startTime) {
-        console.warn(`[Performance Monitor] No start time found for measure: ${label}`);
+        logger.warn(`[Performance Monitor] No start time found for measure: ${label}`, {
+          component: componentName,
+        });
         return;
       }
 
@@ -370,13 +374,11 @@ export function useRenderTracker(componentName: string, threshold: number = 50) 
     renderCount.current += 1;
 
     if (renderCount.current > threshold) {
-      console.warn(
-        `[Render Tracker] ${componentName} has rendered ${renderCount.current} times (threshold: ${threshold})`
-      );
       logger.warn(`Excessive renders detected`, {
         component: componentName,
         renderCount: renderCount.current,
         threshold,
+        message: `${componentName} has rendered ${renderCount.current} times (threshold: ${threshold})`,
       });
     }
   });

@@ -7,15 +7,24 @@
  * - Queue integration with BullMQ
  * - Email logging and tracking
  * - Retry logic for failed emails
+ *
+ * SECURITY WARNING: This file currently exposes RESEND_API_KEY in the frontend.
+ * TODO: Move email sending to a backend API endpoint for security.
+ * See ENHANCEMENT_PLAN.md for implementation details.
  */
 
 import { Resend } from 'resend';
 import type { CreateEmailOptions, CreateEmailResponse } from 'resend';
+import { logger } from './logger';
 
+// SECURITY WARNING: API key exposed in frontend environment
+// TODO: Move to backend-only environment variable
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY || '';
 
 if (!RESEND_API_KEY) {
-  console.warn('RESEND_API_KEY is not set. Email sending will be disabled.');
+  logger.warn('RESEND_API_KEY is not set - email sending will be disabled', {
+    environment: import.meta.env.MODE,
+  });
 }
 
 const resend = new Resend(RESEND_API_KEY);
@@ -137,7 +146,10 @@ export interface EmailLog {
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
   // Check if API key is configured
   if (!RESEND_API_KEY) {
-    console.error('Resend API key not configured');
+    logger.error('Resend API key not configured', {
+      to: options.to,
+      subject: options.subject,
+    });
     return {
       success: false,
       error: 'Email service not configured',
@@ -161,19 +173,34 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     const response: CreateEmailResponse = await resend.emails.send(emailOptions);
 
     if (response.error) {
-      console.error('Resend API error:', response.error);
+      logger.error('Resend API error', {
+        error: response.error.message,
+        to: options.to,
+        subject: options.subject,
+      });
       return {
         success: false,
         error: response.error.message || 'Failed to send email',
       };
     }
 
+    logger.info('Email sent successfully', {
+      emailId: response.data?.id,
+      to: options.to,
+      subject: options.subject,
+    });
+
     return {
       success: true,
       emailId: response.data?.id,
     };
   } catch (error) {
-    console.error('Error sending email:', error);
+    logger.error('Error sending email', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      to: options.to,
+      subject: options.subject,
+    });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

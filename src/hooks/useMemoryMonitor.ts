@@ -12,6 +12,21 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { logger } from '../lib/logger';
 
+// TypeScript type definitions for Performance Memory API
+interface MemoryInfo {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
+}
+
+interface PerformanceWithMemory extends Performance {
+  memory?: MemoryInfo;
+}
+
+interface WindowWithGC extends Window {
+  gc?: () => void;
+}
+
 export interface MemoryMetrics {
   usedJSHeapSize: number; // Bytes
   totalJSHeapSize: number; // Bytes
@@ -71,11 +86,13 @@ function formatBytes(bytes: number): string {
  * Get current memory metrics
  */
 function getMemoryMetrics(): MemoryMetrics | null {
-  if (!('memory' in performance)) {
+  const performanceWithMemory = performance as PerformanceWithMemory;
+
+  if (!performanceWithMemory.memory) {
     return null;
   }
 
-  const memory = (performance as any).memory;
+  const memory = performanceWithMemory.memory;
   const usedPercentage = (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100;
 
   return {
@@ -139,7 +156,10 @@ export function useMemoryMonitor(
 
   const [metrics, setMetrics] = useState<MemoryMetrics | null>(null);
   const [history, setHistory] = useState<MemoryMetrics[]>([]);
-  const [isSupported] = useState(() => 'memory' in performance);
+  const [isSupported] = useState(() => {
+    const performanceWithMemory = performance as PerformanceWithMemory;
+    return performanceWithMemory.memory !== undefined;
+  });
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastWarningRef = useRef<number>(0);
@@ -214,22 +234,22 @@ export function useMemoryMonitor(
     }
 
     if (newMetrics.usedPercentage >= criticalThreshold) {
-      if (logToConsole) {
-        console.error(
-          `🔴 [Memory Monitor] CRITICAL: Memory usage at ${newMetrics.usedPercentage.toFixed(2)}%`,
-          {
-            used: formatBytes(newMetrics.usedJSHeapSize),
-            total: formatBytes(newMetrics.totalJSHeapSize),
-            limit: formatBytes(newMetrics.jsHeapSizeLimit),
-          }
-        );
-      }
-
-      logger.error('Critical memory usage', {
+      const criticalMessage = 'Critical memory usage';
+      const criticalData = {
         usedPercentage: newMetrics.usedPercentage,
         used: formatBytes(newMetrics.usedJSHeapSize),
         total: formatBytes(newMetrics.totalJSHeapSize),
-      });
+        limit: formatBytes(newMetrics.jsHeapSizeLimit),
+      };
+
+      logger.error(criticalMessage, criticalData);
+
+      if (logToConsole) {
+        logger.error(
+          `🔴 [Memory Monitor] CRITICAL: Memory usage at ${newMetrics.usedPercentage.toFixed(2)}%`,
+          criticalData
+        );
+      }
 
       if (onWarning) {
         onWarning(newMetrics, 'critical');
@@ -237,20 +257,21 @@ export function useMemoryMonitor(
 
       lastWarningRef.current = now;
     } else if (newMetrics.usedPercentage >= warningThreshold) {
-      if (logToConsole) {
-        console.warn(
-          `⚠️ [Memory Monitor] WARNING: Memory usage at ${newMetrics.usedPercentage.toFixed(2)}%`,
-          {
-            used: formatBytes(newMetrics.usedJSHeapSize),
-            total: formatBytes(newMetrics.totalJSHeapSize),
-          }
-        );
-      }
-
-      logger.warn('High memory usage', {
+      const warningMessage = 'High memory usage';
+      const warningData = {
         usedPercentage: newMetrics.usedPercentage,
         used: formatBytes(newMetrics.usedJSHeapSize),
-      });
+        total: formatBytes(newMetrics.totalJSHeapSize),
+      };
+
+      logger.warn(warningMessage, warningData);
+
+      if (logToConsole) {
+        logger.warn(
+          `⚠️ [Memory Monitor] WARNING: Memory usage at ${newMetrics.usedPercentage.toFixed(2)}%`,
+          warningData
+        );
+      }
 
       if (onWarning) {
         onWarning(newMetrics, 'warning');
@@ -285,8 +306,10 @@ export function useMemoryMonitor(
 
   // Force garbage collection (if available)
   const forceGC = useCallback(() => {
-    if ('gc' in window && typeof (window as any).gc === 'function') {
-      (window as any).gc();
+    const windowWithGC = window as WindowWithGC;
+
+    if (windowWithGC.gc && typeof windowWithGC.gc === 'function') {
+      windowWithGC.gc();
       logger.info('Forced garbage collection');
 
       // Update metrics after GC

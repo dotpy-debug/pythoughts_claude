@@ -14,6 +14,19 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { logger } from '../lib/logger';
 
+// Type definitions for fetch priority (experimental API)
+interface HTMLElementWithFetchPriority extends HTMLElement {
+  fetchPriority?: 'high' | 'low' | 'auto';
+}
+
+interface HTMLImageElementWithFetchPriority extends HTMLImageElement {
+  fetchPriority?: 'high' | 'low' | 'auto';
+}
+
+interface HTMLLinkElementWithFetchPriority extends HTMLLinkElement {
+  fetchPriority?: 'high' | 'low' | 'auto';
+}
+
 export interface LazyLoadOptions {
   /**
    * Root margin for intersection observer
@@ -292,8 +305,9 @@ export function usePreloadImages(
       };
 
       // Set priority hint if supported
+      const imgWithPriority = img as HTMLImageElementWithFetchPriority;
       if ('fetchPriority' in img) {
-        (img as any).fetchPriority = priority > 0 ? 'high' : 'low';
+        imgWithPriority.fetchPriority = priority > 0 ? 'high' : 'low';
       }
 
       img.src = url;
@@ -429,8 +443,9 @@ export function useLinkPrefetch(
     link.rel = 'prefetch';
     link.href = href;
 
+    const linkWithPriority = link as HTMLLinkElementWithFetchPriority;
     if ('fetchPriority' in link && priority > 0) {
-      (link as any).fetchPriority = 'high';
+      linkWithPriority.fetchPriority = 'high';
     }
 
     document.head.appendChild(link);

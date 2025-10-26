@@ -13,6 +13,7 @@ import { Loader2 } from 'lucide-react';
 import { useKeyboardShortcuts, SkipNavLink } from './hooks/useKeyboardNavigation';
 import { initFocusVisible } from './utils/accessibility';
 import { useScheduledPostsPublisher } from './hooks/useScheduledPostsPublisher';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load page components
 const LandingPage = lazy(() => import('./pages/LandingPage').then(mod => ({ default: mod.LandingPage })));
@@ -207,15 +208,17 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <ThemeProvider>
-        <NotificationProvider>
-          <TooltipProvider delayDuration={500} skipDelayDuration={300}>
-            <AppContent />
-          </TooltipProvider>
-        </NotificationProvider>
-      </ThemeProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <ThemeProvider>
+          <NotificationProvider>
+            <TooltipProvider delayDuration={500} skipDelayDuration={300}>
+              <AppContent />
+            </TooltipProvider>
+          </NotificationProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
