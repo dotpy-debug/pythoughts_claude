@@ -40,39 +40,68 @@ const nextConfig = {
     return [];
   },
 
-  // Headers for security and performance
+  // Headers for cache optimization and performance
   async headers() {
     return [
+      // Cache headers for ISR pages (blog posts)
+      {
+        source: '/blog/:slug*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=3600, stale-while-revalidate=86400',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'max-age=3600',
+          },
+          {
+            key: 'Vercel-CDN-Cache-Control',
+            value: 'max-age=3600',
+          },
+        ],
+      },
+      // Cache headers for blog listing (shorter revalidation)
+      {
+        source: '/blogs',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=300, stale-while-revalidate=3600',
+          },
+          {
+            key: 'CDN-Cache-Control',
+            value: 'max-age=300',
+          },
+        ],
+      },
+      // Cache headers for static assets
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Cache headers for images
+      {
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+      // General headers for all pages
       {
         source: '/:path*',
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
       },
