@@ -22,7 +22,7 @@ export function useScheduledPostsPublisher(intervalMinutes: number = 1, enabled:
           logger.info('Scheduled posts published', { count: publishedCount });
         }
       } catch (error) {
-        logger.error('Error in scheduled posts publisher', { error });
+        logger.error('Error in scheduled posts publisher', { errorDetails: error });
       }
     };
 

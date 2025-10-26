@@ -165,7 +165,7 @@ export class MediaUploadService {
       }
     } catch (error) {
       logger.warn('Failed to process image', {
-        error: error instanceof Error ? error.message : String(error),
+        errorMessage: error instanceof Error ? error.message : String(error),
       });
     }
 

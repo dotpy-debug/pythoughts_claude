@@ -67,7 +67,7 @@ export async function autoFlagContent(
     return { flagged: true, reasons: safetyCheck.issues };
   } catch (error) {
     logger.error('Error in auto-flagging system', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       contentType,
       contentId,

@@ -118,8 +118,7 @@ export async function publishScheduledPosts(): Promise<number> {
         });
         publishedCount++;
       } catch (error) {
-        logger.error('Error processing scheduled post', {
-          error,
+        logger.error('Error processing scheduled post', { errorDetails: error,
           draftId: draft.id
         });
       }
@@ -127,7 +126,7 @@ export async function publishScheduledPosts(): Promise<number> {
 
     return publishedCount;
   } catch (error) {
-    logger.error('Error in publishScheduledPosts', { error });
+    logger.error('Error in publishScheduledPosts', { errorDetails: error });
     return 0;
   }
 }
@@ -144,13 +143,13 @@ export async function getUserScheduledPostsCount(userId: string): Promise<number
       .not('scheduled_publish_at', 'is', null);
 
     if (error) {
-      logger.error('Error fetching scheduled posts count', { error, userId });
+      logger.error('Error fetching scheduled posts count', { errorDetails: error, userId });
       return 0;
     }
 
     return count || 0;
   } catch (error) {
-    logger.error('Error in getUserScheduledPostsCount', { error, userId });
+    logger.error('Error in getUserScheduledPostsCount', { errorDetails: error, userId });
     return 0;
   }
 }
@@ -168,13 +167,13 @@ export async function getUserScheduledPosts(userId: string) {
       .order('scheduled_publish_at', { ascending: true });
 
     if (error) {
-      logger.error('Error fetching scheduled posts', { error, userId });
+      logger.error('Error fetching scheduled posts', { errorDetails: error, userId });
       return [];
     }
 
     return data || [];
   } catch (error) {
-    logger.error('Error in getUserScheduledPosts', { error, userId });
+    logger.error('Error in getUserScheduledPosts', { errorDetails: error, userId });
     return [];
   }
 }
@@ -191,14 +190,14 @@ export async function cancelScheduledPost(draftId: string, userId: string): Prom
       .eq('author_id', userId);
 
     if (error) {
-      logger.error('Error cancelling scheduled post', { error, draftId });
+      logger.error('Error cancelling scheduled post', { errorDetails: error, draftId });
       return false;
     }
 
     logger.info('Scheduled post cancelled', { draftId });
     return true;
   } catch (error) {
-    logger.error('Error in cancelScheduledPost', { error, draftId });
+    logger.error('Error in cancelScheduledPost', { errorDetails: error, draftId });
     return false;
   }
 }

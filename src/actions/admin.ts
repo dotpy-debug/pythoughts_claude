@@ -62,7 +62,7 @@ export async function getUsers(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error fetching users', { error });
+      logger.error('Error fetching users', { errorDetails: error });
       return { users: [], total: 0, error: 'Failed to fetch users' };
     }
 
@@ -71,7 +71,7 @@ export async function getUsers(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in getUsers', { error });
+    logger.error('Exception in getUsers', { errorDetails: error });
     return {
       users: [],
       total: 0,
@@ -97,13 +97,13 @@ export async function getUserDetails(params: {
       .single();
 
     if (error) {
-      logger.error('Error fetching user details', { error });
+      logger.error('Error fetching user details', { errorDetails: error });
       return { user: null, error: 'Failed to fetch user details' };
     }
 
     return { user: data as Profile };
   } catch (error) {
-    logger.error('Exception in getUserDetails', { error });
+    logger.error('Exception in getUserDetails', { errorDetails: error });
     return {
       user: null,
       error: error instanceof Error ? error.message : 'Failed to fetch user details',
@@ -129,7 +129,7 @@ export async function updateUserRole(params: {
       .eq('id', params.targetUserId);
 
     if (error) {
-      logger.error('Error updating user role', { error });
+      logger.error('Error updating user role', { errorDetails: error });
       return { success: false, error: 'Failed to update user role' };
     }
 
@@ -144,7 +144,7 @@ export async function updateUserRole(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateUserRole', { error });
+    logger.error('Exception in updateUserRole', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update user role',
@@ -208,7 +208,7 @@ export async function suspendUser(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in suspendUser', { error });
+    logger.error('Exception in suspendUser', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to suspend user',
@@ -259,7 +259,7 @@ export async function unsuspendUser(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in unsuspendUser', { error });
+    logger.error('Exception in unsuspendUser', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to unsuspend user',
@@ -319,7 +319,7 @@ export async function banUser(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in banUser', { error });
+    logger.error('Exception in banUser', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to ban user',
@@ -373,7 +373,7 @@ export async function unbanUser(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in unbanUser', { error });
+    logger.error('Exception in unbanUser', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to unban user',
@@ -398,7 +398,7 @@ export async function updateUserNotes(params: {
       .eq('id', params.targetUserId);
 
     if (error) {
-      logger.error('Error updating user notes', { error });
+      logger.error('Error updating user notes', { errorDetails: error });
       return { success: false, error: 'Failed to update user notes' };
     }
 
@@ -411,7 +411,7 @@ export async function updateUserNotes(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateUserNotes', { error });
+    logger.error('Exception in updateUserNotes', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update user notes',
@@ -432,7 +432,7 @@ export async function getDashboardStats(params: {
 
     return { stats };
   } catch (error) {
-    logger.error('Exception in getDashboardStats', { error });
+    logger.error('Exception in getDashboardStats', { errorDetails: error });
     return {
       stats: null,
       error: error instanceof Error ? error.message : 'Failed to fetch dashboard stats',
@@ -471,13 +471,13 @@ export async function getUserSuspensions(params: {
     const { data, error } = await query;
 
     if (error) {
-      logger.error('Error fetching suspensions', { error });
+      logger.error('Error fetching suspensions', { errorDetails: error });
       return { suspensions: [], error: 'Failed to fetch suspensions' };
     }
 
     return { suspensions: (data as UserSuspension[]) ?? [] };
   } catch (error) {
-    logger.error('Exception in getUserSuspensions', { error });
+    logger.error('Exception in getUserSuspensions', { errorDetails: error });
     return {
       suspensions: [],
       error: error instanceof Error ? error.message : 'Failed to fetch suspensions',
@@ -508,13 +508,13 @@ export async function getSystemSettings(params: {
     const { data, error } = await query;
 
     if (error) {
-      logger.error('Error fetching system settings', { error });
+      logger.error('Error fetching system settings', { errorDetails: error });
       return { settings: [], error: 'Failed to fetch settings' };
     }
 
     return { settings: (data as SystemSetting[]) ?? [] };
   } catch (error) {
-    logger.error('Exception in getSystemSettings', { error });
+    logger.error('Exception in getSystemSettings', { errorDetails: error });
     return {
       settings: [],
       error: error instanceof Error ? error.message : 'Failed to fetch settings',
@@ -543,7 +543,7 @@ export async function updateSystemSetting(params: {
       .eq('key', params.key);
 
     if (error) {
-      logger.error('Error updating system setting', { error });
+      logger.error('Error updating system setting', { errorDetails: error });
       return { success: false, error: 'Failed to update setting' };
     }
 
@@ -556,7 +556,7 @@ export async function updateSystemSetting(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateSystemSetting', { error });
+    logger.error('Exception in updateSystemSetting', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update setting',
@@ -597,7 +597,7 @@ export async function deleteUser(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in deleteUser', { error });
+    logger.error('Exception in deleteUser', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete user',

@@ -122,7 +122,7 @@ export async function getEngagementTimeSeries(
     return Array.from(dataByDate.values())
       .sort((a, b) => a.date.localeCompare(b.date));
   } catch (error) {
-    logger.error('Error fetching engagement time series', { error, userId });
+    logger.error('Error fetching engagement time series', { errorDetails: error, userId });
     return [];
   }
 }
@@ -189,7 +189,7 @@ export async function getTrafficSources(userId: string): Promise<TrafficSource[]
       .sort((a, b) => b.count - a.count)
       .slice(0, 10); // Top 10 sources
   } catch (error) {
-    logger.error('Error fetching traffic sources', { error, userId });
+    logger.error('Error fetching traffic sources', { errorDetails: error, userId });
     return [];
   }
 }
@@ -231,7 +231,7 @@ export async function getTopReferrers(userId: string, limit: number = 10): Promi
       .sort((a, b) => b.count - a.count)
       .slice(0, limit);
   } catch (error) {
-    logger.error('Error fetching top referrers', { error, userId });
+    logger.error('Error fetching top referrers', { errorDetails: error, userId });
     return [];
   }
 }
@@ -277,7 +277,7 @@ export async function getReadingMetrics(userId: string): Promise<ReadingMetrics>
       totalReads,
     };
   } catch (error) {
-    logger.error('Error fetching reading metrics', { error, userId });
+    logger.error('Error fetching reading metrics', { errorDetails: error, userId });
     return { avgReadTime: 0, completionRate: 0, totalReads: 0 };
   }
 }

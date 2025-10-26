@@ -197,14 +197,14 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     };
   } catch (error) {
     logger.error('Error sending email', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       to: options.to,
       subject: options.subject,
     });
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
     };
   }
 }

@@ -112,7 +112,7 @@ export class PexelsService {
     } catch (error) {
       logger.error('Pexels API request failed', {
         endpoint,
-        error: error instanceof Error ? error.message : String(error),
+        errorMessage: error instanceof Error ? error.message : String(error),
       });
       throw error;
     }

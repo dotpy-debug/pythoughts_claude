@@ -9,7 +9,7 @@
  * - Performance measurement
  */
 
-import { useCallback, useEffect, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useMemo, useState } from 'react';
 
 /**
  * Debounce function
@@ -261,7 +261,7 @@ export function memoize<T extends (...args: any[]) => any>(
 
     // Limit cache size
     if (cache.size >= maxSize) {
-      const firstKey = cache.keys().next().value;
+      const firstKey = cache.keys().next().value as string;
       cache.delete(firstKey);
     }
 

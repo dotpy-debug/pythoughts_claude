@@ -83,7 +83,7 @@ export function AnalyticsExporter({
       setIsOpen(false);
     } catch (error) {
       logger.error('Analytics export failed', {
-        error: error instanceof Error ? error.message : 'Unknown error',
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
         format: options.format,
         dateRange: {
           start: options.dateRange.start.toISOString(),

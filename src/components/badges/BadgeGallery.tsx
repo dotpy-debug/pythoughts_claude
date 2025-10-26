@@ -55,7 +55,7 @@ export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProps) {
         alert(result.error || 'Failed to update badge');
       }
     } catch (error) {
-      logger.error('Error toggling badge featured status', { error });
+      logger.error('Error toggling badge featured status', { errorDetails: error });
       alert('An unexpected error occurred');
     } finally {
       setToggling(null);

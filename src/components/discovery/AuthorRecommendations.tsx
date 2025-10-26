@@ -121,7 +121,7 @@ export function AuthorRecommendations() {
 
       setAuthors(recommendations);
     } catch (error) {
-      logger.error('Error loading author recommendations', { error });
+      logger.error('Error loading author recommendations', { errorDetails: error });
     } finally {
       setLoading(false);
     }
@@ -174,7 +174,7 @@ export function AuthorRecommendations() {
         );
       }
     } catch (error) {
-      logger.error('Error toggling follow', { error, authorId });
+      logger.error('Error toggling follow', { errorDetails: error, authorId });
     }
   };
 

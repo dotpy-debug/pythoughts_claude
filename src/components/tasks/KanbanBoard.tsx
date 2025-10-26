@@ -58,7 +58,7 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
       const data = await getTasksByStatus(filters);
       setTasks(data);
     } catch (error) {
-      logger.error('Error loading kanban tasks', { error });
+      logger.error('Error loading kanban tasks', { errorDetails: error });
     } finally {
       setLoading(false);
     }
@@ -160,7 +160,7 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
           );
         }
       } catch (error) {
-        logger.error('Error updating task status', { error, taskId: active.id, newStatus: overContainer });
+        logger.error('Error updating task status', { errorDetails: error, taskId: active.id, newStatus: overContainer });
         // Revert on error
         await loadTasks();
       }

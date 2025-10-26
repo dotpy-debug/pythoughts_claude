@@ -57,7 +57,7 @@ export async function getContentReports(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error fetching content reports', { error });
+      logger.error('Error fetching content reports', { errorDetails: error });
       return { reports: [], total: 0, error: 'Failed to fetch reports' };
     }
 
@@ -66,7 +66,7 @@ export async function getContentReports(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in getContentReports', { error });
+    logger.error('Exception in getContentReports', { errorDetails: error });
     return {
       reports: [],
       total: 0,
@@ -107,7 +107,7 @@ export async function updateReportStatus(params: {
       .eq('id', params.reportId);
 
     if (error) {
-      logger.error('Error updating report status', { error });
+      logger.error('Error updating report status', { errorDetails: error });
       return { success: false, error: 'Failed to update report' };
     }
 
@@ -121,7 +121,7 @@ export async function updateReportStatus(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateReportStatus', { error });
+    logger.error('Exception in updateReportStatus', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update report',
@@ -173,7 +173,7 @@ export async function getPostsForModeration(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error fetching posts for moderation', { error });
+      logger.error('Error fetching posts for moderation', { errorDetails: error });
       return { posts: [], total: 0, error: 'Failed to fetch posts' };
     }
 
@@ -182,7 +182,7 @@ export async function getPostsForModeration(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in getPostsForModeration', { error });
+    logger.error('Exception in getPostsForModeration', { errorDetails: error });
     return {
       posts: [],
       total: 0,
@@ -205,7 +205,7 @@ export async function deletePost(params: {
     const { error } = await supabase.from('posts').delete().eq('id', params.postId);
 
     if (error) {
-      logger.error('Error deleting post', { error });
+      logger.error('Error deleting post', { errorDetails: error });
       return { success: false, error: 'Failed to delete post' };
     }
 
@@ -219,7 +219,7 @@ export async function deletePost(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in deletePost', { error });
+    logger.error('Exception in deletePost', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete post',
@@ -253,7 +253,7 @@ export async function moderatePost(params: {
       .eq('id', params.postId);
 
     if (error) {
-      logger.error('Error moderating post', { error });
+      logger.error('Error moderating post', { errorDetails: error });
       return { success: false, error: 'Failed to moderate post' };
     }
 
@@ -267,7 +267,7 @@ export async function moderatePost(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in moderatePost', { error });
+    logger.error('Exception in moderatePost', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to moderate post',
@@ -292,7 +292,7 @@ export async function toggleFeaturedPost(params: {
       .eq('id', params.postId);
 
     if (error) {
-      logger.error('Error toggling featured status', { error });
+      logger.error('Error toggling featured status', { errorDetails: error });
       return { success: false, error: 'Failed to update post' };
     }
 
@@ -305,7 +305,7 @@ export async function toggleFeaturedPost(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in toggleFeaturedPost', { error });
+    logger.error('Exception in toggleFeaturedPost', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update post',
@@ -356,7 +356,7 @@ export async function getCommentsForModeration(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error fetching comments for moderation', { error });
+      logger.error('Error fetching comments for moderation', { errorDetails: error });
       return { comments: [], total: 0, error: 'Failed to fetch comments' };
     }
 
@@ -365,7 +365,7 @@ export async function getCommentsForModeration(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in getCommentsForModeration', { error });
+    logger.error('Exception in getCommentsForModeration', { errorDetails: error });
     return {
       comments: [],
       total: 0,
@@ -396,7 +396,7 @@ export async function deleteComment(params: {
       .eq('id', params.commentId);
 
     if (error) {
-      logger.error('Error deleting comment', { error });
+      logger.error('Error deleting comment', { errorDetails: error });
       return { success: false, error: 'Failed to delete comment' };
     }
 
@@ -410,7 +410,7 @@ export async function deleteComment(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in deleteComment', { error });
+    logger.error('Exception in deleteComment', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete comment',
@@ -435,7 +435,7 @@ export async function bulkDeletePosts(params: {
       .in('id', params.postIds);
 
     if (error) {
-      logger.error('Error bulk deleting posts', { error });
+      logger.error('Error bulk deleting posts', { errorDetails: error });
       return { success: false, deleted: 0, error: 'Failed to delete posts' };
     }
 
@@ -448,7 +448,7 @@ export async function bulkDeletePosts(params: {
 
     return { success: true, deleted: count ?? 0 };
   } catch (error) {
-    logger.error('Exception in bulkDeletePosts', { error });
+    logger.error('Exception in bulkDeletePosts', { errorDetails: error });
     return {
       success: false,
       deleted: 0,
@@ -478,7 +478,7 @@ export async function bulkDeleteComments(params: {
       .in('id', params.commentIds);
 
     if (error) {
-      logger.error('Error bulk deleting comments', { error });
+      logger.error('Error bulk deleting comments', { errorDetails: error });
       return { success: false, deleted: 0, error: 'Failed to delete comments' };
     }
 
@@ -491,7 +491,7 @@ export async function bulkDeleteComments(params: {
 
     return { success: true, deleted: count ?? 0 };
   } catch (error) {
-    logger.error('Exception in bulkDeleteComments', { error });
+    logger.error('Exception in bulkDeleteComments', { errorDetails: error });
     return {
       success: false,
       deleted: 0,

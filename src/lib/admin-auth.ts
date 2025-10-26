@@ -53,13 +53,13 @@ export async function isAdmin(userId: string): Promise<boolean> {
       .single();
 
     if (error) {
-      logger.error('Error checking admin status', { error, userId });
+      logger.error('Error checking admin status', { errorDetails: error, userId });
       return false;
     }
 
     return data?.is_admin ?? false;
   } catch (error) {
-    logger.error('Exception checking admin status', { error, userId });
+    logger.error('Exception checking admin status', { errorDetails: error, userId });
     return false;
   }
 }
@@ -82,7 +82,7 @@ export async function hasRole(
       .single();
 
     if (error) {
-      logger.error('Error checking user role', { error, userId, requiredRole });
+      logger.error('Error checking user role', { errorDetails: error, userId, requiredRole });
       return false;
     }
 
@@ -92,7 +92,7 @@ export async function hasRole(
 
     return userLevel >= requiredLevel;
   } catch (error) {
-    logger.error('Exception checking user role', { error, userId, requiredRole });
+    logger.error('Exception checking user role', { errorDetails: error, userId, requiredRole });
     return false;
   }
 }
@@ -111,13 +111,13 @@ export async function getAdminProfile(userId: string): Promise<Profile | null> {
       .single();
 
     if (error) {
-      logger.error('Error fetching admin profile', { error, userId });
+      logger.error('Error fetching admin profile', { errorDetails: error, userId });
       return null;
     }
 
     return data as Profile;
   } catch (error) {
-    logger.error('Exception fetching admin profile', { error, userId });
+    logger.error('Exception fetching admin profile', { errorDetails: error, userId });
     return null;
   }
 }
@@ -136,13 +136,13 @@ export async function isUserSuspended(userId: string): Promise<boolean> {
       .single();
 
     if (error) {
-      logger.error('Error checking suspension status', { error, userId });
+      logger.error('Error checking suspension status', { errorDetails: error, userId });
       return false;
     }
 
     return data?.is_suspended ?? false;
   } catch (error) {
-    logger.error('Exception checking suspension status', { error, userId });
+    logger.error('Exception checking suspension status', { errorDetails: error, userId });
     return false;
   }
 }
@@ -177,7 +177,7 @@ export async function logAdminActivity(params: {
       .single();
 
     if (error) {
-      logger.error('Error logging admin activity', { error, params });
+      logger.error('Error logging admin activity', { errorDetails: error, params });
       return null;
     }
 
@@ -189,7 +189,7 @@ export async function logAdminActivity(params: {
 
     return data.id;
   } catch (error) {
-    logger.error('Exception logging admin activity', { error, params });
+    logger.error('Exception logging admin activity', { errorDetails: error, params });
     return null;
   }
 }
@@ -237,13 +237,13 @@ export async function getAdminActivities(options: {
     const { data, error } = await query;
 
     if (error) {
-      logger.error('Error fetching admin activities', { error, options });
+      logger.error('Error fetching admin activities', { errorDetails: error, options });
       return [];
     }
 
     return (data as AdminActivityLog[]) ?? [];
   } catch (error) {
-    logger.error('Exception fetching admin activities', { error, options });
+    logger.error('Exception fetching admin activities', { errorDetails: error, options });
     return [];
   }
 }
@@ -346,7 +346,7 @@ export async function getAdminStats(): Promise<{
       newUsersToday: newUsersToday ?? 0,
     };
   } catch (error) {
-    logger.error('Exception fetching admin stats', { error });
+    logger.error('Exception fetching admin stats', { errorDetails: error });
     return {
       totalUsers: 0,
       totalPosts: 0,
@@ -369,6 +369,6 @@ export async function updateLastActivity(userId: string): Promise<void> {
       .update({ last_active_at: new Date().toISOString() })
       .eq('id', userId);
   } catch (error) {
-    logger.error('Exception updating last activity', { error, userId });
+    logger.error('Exception updating last activity', { errorDetails: error, userId });
   }
 }

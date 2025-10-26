@@ -34,13 +34,13 @@ export async function getCategories(params: {
     const { data, error } = await query;
 
     if (error) {
-      logger.error('Error fetching categories', { error });
+      logger.error('Error fetching categories', { errorDetails: error });
       return { categories: [], error: 'Failed to fetch categories' };
     }
 
     return { categories: (data as Category[]) ?? [] };
   } catch (error) {
-    logger.error('Exception in getCategories', { error });
+    logger.error('Exception in getCategories', { errorDetails: error });
     return {
       categories: [],
       error: error instanceof Error ? error.message : 'Failed to fetch categories',
@@ -77,7 +77,7 @@ export async function createCategory(params: {
       .single();
 
     if (error) {
-      logger.error('Error creating category', { error });
+      logger.error('Error creating category', { errorDetails: error });
       return { category: null, error: 'Failed to create category' };
     }
 
@@ -91,7 +91,7 @@ export async function createCategory(params: {
 
     return { category: data as Category };
   } catch (error) {
-    logger.error('Exception in createCategory', { error });
+    logger.error('Exception in createCategory', { errorDetails: error });
     return {
       category: null,
       error: error instanceof Error ? error.message : 'Failed to create category',
@@ -119,7 +119,7 @@ export async function updateCategory(params: {
       .eq('id', params.categoryId);
 
     if (error) {
-      logger.error('Error updating category', { error });
+      logger.error('Error updating category', { errorDetails: error });
       return { success: false, error: 'Failed to update category' };
     }
 
@@ -133,7 +133,7 @@ export async function updateCategory(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateCategory', { error });
+    logger.error('Exception in updateCategory', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update category',
@@ -154,7 +154,7 @@ export async function deleteCategory(params: {
     const { error } = await supabase.from('categories').delete().eq('id', params.categoryId);
 
     if (error) {
-      logger.error('Error deleting category', { error });
+      logger.error('Error deleting category', { errorDetails: error });
       return { success: false, error: 'Failed to delete category' };
     }
 
@@ -167,7 +167,7 @@ export async function deleteCategory(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in deleteCategory', { error });
+    logger.error('Exception in deleteCategory', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete category',
@@ -199,7 +199,7 @@ export async function reorderCategories(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in reorderCategories', { error });
+    logger.error('Exception in reorderCategories', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to reorder categories',
@@ -238,7 +238,7 @@ export async function getTags(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error fetching tags', { error });
+      logger.error('Error fetching tags', { errorDetails: error });
       return { tags: [], total: 0, error: 'Failed to fetch tags' };
     }
 
@@ -247,7 +247,7 @@ export async function getTags(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in getTags', { error });
+    logger.error('Exception in getTags', { errorDetails: error });
     return {
       tags: [],
       total: 0,
@@ -281,7 +281,7 @@ export async function createTag(params: {
       .single();
 
     if (error) {
-      logger.error('Error creating tag', { error });
+      logger.error('Error creating tag', { errorDetails: error });
       return { tag: null, error: 'Failed to create tag' };
     }
 
@@ -295,7 +295,7 @@ export async function createTag(params: {
 
     return { tag: data as Tag };
   } catch (error) {
-    logger.error('Exception in createTag', { error });
+    logger.error('Exception in createTag', { errorDetails: error });
     return {
       tag: null,
       error: error instanceof Error ? error.message : 'Failed to create tag',
@@ -317,7 +317,7 @@ export async function updateTag(params: {
     const { error } = await supabase.from('tags').update(params.updates).eq('id', params.tagId);
 
     if (error) {
-      logger.error('Error updating tag', { error });
+      logger.error('Error updating tag', { errorDetails: error });
       return { success: false, error: 'Failed to update tag' };
     }
 
@@ -331,7 +331,7 @@ export async function updateTag(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateTag', { error });
+    logger.error('Exception in updateTag', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update tag',
@@ -388,7 +388,7 @@ export async function mergeTags(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in mergeTags', { error });
+    logger.error('Exception in mergeTags', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to merge tags',
@@ -409,7 +409,7 @@ export async function deleteTag(params: {
     const { error } = await supabase.from('tags').delete().eq('id', params.tagId);
 
     if (error) {
-      logger.error('Error deleting tag', { error });
+      logger.error('Error deleting tag', { errorDetails: error });
       return { success: false, error: 'Failed to delete tag' };
     }
 
@@ -422,7 +422,7 @@ export async function deleteTag(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in deleteTag', { error });
+    logger.error('Exception in deleteTag', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete tag',
@@ -454,7 +454,7 @@ export async function cleanupUnusedTags(params: {
     const { error } = await supabase.from('tags').delete().in('id', tagIds);
 
     if (error) {
-      logger.error('Error cleaning up unused tags', { error });
+      logger.error('Error cleaning up unused tags', { errorDetails: error });
       return { success: false, deleted: 0, error: 'Failed to clean up tags' };
     }
 
@@ -467,7 +467,7 @@ export async function cleanupUnusedTags(params: {
 
     return { success: true, deleted: tagIds.length };
   } catch (error) {
-    logger.error('Exception in cleanupUnusedTags', { error });
+    logger.error('Exception in cleanupUnusedTags', { errorDetails: error });
     return {
       success: false,
       deleted: 0,
@@ -492,14 +492,14 @@ export async function getFeaturedTags(params: {
       .single();
 
     if (error) {
-      logger.error('Error fetching featured tags', { error });
+      logger.error('Error fetching featured tags', { errorDetails: error });
       return { tags: [], error: 'Failed to fetch featured tags' };
     }
 
     const tags = (data?.value as any)?.tags || [];
     return { tags };
   } catch (error) {
-    logger.error('Exception in getFeaturedTags', { error });
+    logger.error('Exception in getFeaturedTags', { errorDetails: error });
     return {
       tags: [],
       error: error instanceof Error ? error.message : 'Failed to fetch featured tags',
@@ -527,7 +527,7 @@ export async function updateFeaturedTags(params: {
       .eq('key', 'featured_tags');
 
     if (error) {
-      logger.error('Error updating featured tags', { error });
+      logger.error('Error updating featured tags', { errorDetails: error });
       return { success: false, error: 'Failed to update featured tags' };
     }
 
@@ -540,7 +540,7 @@ export async function updateFeaturedTags(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateFeaturedTags', { error });
+    logger.error('Exception in updateFeaturedTags', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update featured tags',

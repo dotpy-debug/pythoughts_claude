@@ -76,7 +76,7 @@ export async function refreshTrendingPosts(): Promise<void> {
     const duration = Date.now() - startTime;
     logger.error('Trending posts refresh failed', {
       durationMs: duration,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
     throw error;
@@ -114,7 +114,7 @@ export async function getTrendingRefreshStats(): Promise<{
     };
   } catch (error) {
     logger.error('Unexpected error getting trending refresh stats', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
     return {

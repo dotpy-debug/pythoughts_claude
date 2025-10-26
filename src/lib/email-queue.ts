@@ -259,7 +259,7 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<EmailResult> {
     logger.error('Email job failed', {
       jobId: job.id,
       emailType: job.data.type,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       attemptNumber: job.attemptsMade + 1,
     });
@@ -296,14 +296,14 @@ export function startEmailWorker(): Worker<EmailJobData, EmailResult> {
     logger.error('Email worker job failed', {
       jobId: job?.id,
       jobName: job?.name,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
   });
 
   emailWorker.on('error', (error) => {
     logger.error('Email worker error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
     });
   });

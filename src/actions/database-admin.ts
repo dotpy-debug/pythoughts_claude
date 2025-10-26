@@ -68,7 +68,7 @@ export async function getDatabaseTables(params: {
 
     return { tables: data as DatabaseTable[] };
   } catch (error) {
-    logger.error('Exception in getDatabaseTables', { error });
+    logger.error('Exception in getDatabaseTables', { errorDetails: error });
     return {
       tables: [],
       error: error instanceof Error ? error.message : 'Failed to fetch tables',
@@ -99,7 +99,7 @@ export async function getTableSchema(params: {
 
     return { columns };
   } catch (error) {
-    logger.error('Exception in getTableSchema', { error });
+    logger.error('Exception in getTableSchema', { errorDetails: error });
     return {
       columns: [],
       error: error instanceof Error ? error.message : 'Failed to fetch schema',
@@ -142,7 +142,7 @@ export async function browseTableData(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error browsing table data', { error, tableName: params.tableName });
+      logger.error('Error browsing table data', { errorDetails: error, tableName: params.tableName });
       return { data: [], total: 0, error: 'Failed to browse table data' };
     }
 
@@ -158,7 +158,7 @@ export async function browseTableData(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in browseTableData', { error });
+    logger.error('Exception in browseTableData', { errorDetails: error });
     return {
       data: [],
       total: 0,
@@ -197,7 +197,7 @@ export async function searchTableData(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error searching table data', { error });
+      logger.error('Error searching table data', { errorDetails: error });
       return { data: [], total: 0, error: 'Failed to search table data' };
     }
 
@@ -217,7 +217,7 @@ export async function searchTableData(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in searchTableData', { error });
+    logger.error('Exception in searchTableData', { errorDetails: error });
     return {
       data: [],
       total: 0,
@@ -250,7 +250,7 @@ export async function updateTableRecord(params: {
       .eq('id', params.recordId);
 
     if (error) {
-      logger.error('Error updating table record', { error });
+      logger.error('Error updating table record', { errorDetails: error });
       return { success: false, error: 'Failed to update record' };
     }
 
@@ -267,7 +267,7 @@ export async function updateTableRecord(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateTableRecord', { error });
+    logger.error('Exception in updateTableRecord', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update record',
@@ -292,7 +292,7 @@ export async function deleteTableRecord(params: {
       .eq('id', params.recordId);
 
     if (error) {
-      logger.error('Error deleting table record', { error });
+      logger.error('Error deleting table record', { errorDetails: error });
       return { success: false, error: 'Failed to delete record' };
     }
 
@@ -306,7 +306,7 @@ export async function deleteTableRecord(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in deleteTableRecord', { error });
+    logger.error('Exception in deleteTableRecord', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete record',
@@ -353,7 +353,7 @@ export async function getDatabaseStats(params: {
 
     return { stats };
   } catch (error) {
-    logger.error('Exception in getDatabaseStats', { error });
+    logger.error('Exception in getDatabaseStats', { errorDetails: error });
     return {
       stats: { totalTables: 0, totalRecords: 0, tableSizes: {} },
       error: error instanceof Error ? error.message : 'Failed to get database stats',

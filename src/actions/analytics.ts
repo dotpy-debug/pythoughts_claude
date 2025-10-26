@@ -79,7 +79,7 @@ export async function getAnalytics(params: {
       },
     };
   } catch (error) {
-    logger.error('Exception in getAnalytics', { error });
+    logger.error('Exception in getAnalytics', { errorDetails: error });
     return {
       data: null,
       error: error instanceof Error ? error.message : 'Failed to fetch analytics',
@@ -263,7 +263,7 @@ export async function exportAnalytics(params: {
       return { data: csv };
     }
   } catch (error) {
-    logger.error('Exception in exportAnalytics', { error });
+    logger.error('Exception in exportAnalytics', { errorDetails: error });
     return {
       data: '',
       error: error instanceof Error ? error.message : 'Failed to export analytics',

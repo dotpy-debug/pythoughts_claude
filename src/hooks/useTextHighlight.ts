@@ -34,7 +34,7 @@ export function useTextHighlight(postId: string | undefined) {
       if (error) throw error;
       setHighlights(data || []);
     } catch (error) {
-      logger.error('Error loading highlights', { error, postId, userId: user?.id });
+      logger.error('Error loading highlights', { errorDetails: error, postId, userId: user?.id });
     } finally {
       setLoading(false);
     }
@@ -77,7 +77,7 @@ export function useTextHighlight(postId: string | undefined) {
         logger.info('Highlight created', { highlightId: data.id });
         return data;
       } catch (error) {
-        logger.error('Error creating highlight', { error, postId, userId: user.id });
+        logger.error('Error creating highlight', { errorDetails: error, postId, userId: user.id });
         return null;
       }
     },
@@ -104,7 +104,7 @@ export function useTextHighlight(postId: string | undefined) {
         logger.info('Highlight updated', { highlightId });
         return true;
       } catch (error) {
-        logger.error('Error updating highlight', { error, highlightId });
+        logger.error('Error updating highlight', { errorDetails: error, highlightId });
         return false;
       }
     },
@@ -129,7 +129,7 @@ export function useTextHighlight(postId: string | undefined) {
         logger.info('Highlight deleted', { highlightId });
         return true;
       } catch (error) {
-        logger.error('Error deleting highlight', { error, highlightId });
+        logger.error('Error deleting highlight', { errorDetails: error, highlightId });
         return false;
       }
     },

@@ -48,7 +48,7 @@ export function TagExploration() {
         setFollowingTags(following);
       }
     } catch (error) {
-      logger.error('Error loading tags', { error });
+      logger.error('Error loading tags', { errorDetails: error });
     } finally {
       setLoading(false);
     }
@@ -59,7 +59,7 @@ export function TagExploration() {
       const results = await searchTags(searchQuery.trim());
       setSearchResults(results);
     } catch (error) {
-      logger.error('Error searching tags', { error });
+      logger.error('Error searching tags', { errorDetails: error });
     }
   };
 
@@ -92,7 +92,7 @@ export function TagExploration() {
         }
       }
     } catch (error) {
-      logger.error('Error toggling tag follow', { error, tagId });
+      logger.error('Error toggling tag follow', { errorDetails: error, tagId });
     }
   };
 

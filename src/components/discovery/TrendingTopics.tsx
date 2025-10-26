@@ -28,7 +28,7 @@ export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsPro
       const trending = await getTrendingTags(limit, 7);
       setTopics(trending);
     } catch (error) {
-      logger.error('Error loading trending topics', { error });
+      logger.error('Error loading trending topics', { errorDetails: error });
     } finally {
       setLoading(false);
     }

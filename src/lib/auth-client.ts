@@ -427,7 +427,7 @@ export async function getSession() {
     return await authClient.getSession();
   } catch (error) {
     logger.error('Failed to get session', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
     });
     return null;
   }
@@ -479,7 +479,7 @@ export async function refreshSession() {
     return session;
   } catch (error) {
     logger.error('Failed to refresh session', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
     });
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
     return null;
@@ -496,7 +496,7 @@ export function getCachedSession(): Session | null {
     return cached ? JSON.parse(cached) : null;
   } catch (error) {
     logger.error('Failed to get cached session', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
     });
     return null;
   }

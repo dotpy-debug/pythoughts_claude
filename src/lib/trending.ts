@@ -255,7 +255,7 @@ export async function updatePostTrendingScore(postId: string): Promise<void> {
     await invalidateTrendingCache();
   } catch (error) {
     logger.error('Failed to update trending score', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       postId,
     });
   }
@@ -289,7 +289,7 @@ export async function batchUpdateTrendingScores(
     await invalidateTrendingCache();
   } catch (error) {
     logger.error('Batch trending update failed', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       postIdsCount: postIds?.length,
     });
   }
@@ -313,7 +313,7 @@ export async function invalidateTrendingCache(): Promise<void> {
     }
   } catch (error) {
     logger.error('Trending cache invalidation error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }

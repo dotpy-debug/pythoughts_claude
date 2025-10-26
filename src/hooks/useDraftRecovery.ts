@@ -39,7 +39,7 @@ export function useDraftRecovery(
       localStorage.setItem(getStorageKey(), JSON.stringify(draftData));
       logger.info('Draft backup saved to localStorage', { key: getStorageKey() });
     } catch (error) {
-      logger.error('Error saving draft backup', { error });
+      logger.error('Error saving draft backup', { errorDetails: error });
     }
   }, [postType, getStorageKey]);
 
@@ -63,7 +63,7 @@ export function useDraftRecovery(
 
       return draftData;
     } catch (error) {
-      logger.error('Error loading draft backup', { error });
+      logger.error('Error loading draft backup', { errorDetails: error });
       return null;
     }
   }, [getStorageKey]);
@@ -76,7 +76,7 @@ export function useDraftRecovery(
       localStorage.removeItem(getStorageKey());
       logger.info('Draft backup cleared', { key: getStorageKey() });
     } catch (error) {
-      logger.error('Error clearing draft backup', { error });
+      logger.error('Error clearing draft backup', { errorDetails: error });
     }
   }, [getStorageKey]);
 
@@ -149,7 +149,7 @@ export function useDraftRecovery(
           }
         });
       } catch (error) {
-        logger.error('Error cleaning up expired drafts', { error });
+        logger.error('Error cleaning up expired drafts', { errorDetails: error });
       }
     };
 

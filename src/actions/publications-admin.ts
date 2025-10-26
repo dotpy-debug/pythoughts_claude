@@ -85,7 +85,7 @@ export async function getPublications(params: {
     const { data, error, count } = await query.range(offset, offset + limit - 1);
 
     if (error) {
-      logger.error('Error fetching publications', { error });
+      logger.error('Error fetching publications', { errorDetails: error });
       return { publications: [], total: 0, error: 'Failed to fetch publications' };
     }
 
@@ -94,7 +94,7 @@ export async function getPublications(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in getPublications', { error });
+    logger.error('Exception in getPublications', { errorDetails: error });
     return {
       publications: [],
       total: 0,
@@ -120,13 +120,13 @@ export async function getPublicationDetails(params: {
       .single();
 
     if (error) {
-      logger.error('Error fetching publication details', { error });
+      logger.error('Error fetching publication details', { errorDetails: error });
       return { publication: null, error: 'Failed to fetch publication' };
     }
 
     return { publication: data as Publication };
   } catch (error) {
-    logger.error('Exception in getPublicationDetails', { error });
+    logger.error('Exception in getPublicationDetails', { errorDetails: error });
     return {
       publication: null,
       error: error instanceof Error ? error.message : 'Failed to fetch publication',
@@ -154,7 +154,7 @@ export async function updatePublication(params: {
       .eq('id', params.publicationId);
 
     if (error) {
-      logger.error('Error updating publication', { error });
+      logger.error('Error updating publication', { errorDetails: error });
       return { success: false, error: 'Failed to update publication' };
     }
 
@@ -168,7 +168,7 @@ export async function updatePublication(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updatePublication', { error });
+    logger.error('Exception in updatePublication', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update publication',
@@ -192,7 +192,7 @@ export async function deletePublication(params: {
       .eq('id', params.publicationId);
 
     if (error) {
-      logger.error('Error deleting publication', { error });
+      logger.error('Error deleting publication', { errorDetails: error });
       return { success: false, error: 'Failed to delete publication' };
     }
 
@@ -205,7 +205,7 @@ export async function deletePublication(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in deletePublication', { error });
+    logger.error('Exception in deletePublication', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to delete publication',
@@ -235,13 +235,13 @@ export async function getPublicationMembers(params: {
       .order('joined_at', { ascending: false });
 
     if (error) {
-      logger.error('Error fetching publication members', { error });
+      logger.error('Error fetching publication members', { errorDetails: error });
       return { members: [], error: 'Failed to fetch members' };
     }
 
     return { members: (data as any) ?? [] };
   } catch (error) {
-    logger.error('Exception in getPublicationMembers', { error });
+    logger.error('Exception in getPublicationMembers', { errorDetails: error });
     return {
       members: [],
       error: error instanceof Error ? error.message : 'Failed to fetch members',
@@ -279,7 +279,7 @@ export async function updateMemberRole(params: {
       .eq('id', params.memberId);
 
     if (error) {
-      logger.error('Error updating member role', { error });
+      logger.error('Error updating member role', { errorDetails: error });
       return { success: false, error: 'Failed to update member role' };
     }
 
@@ -293,7 +293,7 @@ export async function updateMemberRole(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in updateMemberRole', { error });
+    logger.error('Exception in updateMemberRole', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update member role',
@@ -317,7 +317,7 @@ export async function removeMember(params: {
       .eq('id', params.memberId);
 
     if (error) {
-      logger.error('Error removing member', { error });
+      logger.error('Error removing member', { errorDetails: error });
       return { success: false, error: 'Failed to remove member' };
     }
 
@@ -330,7 +330,7 @@ export async function removeMember(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in removeMember', { error });
+    logger.error('Exception in removeMember', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to remove member',
@@ -374,7 +374,7 @@ export async function getPublicationSubmissions(params: {
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error fetching submissions', { error });
+      logger.error('Error fetching submissions', { errorDetails: error });
       return { submissions: [], total: 0, error: 'Failed to fetch submissions' };
     }
 
@@ -383,7 +383,7 @@ export async function getPublicationSubmissions(params: {
       total: count ?? 0,
     };
   } catch (error) {
-    logger.error('Exception in getPublicationSubmissions', { error });
+    logger.error('Exception in getPublicationSubmissions', { errorDetails: error });
     return {
       submissions: [],
       total: 0,
@@ -413,7 +413,7 @@ export async function reviewSubmission(params: {
       });
 
       if (error) {
-        logger.error('Error approving submission', { error });
+        logger.error('Error approving submission', { errorDetails: error });
         return { success: false, error: 'Failed to approve submission' };
       }
     } else {
@@ -430,7 +430,7 @@ export async function reviewSubmission(params: {
         .eq('id', params.submissionId);
 
       if (error) {
-        logger.error('Error reviewing submission', { error });
+        logger.error('Error reviewing submission', { errorDetails: error });
         return { success: false, error: 'Failed to review submission' };
       }
     }
@@ -445,7 +445,7 @@ export async function reviewSubmission(params: {
 
     return { success: true };
   } catch (error) {
-    logger.error('Exception in reviewSubmission', { error });
+    logger.error('Exception in reviewSubmission', { errorDetails: error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to review submission',
@@ -476,13 +476,13 @@ export async function getPublicationAnalytics(params: {
       .order('date', { ascending: true });
 
     if (error) {
-      logger.error('Error fetching publication analytics', { error });
+      logger.error('Error fetching publication analytics', { errorDetails: error });
       return { analytics: null, error: 'Failed to fetch analytics' };
     }
 
     return { analytics: data ?? [] };
   } catch (error) {
-    logger.error('Exception in getPublicationAnalytics', { error });
+    logger.error('Exception in getPublicationAnalytics', { errorDetails: error });
     return {
       analytics: null,
       error: error instanceof Error ? error.message : 'Failed to fetch analytics',
@@ -526,7 +526,7 @@ export async function getPublicationStats(params: {
       },
     };
   } catch (error) {
-    logger.error('Exception in getPublicationStats', { error });
+    logger.error('Exception in getPublicationStats', { errorDetails: error });
     return {
       stats: {
         totalPublications: 0,

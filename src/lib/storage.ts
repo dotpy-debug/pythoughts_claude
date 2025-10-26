@@ -255,7 +255,7 @@ export async function uploadFile(
     };
   } catch (error) {
     logger.error('Unexpected error during file upload', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       fileName: file.name,
     });
@@ -345,7 +345,7 @@ export async function deleteFile(
     return true;
   } catch (error) {
     logger.error('Unexpected error during file deletion', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       filePath,
     });
@@ -393,7 +393,7 @@ export async function deleteMultipleFiles(
     return true;
   } catch (error) {
     logger.error('Unexpected error during bulk file deletion', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
       count: filePaths.length,
     });
@@ -450,7 +450,7 @@ export async function createSignedUrl(
     return data.signedUrl;
   } catch (error) {
     logger.error('Unexpected error creating signed URL', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       filePath,
     });
     return null;
@@ -486,7 +486,7 @@ export async function listFiles(
     return data || [];
   } catch (error) {
     logger.error('Unexpected error listing files', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error',
       bucket,
       path,
     });
