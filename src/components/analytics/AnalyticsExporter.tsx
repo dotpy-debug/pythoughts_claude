@@ -14,6 +14,7 @@ import { useState } from 'react';
 import { Download, Calendar, Mail, FileText, Settings } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { format, subDays } from 'date-fns';
+import { logger } from '../../lib/logger';
 
 export interface ExportOptions {
   format: 'json' | 'csv' | 'pdf';
@@ -81,7 +82,15 @@ export function AnalyticsExporter({
       await onExport(options);
       setIsOpen(false);
     } catch (error) {
-      console.error('Export failed:', error);
+      logger.error('Analytics export failed', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        format: options.format,
+        dateRange: {
+          start: options.dateRange.start.toISOString(),
+          end: options.dateRange.end.toISOString(),
+        },
+        metrics: options.metrics,
+      });
     } finally {
       setExporting(false);
     }

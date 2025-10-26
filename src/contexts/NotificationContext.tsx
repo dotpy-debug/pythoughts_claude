@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { supabase, Notification as NotificationType } from '../lib/supabase';
+import { logger } from '../lib/logger';
 
 type NotificationContextType = {
   notifications: NotificationType[];
@@ -36,7 +37,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setNotifications(data || []);
       setUnreadCount(data?.filter(n => !n.is_read).length || 0);
     } catch (error) {
-      console.error('Error loading notifications:', error);
+      logger.error('Error loading notifications', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        userId: user?.id,
+      });
     } finally {
       setLoading(false);
     }
@@ -128,7 +132,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      logger.error('Error marking notification as read', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        notificationId,
+        userId: user?.id,
+      });
     }
   };
 
@@ -147,7 +155,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      logger.error('Error marking all notifications as read', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        userId: user?.id,
+      });
     }
   };
 

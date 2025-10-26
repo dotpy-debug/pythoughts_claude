@@ -11,6 +11,7 @@
  */
 
 import { supabase } from './supabase';
+import { logger } from './logger';
 import { startOfDay, subDays, format, eachDayOfInterval } from 'date-fns';
 
 /**
@@ -84,7 +85,13 @@ export async function getMultiMetricTimeSeries(
     .order('date', { ascending: true });
 
   if (error) {
-    console.error('Error fetching time series:', error);
+    logger.error('Error fetching time series analytics', {
+      error: error.message,
+      userId,
+      metrics,
+      days,
+      dateRange: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
     return {};
   }
 
@@ -97,7 +104,11 @@ export async function getMultiMetricTimeSeries(
     .lte('created_at', endDate.toISOString());
 
   if (postsError) {
-    console.error('Error fetching posts data:', postsError);
+    logger.error('Error fetching posts data for analytics', {
+      error: postsError.message,
+      userId,
+      dateRange: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+    });
   }
 
   const { data: commentsData, error: commentsError } = await supabase
@@ -111,7 +122,11 @@ export async function getMultiMetricTimeSeries(
     .lte('created_at', endDate.toISOString());
 
   if (commentsError) {
-    console.error('Error fetching comments data:', commentsError);
+    logger.error('Error fetching comments data for analytics', {
+      error: commentsError.message,
+      userId,
+      postCount: postsData?.length || 0,
+    });
   }
 
   // Create date range
@@ -207,7 +222,10 @@ export async function getCohortAnalysis(
     .limit(weeks);
 
   if (error) {
-    console.error('Error fetching cohort data:', error);
+    logger.error('Error fetching cohort data for analysis', {
+      error: error.message,
+      weeks,
+    });
     return [];
   }
 
@@ -324,7 +342,12 @@ export async function getEngagementHeatmap(
     .gte('created_at', startDate.toISOString());
 
   if (error || !data) {
-    console.error('Error fetching heatmap data:', error);
+    logger.error('Error fetching heatmap data for engagement analysis', {
+      error: error?.message || 'No data returned',
+      userId,
+      days,
+      startDate: startDate.toISOString(),
+    });
     return [];
   }
 
@@ -474,7 +497,13 @@ export async function getTopPerformingPosts(
   const { data: posts, error } = await query.limit(100);
 
   if (error || !posts) {
-    console.error('Error fetching top posts:', error);
+    logger.error('Error fetching top performing posts', {
+      error: error?.message || 'No posts returned',
+      userId,
+      metric,
+      limit,
+      days,
+    });
     return [];
   }
 

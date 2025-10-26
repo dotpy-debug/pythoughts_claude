@@ -15,6 +15,7 @@ import { createAuthClient } from 'better-auth/client';
 import { useState, useEffect, useCallback } from 'react';
 import { env } from './env';
 import type { User, Session } from './auth';
+import { logger } from './logger';
 
 /**
  * Better-Auth client instance
@@ -425,7 +426,9 @@ export async function getSession() {
   try {
     return await authClient.getSession();
   } catch (error) {
-    console.error('Failed to get session:', error);
+    logger.error('Failed to get session', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return null;
   }
 }
@@ -475,7 +478,9 @@ export async function refreshSession() {
     }
     return session;
   } catch (error) {
-    console.error('Failed to refresh session:', error);
+    logger.error('Failed to refresh session', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
     return null;
   }
@@ -490,7 +495,9 @@ export function getCachedSession(): Session | null {
     const cached = sessionStorage.getItem(SESSION_STORAGE_KEY);
     return cached ? JSON.parse(cached) : null;
   } catch (error) {
-    console.error('Failed to get cached session:', error);
+    logger.error('Failed to get cached session', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
     return null;
   }
 }

@@ -1,4 +1,5 @@
 import { supabase, Post } from './supabase';
+import { logger } from './logger';
 
 // Import cache functions dynamically to avoid bundling Redis in the client
 const getCacheUtils = async () => {
@@ -127,11 +128,11 @@ export async function getTrendingPosts(
   // Step 1: Try cache first
   const cached = await cacheGet<Post[]>(cacheKey);
   if (cached) {
-    console.log('[Trending] Cache HIT for trending posts');
+    logger.debug('Trending posts cache HIT', { limit, cacheKey });
     return cached;
   }
 
-  console.log('[Trending] Cache MISS for trending posts - querying database');
+  logger.debug('Trending posts cache MISS - querying database', { limit, cacheKey });
 
   // Step 2: Query from posts table directly since view may not exist
   const { data, error } = await supabase
@@ -154,7 +155,10 @@ export async function getTrendingPosts(
     .limit(limit);
 
   if (error) {
-    console.error('[Trending] Database query error:', error);
+    logger.error('Trending posts database query error', {
+      error: error.message,
+      limit,
+    });
     throw error;
   }
 
@@ -208,7 +212,11 @@ export async function getTrendingPostsByCategory(
     .limit(limit);
 
   if (error) {
-    console.error('[Trending] Category query error:', error);
+    logger.error('Trending category query error', {
+      error: error.message,
+      category,
+      limit,
+    });
     throw error;
   }
 
@@ -236,14 +244,20 @@ export async function updatePostTrendingScore(postId: string): Promise<void> {
     });
 
     if (error) {
-      console.error('[Trending] Error updating trending score:', error);
+      logger.error('Error updating trending score', {
+        error: error.message,
+        postId,
+      });
       throw error;
     }
 
     // Invalidate all trending caches
     await invalidateTrendingCache();
   } catch (error) {
-    console.error('[Trending] Failed to update trending score:', error);
+    logger.error('Failed to update trending score', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      postId,
+    });
   }
 }
 
@@ -265,14 +279,19 @@ export async function batchUpdateTrendingScores(
       const { error } = await supabase.rpc('refresh_trending_posts');
 
       if (error) {
-        console.error('[Trending] Error refreshing trending view:', error);
+        logger.error('Error refreshing trending view', {
+          error: error.message,
+        });
         throw error;
       }
     }
 
     await invalidateTrendingCache();
   } catch (error) {
-    console.error('[Trending] Batch update failed:', error);
+    logger.error('Batch trending update failed', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      postIdsCount: postIds?.length,
+    });
   }
 }
 
@@ -288,10 +307,14 @@ export async function invalidateTrendingCache(): Promise<void> {
     const keys = await redis.keys('trending:*');
     if (keys.length > 0) {
       await redis.del(...keys);
-      console.log(`[Trending] Invalidated ${keys.length} cache keys`);
+      logger.info('Trending cache invalidated', {
+        keysCount: keys.length,
+      });
     }
   } catch (error) {
-    console.error('[Trending] Cache invalidation error:', error);
+    logger.error('Trending cache invalidation error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }
 
@@ -319,7 +342,9 @@ export async function getTrendingStats(): Promise<{
   const { data, error } = await supabase.rpc('get_trending_stats');
 
   if (error) {
-    console.error('[Trending] Stats query error:', error);
+    logger.error('Trending stats query error', {
+      error: error.message,
+    });
     return {
       totalTrendingPosts: 0,
       topCategory: null,
