@@ -40,6 +40,8 @@ const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage').then(mod 
 const SeriesEditPage = lazy(() => import('./pages/SeriesEditPage').then(mod => ({ default: mod.SeriesEditPage })));
 const ModerationPage = lazy(() => import('./pages/ModerationPage').then(mod => ({ default: mod.ModerationPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(mod => ({ default: mod.NotFoundPage })));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage').then(mod => ({ default: mod.BlogPostPage })));
+const BlogEditorPage = lazy(() => import('./pages/BlogEditorPage').then(mod => ({ default: mod.BlogEditorPage })));
 
 const CreatePostModal = lazy(() => import('./components/posts/CreatePostModal').then(mod => ({ default: mod.CreatePostModal })));
 const CreateTaskModal = lazy(() => import('./components/tasks/CreateTaskModal').then(mod => ({ default: mod.CreateTaskModal })));
@@ -178,6 +180,9 @@ function AppContent() {
             <Route path="/series" element={<SeriesPage />} />
             <Route path="/series/:slug" element={<SeriesDetailPage />} />
             <Route path="/series/:slug/edit" element={<SeriesEditPage />} />
+            <Route path="/blog/new" element={<BlogEditorPage />} />
+            <Route path="/blog/edit/:postId" element={<BlogEditorPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
