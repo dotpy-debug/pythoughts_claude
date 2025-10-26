@@ -49,7 +49,8 @@ export type EmailTemplate =
   | 'vote-notification'
   | 'mention-notification'
   | 'task-assigned'
-  | 'weekly-digest';
+  | 'weekly-digest'
+  | 'publication-invitation';
 
 /**
  * Email options
@@ -777,6 +778,196 @@ export async function sendWeeklyDigestEmail(
     tags: [
       { name: 'category', value: 'digest' },
       { name: 'template', value: 'weekly-digest' },
+    ],
+  });
+}
+
+/**
+ * Send publication invitation email
+ */
+export async function sendPublicationInvitationEmail(
+  to: string,
+  params: {
+    inviterName: string;
+    publicationName: string;
+    role: 'editor' | 'writer' | 'contributor';
+    invitationUrl: string;
+    personalMessage?: string;
+  }
+): Promise<EmailResult> {
+  const roleDescriptions = {
+    editor: 'Editor - Can publish posts, edit others\' work, and manage content',
+    writer: 'Writer - Can write and publish their own posts',
+    contributor: 'Contributor - Can submit posts for review and approval',
+  };
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Publication Invitation</title>
+        <style>
+          body {
+            font-family: 'Courier New', monospace;
+            background-color: #0a0a0a;
+            color: #00ff00;
+            margin: 0;
+            padding: 0;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 40px;
+          }
+          .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff00;
+          }
+          .content {
+            background-color: #111;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 30px;
+          }
+          .publication-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff00;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #0a0a0a;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+          }
+          .role-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #00ff00;
+            color: #0a0a0a;
+            font-weight: bold;
+            border-radius: 4px;
+            margin: 10px 0;
+          }
+          .personal-message {
+            background-color: #0a0a0a;
+            border-left: 3px solid #00ff00;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #aaa;
+          }
+          .button {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: #00ff00;
+            color: #0a0a0a;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 12px;
+          }
+          a {
+            color: #00ff00;
+          }
+          .expiry {
+            color: #ff9500;
+            font-size: 14px;
+            margin-top: 10px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">PYTHOUGHTS</div>
+          </div>
+          <div class="content">
+            <h1 style="color: #00ff00; margin-top: 0;">You've Been Invited!</h1>
+            <p><strong>${params.inviterName}</strong> has invited you to join:</p>
+
+            <div class="publication-name">${params.publicationName}</div>
+
+            <p>You've been invited as a <span class="role-badge">${params.role.toUpperCase()}</span></p>
+            <p style="color: #aaa; font-size: 14px;">${roleDescriptions[params.role]}</p>
+
+            ${params.personalMessage ? `
+              <div class="personal-message">
+                <strong>Personal message from ${params.inviterName}:</strong><br/>
+                "${params.personalMessage}"
+              </div>
+            ` : ''}
+
+            <p>Click the button below to accept this invitation and start collaborating:</p>
+
+            <div style="text-align: center;">
+              <a href="${params.invitationUrl}" class="button">Accept Invitation</a>
+            </div>
+
+            <p class="expiry">⏰ This invitation will expire in 7 days</p>
+
+            <p style="color: #666; font-size: 12px; word-break: break-all; margin-top: 30px;">
+              Or copy and paste this URL into your browser:<br/>
+              ${params.invitationUrl}
+            </p>
+
+            <p style="color: #999; font-size: 14px; margin-top: 30px;">
+              Not interested? You can safely ignore this email.
+            </p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} Pythoughts. All rights reserved.</p>
+            <p><a href="https://pythoughts.com">Visit our website</a></p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  const text = `
+PYTHOUGHTS
+
+You've Been Invited!
+
+${params.inviterName} has invited you to join: ${params.publicationName}
+
+Role: ${params.role.toUpperCase()}
+${roleDescriptions[params.role]}
+
+${params.personalMessage ? `Personal message from ${params.inviterName}:\n"${params.personalMessage}"\n\n` : ''}
+
+Accept this invitation by visiting:
+${params.invitationUrl}
+
+⏰ This invitation will expire in 7 days
+
+Not interested? You can safely ignore this email.
+
+© ${new Date().getFullYear()} Pythoughts. All rights reserved.
+Visit us at: https://pythoughts.com
+  `;
+
+  return sendEmail({
+    to,
+    subject: `You're invited to join ${params.publicationName} on Pythoughts`,
+    html,
+    text,
+    tags: [
+      { name: 'category', value: 'publication' },
+      { name: 'template', value: 'publication-invitation' },
     ],
   });
 }

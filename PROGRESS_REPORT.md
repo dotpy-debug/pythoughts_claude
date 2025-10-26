@@ -733,3 +733,186 @@ Created a comprehensive database indexes migration file targeting frequently exe
 **Phase 4 Status:** ✅ Complete
 **Next Phase:** Feature implementation and React optimizations
 
+---
+
+## Phase 5: Email Invitation System Implementation ✅
+
+**Date:** October 2025
+**Focus:** Publication member invitation functionality
+**Status:** Complete ✅
+
+### Summary
+
+Successfully implemented a complete email-based invitation system for publications, enabling publication owners to invite collaborators via email with role-based permissions. The system includes email templates, token-based acceptance flow, and comprehensive error handling.
+
+### Features Implemented
+
+#### 1. Email Service Enhancement
+**File:** `src/lib/email-service.ts`
+- Added `sendPublicationInvitationEmail` function (175 lines)
+- Terminal-themed email template with publication branding
+- Role descriptions (editor, writer, contributor)
+- Personal message support
+- 7-day expiration warning
+- Plain text alternative for accessibility
+
+#### 2. Invitation Modal Integration
+**File:** `src/components/publications/InviteMemberModal.tsx`
+- Integrated email sending on invitation creation
+- Automatic inviter name retrieval from profile
+- Dynamic invitation URL generation
+- Best-effort email sending (doesn't block on email failure)
+- Comprehensive error handling and logging
+
+#### 3. Invitation Acceptance Page
+**File:** `src/pages/PublicationInvite.tsx` (NEW - 500+ lines)
+- Token-based invitation validation
+- Expiration status checking
+- Login requirement handling
+- Email verification (matches invitation email)
+- Duplicate member prevention
+- Role-based permission assignment
+- Automatic member count updating
+- Accept/decline actions
+- Status display (pending, accepted, declined, expired)
+- Terminal-themed UI consistent with design system
+
+#### 4. Routing Configuration
+**File:** `src/App.tsx`
+- Added `/publications/invite/:token` route
+- Lazy-loaded invitation page component
+
+### Technical Implementation
+
+**Email Template Features:**
+```html
+- Terminal-themed design (#00ff00 on #0a0a0a)
+- Publication logo/name display
+- Role badge with description
+- Personal message block
+- CTA button for acceptance
+- Expiration timer (⏰ 7 days)
+- Fallback URL for manual entry
+```
+
+**Invitation Flow:**
+```
+1. Owner sends invitation via InviteMemberModal
+   ├─ Creates database record with token
+   ├─ Sends email with acceptance link
+   └─ Shows success/error feedback
+
+2. Recipient receives email
+   ├─ Clicks "Accept Invitation" button
+   └─ Redirected to /publications/invite/{token}
+
+3. Acceptance page validates invitation
+   ├─ Checks token validity
+   ├─ Checks expiration status
+   ├─ Verifies user is logged in
+   ├─ Validates email match
+   └─ Shows appropriate UI
+
+4. User accepts invitation
+   ├─ Creates publication_members record
+   ├─ Assigns role-based permissions
+   ├─ Updates invitation status
+   ├─ Increments member count
+   └─ Redirects to publication homepage
+```
+
+**Role Permissions:**
+```typescript
+Editor:
+  ✅ can_publish
+  ✅ can_edit_others
+  ✅ can_delete_posts
+  ❌ can_manage_members
+  ❌ can_manage_settings
+
+Writer:
+  ✅ can_publish
+  ❌ can_edit_others
+  ❌ can_delete_posts
+  ❌ can_manage_members
+  ❌ can_manage_settings
+
+Contributor:
+  ❌ can_publish (requires approval)
+  ❌ can_edit_others
+  ❌ can_delete_posts
+  ❌ can_manage_members
+  ❌ can_manage_settings
+```
+
+### Files Modified/Created
+
+1. **Modified:**
+   - `src/lib/email-service.ts` (+175 lines)
+   - `src/components/publications/InviteMemberModal.tsx` (+30 lines)
+   - `src/App.tsx` (+2 lines)
+
+2. **Created:**
+   - `src/pages/PublicationInvite.tsx` (500+ lines)
+
+### Error Handling
+
+**Invitation Modal:**
+- Email validation (format check)
+- Authentication verification
+- Database constraint handling
+- Email sending failure gracefully handled (doesn't block)
+
+**Acceptance Page:**
+- Token not found → Clear error message
+- Expired invitation → Warning with re-send suggestion
+- Already accepted → Success message + navigate option
+- Already declined → Info message + re-send suggestion
+- Email mismatch → Clear instructions to log in with correct email
+- Not logged in → "Log in to accept" CTA
+
+### Security Features
+
+✅ **Token-based authentication** - Unique UUID tokens
+✅ **Email verification** - Must match invitation email
+✅ **Expiration handling** - 7-day validity period
+✅ **Duplicate prevention** - Checks existing membership
+✅ **Structured logging** - All actions logged with context
+✅ **Input validation** - Email format, required fields
+
+### User Experience
+
+**Email Design:**
+- Clean, terminal-themed aesthetics
+- Clear role descriptions
+- Personal touch with custom messages
+- Mobile-responsive layout
+- Plain text alternative
+
+**Acceptance Page:**
+- Loading state while fetching invitation
+- Clear status indicators (expired, accepted, declined)
+- Contextual CTAs based on state
+- Error messages with actionable guidance
+- Auto-redirect on success
+
+### Testing Checklist
+
+- [ ] Send invitation email
+- [ ] Verify email receipt and formatting
+- [ ] Test invitation link click
+- [ ] Accept invitation as logged-in user
+- [ ] Test expired invitation handling
+- [ ] Test already-accepted invitation
+- [ ] Test decline invitation flow
+- [ ] Verify email mismatch error
+- [ ] Test unauthenticated user flow
+- [ ] Verify member permissions after acceptance
+- [ ] Check member count increment
+- [ ] Test duplicate invitation prevention
+
+---
+
+**Phase 5 Status:** ✅ Complete
+**Next Phase:** React performance optimizations
+

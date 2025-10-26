@@ -20,6 +20,7 @@ import {
 } from '../ui/dialog';
 import { supabase } from '@/lib/supabase';
 import { logger } from '@/lib/logger';
+import { sendPublicationInvitationEmail } from '@/lib/email-service';
 
 type MemberRole = 'editor' | 'writer' | 'contributor';
 
@@ -65,6 +66,21 @@ export function InviteMemberModal({
     setError(null);
 
     try {
+      // Get current user info for inviter name
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('You must be logged in to send invitations');
+      }
+
+      // Get inviter profile for name
+      const { data: inviterProfile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('id', user.id)
+        .single();
+
+      const inviterName = inviterProfile?.username || 'Someone';
+
       // Generate invitation token
       const token = crypto.randomUUID();
 
@@ -73,7 +89,7 @@ export function InviteMemberModal({
         .from('publication_invitations')
         .insert({
           publication_id: publicationId,
-          inviter_id: (await supabase.auth.getUser()).data.user?.id,
+          inviter_id: user.id,
           invitee_email: email.trim().toLowerCase(),
           role,
           message: message.trim() || null,
@@ -86,11 +102,31 @@ export function InviteMemberModal({
         throw inviteError;
       }
 
-      // TODO: Send invitation email via Resend
-      // const invitationUrl = `${window.location.origin}/publications/invite/${token}`;
-      // await sendInvitationEmail(email, publicationName, invitationUrl, message);
+      // Send invitation email
+      const invitationUrl = `${window.location.origin}/publications/invite/${token}`;
+      const emailResult = await sendPublicationInvitationEmail(
+        email.trim().toLowerCase(),
+        {
+          inviterName,
+          publicationName,
+          role,
+          invitationUrl,
+          personalMessage: message.trim() || undefined,
+        }
+      );
 
-      logger.info('Publication invitation created', { invitationId: invitation.id });
+      if (!emailResult.success) {
+        logger.warn('Failed to send invitation email', {
+          error: emailResult.error,
+          invitationId: invitation.id,
+        });
+        // Don't throw - invitation was created successfully, email is best-effort
+      }
+
+      logger.info('Publication invitation created and email sent', {
+        invitationId: invitation.id,
+        emailSent: emailResult.success,
+      });
 
       // Reset form
       setEmail('');

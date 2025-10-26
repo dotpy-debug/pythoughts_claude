@@ -37,6 +37,7 @@ const SearchResultsPage = lazy(() => import('./pages/SearchResultsPage').then(mo
 const PublicationsPage = lazy(() => import('./pages/PublicationsPage').then(mod => ({ default: mod.PublicationsPage })));
 const PublicationDetailPage = lazy(() => import('./pages/PublicationDetailPage').then(mod => ({ default: mod.PublicationDetailPage })));
 const PublicationSettingsPage = lazy(() => import('./pages/PublicationSettingsPage').then(mod => ({ default: mod.PublicationSettingsPage })));
+const PublicationInvite = lazy(() => import('./pages/PublicationInvite').then(mod => ({ default: mod.PublicationInvite })));
 const SeriesPage = lazy(() => import('./pages/SeriesPage').then(mod => ({ default: mod.SeriesPage })));
 const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage').then(mod => ({ default: mod.SeriesDetailPage })));
 const SeriesEditPage = lazy(() => import('./pages/SeriesEditPage').then(mod => ({ default: mod.SeriesEditPage })));
@@ -167,6 +168,7 @@ function AppContent() {
             <Route path="/trending" element={<TrendingPage />} />
             <Route path="/search" element={<SearchResultsPage />} />
             <Route path="/publications" element={<PublicationsPage />} />
+            <Route path="/publications/invite/:token" element={<PublicationInvite />} />
             <Route path="/publication/:slug" element={<PublicationDetailPage />} />
             <Route path="/publication/:slug/settings" element={<PublicationSettingsPage />} />
             <Route path="/series" element={<SeriesPage />} />
