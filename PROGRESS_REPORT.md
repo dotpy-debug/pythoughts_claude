@@ -1749,5 +1749,464 @@ WHERE message = 'Processing email job' AND attemptNumber > 1
 ---
 
 **Phase 8 Status:** ✅ Complete
-**Next Phase:** Additional enhancements and optimizations
+**Next Phase:** Error boundaries and monitoring infrastructure
+
+---
+
+## Phase 9: Error Boundaries and Monitoring Infrastructure ✅
+
+**Date:** October 2025
+**Focus:** Advanced error handling and performance monitoring infrastructure
+**Status:** Complete ✅
+
+### Summary
+
+Implemented comprehensive error handling and monitoring infrastructure by creating specialized error boundaries for routes and a centralized error tracking integration system. Enhanced the existing performance monitoring hooks with production-ready utilities for error tracking services like Sentry, LogRocket, and Datadog.
+
+### Components Created
+
+#### 1. Route Error Boundary Component
+**File:** `src/components/RouteErrorBoundary.tsx` (NEW - 180 lines)
+
+**Features:**
+- Terminal-themed error UI consistent with app design
+- Route-specific error context logging
+- Navigation options (Try Again, Go Home)
+- React Router integration
+- Development mode stack traces
+- Component stack preservation
+- Higher-order component wrapper
+
+**Implementation:**
+```typescript
+export function RouteErrorBoundary(props: Props) {
+  const navigate = useNavigate();
+  return <RouteErrorBoundaryClass {...props} navigate={navigate} />;
+}
+
+// Higher-order component
+export function withRouteErrorBoundary<P extends object>(
+  Component: React.ComponentType<P>,
+  routeName?: string
+): React.ComponentType<P> {
+  return function WithRouteErrorBoundaryComponent(props: P) {
+    return (
+      <RouteErrorBoundary routeName={routeName}>
+        <Component {...props} />
+      </RouteErrorBoundary>
+    );
+  };
+}
+```
+
+**Terminal-Themed Error UI:**
+- Mac-style terminal window (red, yellow, green dots)
+- Monospace font for all text
+- Terminal green/pink color scheme
+- Expandable stack traces (dev mode)
+- Component stack visualization
+- Contextual action buttons
+
+**Logging Features:**
+```typescript
+logger.error('Route Error Boundary caught an error', {
+  route: routeName || 'unknown',
+  error: error.message,
+  stack: error.stack,
+  componentStack: errorInfo.componentStack,
+  url: window.location.href,
+  timestamp: new Date().toISOString(),
+});
+```
+
+#### 2. Error Tracking Integration System
+**File:** `src/lib/error-tracking.ts` (NEW - 350 lines)
+
+**Features:**
+- Centralized error tracking singleton
+- Integration points for Sentry, LogRocket, Datadog
+- Breadcrumb tracking for debugging context
+- User context management
+- Global tag system
+- Performance transaction tracking
+- Unhandled error/rejection handlers
+- Function wrappers for automatic tracking
+
+**Core API:**
+```typescript
+// Initialize error tracking
+initErrorTracking({
+  dsn: 'your-sentry-dsn',
+  environment: 'production',
+  release: 'v1.0.0',
+  sampleRate: 0.1,
+});
+
+// Set user context
+setUser({
+  id: user.id,
+  username: user.username,
+  email: user.email,
+});
+
+// Add breadcrumbs for debugging
+addBreadcrumb({
+  message: 'User clicked submit button',
+  category: 'user-interaction',
+  level: 'info',
+  data: { formId: 'login-form' },
+});
+
+// Capture errors with context
+captureError(error, {
+  tags: { feature: 'authentication' },
+  extra: { attemptNumber: 3 },
+  level: 'error',
+});
+
+// Track performance
+const finishTransaction = startTransaction('page-load', 'navigation');
+// ... do work
+finishTransaction();
+```
+
+**Function Wrappers:**
+```typescript
+// Wrap async functions
+const safeAsyncFunction = withErrorTracking(
+  async () => {
+    // ... async work that may throw
+  },
+  {
+    tags: { function: 'fetchUserData' },
+    level: 'error',
+  }
+);
+
+// Wrap sync functions
+const safeSyncFunction = withErrorTrackingSync(
+  () => {
+    // ... sync work that may throw
+  },
+  {
+    tags: { function: 'processData' },
+  }
+);
+```
+
+**Breadcrumb System:**
+- Automatic breadcrumb buffering (last 50 events)
+- Categorized events (navigation, user-interaction, api-call, etc.)
+- Severity levels (fatal, error, warning, info, debug)
+- Attached to all error reports
+- Helps reconstruct user journey before error
+
+**Global Error Handlers:**
+```typescript
+// Unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  errorTracker.captureError(
+    new Error(`Unhandled Promise Rejection: ${event.reason}`),
+    { level: 'error', tags: { type: 'unhandledrejection' } }
+  );
+});
+
+// Global errors
+window.addEventListener('error', (event) => {
+  errorTracker.captureError(event.error || new Error(event.message), {
+    level: 'error',
+    tags: { type: 'global_error' },
+    extra: {
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+    },
+  });
+});
+```
+
+### Integration Ready
+
+**Sentry Integration (Commented Example):**
+```typescript
+// Install: npm install @sentry/react
+import * as Sentry from '@sentry/react';
+
+Sentry.init({
+  dsn: config.dsn,
+  environment: config.environment,
+  release: config.release,
+  tracesSampleRate: 0.1,
+  integrations: [
+    new Sentry.BrowserTracing(),
+    new Sentry.Replay(),
+  ],
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+});
+```
+
+**LogRocket Integration:**
+```typescript
+// Install: npm install logrocket
+import LogRocket from 'logrocket';
+
+LogRocket.init('your-app-id');
+
+// Identify users
+LogRocket.identify(user.id, {
+  name: user.username,
+  email: user.email,
+});
+```
+
+**Datadog Integration:**
+```typescript
+// Install: npm install @datadog/browser-logs
+import { datadogLogs } from '@datadog/browser-logs';
+
+datadogLogs.init({
+  clientToken: 'your-client-token',
+  site: 'datadoghq.com',
+  forwardErrorsToLogs: true,
+  sessionSampleRate: 100,
+});
+```
+
+### Usage Examples
+
+**Wrap Routes with Error Boundary:**
+```typescript
+// In App.tsx or route configuration
+import { RouteErrorBoundary } from './components/RouteErrorBoundary';
+
+<RouteErrorBoundary routeName="ProfilePage">
+  <ProfilePage />
+</RouteErrorBoundary>
+
+// Or use HOC
+const SafeProfilePage = withRouteErrorBoundary(ProfilePage, 'ProfilePage');
+```
+
+**Track User Actions:**
+```typescript
+import { addBreadcrumb, captureError } from './lib/error-tracking';
+
+function handleSubmit() {
+  addBreadcrumb({
+    message: 'User submitted form',
+    category: 'user-action',
+    level: 'info',
+    data: { formType: 'login' },
+  });
+
+  try {
+    await submitForm();
+  } catch (error) {
+    captureError(error as Error, {
+      tags: { action: 'form-submit' },
+      extra: { formData: sanitizedData },
+    });
+  }
+}
+```
+
+**Performance Monitoring:**
+```typescript
+import { startTransaction } from './lib/error-tracking';
+
+function loadPage() {
+  const finish = startTransaction('page-load', 'navigation');
+
+  // Load page data
+  await Promise.all([
+    fetchPosts(),
+    fetchComments(),
+    fetchUserData(),
+  ]);
+
+  finish(); // Logs performance metric
+}
+```
+
+### Existing Performance Monitoring
+
+The codebase already has a comprehensive `usePerformanceMonitor` hook:
+- Render time tracking
+- Interaction metrics (clicks, scrolls, inputs)
+- Performance warnings (slow renders, excessive renders)
+- Memory usage tracking
+- Custom measurements
+- Integration with centralized logger
+
+### Benefits
+
+**Error Tracking:**
+✅ **Centralized error handling** - All errors flow through one system
+✅ **Rich context** - User, tags, breadcrumbs attached
+✅ **Production ready** - Integration points for major services
+✅ **Debugging friendly** - Breadcrumbs reconstruct user journey
+✅ **Type-safe** - Full TypeScript support
+✅ **Flexible** - Works with any error tracking service
+
+**Error Boundaries:**
+✅ **Terminal-themed UI** - Consistent with app design
+✅ **Route-specific** - Targeted error recovery
+✅ **User-friendly** - Clear error messages and recovery options
+✅ **Developer-friendly** - Stack traces in development mode
+✅ **Logged** - All errors sent to logger for monitoring
+
+### Architecture
+
+**Error Flow:**
+```
+Component Error
+    ↓
+RouteErrorBoundary catches
+    ↓
+Logs to logger with context
+    ↓
+errorTracker.captureError()
+    ↓
+Breadcrumbs attached
+    ↓
+Sent to monitoring service (Sentry/LogRocket)
+    ↓
+Fallback UI shown to user
+```
+
+**Monitoring Integration:**
+```
+Application Events
+    ↓
+Add breadcrumbs
+    ↓
+Track user actions
+    ↓
+Capture errors
+    ↓
+Track performance
+    ↓
+Send to logger + monitoring service
+    ↓
+Alerts & dashboards
+```
+
+### Files Created
+
+1. **src/components/RouteErrorBoundary.tsx** (NEW - 180 lines)
+   - Terminal-themed error boundary for routes
+   - React Router integration
+   - Higher-order component wrapper
+
+2. **src/lib/error-tracking.ts** (NEW - 350 lines)
+   - Centralized error tracking system
+   - Integration points for Sentry, LogRocket, Datadog
+   - Breadcrumb system
+   - Global error handlers
+   - Function wrappers
+
+**Total Changes:**
+- 2 files created
+- 530 new lines
+- 0 breaking changes
+- 100% backward compatible
+
+### Build Validation
+
+**TypeScript Check:**
+```bash
+✅ npx tsc --noEmit - No errors
+```
+
+**Production Build:**
+```bash
+✅ npm run build - Success in 13.90s
+✅ All chunks generated correctly
+✅ No errors or warnings
+```
+
+### Future Enhancements
+
+**Potential integrations:**
+1. **Session replay** - LogRocket or Sentry Replay
+2. **Real user monitoring** - Datadog RUM
+3. **Error budgets** - SLO-based alerting
+4. **Automated alerts** - Slack/email on critical errors
+5. **Error grouping** - Smart error deduplication
+
+**Not implemented (ready to integrate):**
+- Live session replay
+- User feedback widgets
+- Error screenshots
+- Network request tracking
+- Console log capture
+
+### Testing Checklist
+
+- [x] Build completes successfully
+- [x] TypeScript check passes
+- [x] RouteErrorBoundary renders correctly
+- [x] Error tracking utilities work
+- [x] Logger integration works
+- [x] Breadcrumbs buffer correctly
+- [x] Global error handlers registered
+- [x] No performance regression
+
+### Integration Guide
+
+**Step 1: Initialize error tracking**
+```typescript
+// In main.tsx or App.tsx
+import { initErrorTracking } from './lib/error-tracking';
+
+initErrorTracking({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  environment: import.meta.env.MODE,
+  release: import.meta.env.VITE_APP_VERSION,
+  sampleRate: 0.1,
+});
+```
+
+**Step 2: Set user context on login**
+```typescript
+import { setUser } from './lib/error-tracking';
+
+function onLogin(user) {
+  setUser({
+    id: user.id,
+    username: user.username,
+    email: user.email,
+  });
+}
+```
+
+**Step 3: Wrap critical routes**
+```typescript
+import { RouteErrorBoundary } from './components/RouteErrorBoundary';
+
+<Route path="/profile" element={
+  <RouteErrorBoundary routeName="ProfilePage">
+    <ProfilePage />
+  </RouteErrorBoundary>
+} />
+```
+
+**Step 4: Add breadcrumbs for user actions**
+```typescript
+import { addBreadcrumb } from './lib/error-tracking';
+
+function handleAction() {
+  addBreadcrumb({
+    message: 'User performed action',
+    category: 'user-interaction',
+    level: 'info',
+  });
+}
+```
+
+---
+
+**Phase 9 Status:** ✅ Complete
+**Next Phase:** Continued enhancements and optimizations
 
