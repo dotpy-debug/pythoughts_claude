@@ -7,6 +7,7 @@
 
 import { supabase } from '../lib/supabase';
 import { checkContentSafety, shouldAutoFlag } from './contentFilter';
+import { logger } from '../lib/logger';
 
 /**
  * Auto-flag content for moderation review
@@ -45,17 +46,32 @@ export async function autoFlagContent(
     const { error } = await supabase.from('reports').insert(reportData);
 
     if (error) {
-      console.error('Failed to create auto-flag report:', error);
+      logger.error('Failed to create auto-flag report', {
+        error: error.message || 'Unknown error',
+        code: error.code,
+        contentType,
+        contentId,
+        severity: safetyCheck.severity,
+      });
       return { flagged: false, reasons: safetyCheck.issues };
     }
 
-    console.log(
-      `Content auto-flagged for review: ${contentType} ${contentId} (${safetyCheck.severity} severity)`
-    );
+    logger.warn('Content auto-flagged for moderation review', {
+      contentType,
+      contentId,
+      severity: safetyCheck.severity,
+      issues: safetyCheck.issues,
+      authorId,
+    });
 
     return { flagged: true, reasons: safetyCheck.issues };
   } catch (error) {
-    console.error('Error in auto-flagging:', error);
+    logger.error('Error in auto-flagging system', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      contentType,
+      contentId,
+    });
     return { flagged: false, reasons: safetyCheck.issues };
   }
 }

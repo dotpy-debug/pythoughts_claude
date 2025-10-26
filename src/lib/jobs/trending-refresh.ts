@@ -17,6 +17,7 @@
 
 import { supabase } from '../supabase';
 import { invalidateTrendingCache, batchUpdateTrendingScores } from '../trending';
+import { logger } from '../logger';
 
 /**
  * Refresh trending posts materialized view and invalidate cache
@@ -25,22 +26,26 @@ export async function refreshTrendingPosts(): Promise<void> {
   const startTime = Date.now();
 
   try {
-    console.log('[Trending Refresh] Starting trending posts refresh...');
+    logger.info('Starting trending posts refresh');
 
     // Step 1: Refresh materialized view concurrently (non-blocking)
     const { error: refreshError } = await supabase.rpc('refresh_trending_posts');
 
     if (refreshError) {
-      console.error('[Trending Refresh] Error refreshing materialized view:', refreshError);
+      logger.error('Error refreshing trending materialized view', {
+        error: refreshError.message || 'Unknown error',
+        code: refreshError.code,
+        details: refreshError.details,
+      });
       throw refreshError;
     }
 
-    console.log('[Trending Refresh] Materialized view refreshed successfully');
+    logger.info('Trending materialized view refreshed successfully');
 
     // Step 2: Invalidate all trending caches
     await invalidateTrendingCache();
 
-    console.log('[Trending Refresh] Cache invalidated successfully');
+    logger.info('Trending cache invalidated successfully');
 
     // Step 3: Update trending scores for recently active posts
     // This ensures real-time updates for posts with recent activity
@@ -51,18 +56,29 @@ export async function refreshTrendingPosts(): Promise<void> {
       .eq('is_published', true);
 
     if (recentError) {
-      console.error('[Trending Refresh] Error fetching recent posts:', recentError);
+      logger.error('Error fetching recent posts for trending update', {
+        error: recentError.message || 'Unknown error',
+        code: recentError.code,
+      });
     } else if (recentPosts && recentPosts.length > 0) {
       const postIds = recentPosts.map((p) => p.id);
       await batchUpdateTrendingScores(postIds);
-      console.log(`[Trending Refresh] Updated scores for ${postIds.length} recently active posts`);
+      logger.info('Updated trending scores for recently active posts', {
+        postsUpdated: postIds.length,
+      });
     }
 
     const duration = Date.now() - startTime;
-    console.log(`[Trending Refresh] Completed successfully in ${duration}ms`);
+    logger.info('Trending posts refresh completed successfully', {
+      durationMs: duration,
+    });
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error(`[Trending Refresh] Failed after ${duration}ms:`, error);
+    logger.error('Trending posts refresh failed', {
+      durationMs: duration,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw error;
   }
 }
@@ -80,7 +96,10 @@ export async function getTrendingRefreshStats(): Promise<{
     const { data, error } = await supabase.rpc('get_trending_stats');
 
     if (error) {
-      console.error('[Trending Refresh] Error getting stats:', error);
+      logger.error('Error getting trending refresh stats', {
+        error: error.message || 'Unknown error',
+        code: error.code,
+      });
       return {
         lastRefresh: null,
         totalPosts: 0,
@@ -94,7 +113,10 @@ export async function getTrendingRefreshStats(): Promise<{
       avgScore: data?.average_score || 0,
     };
   } catch (error) {
-    console.error('[Trending Refresh] Error getting stats:', error);
+    logger.error('Unexpected error getting trending refresh stats', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return {
       lastRefresh: null,
       totalPosts: 0,

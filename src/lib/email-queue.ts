@@ -20,6 +20,7 @@ import {
   sendTaskAssignedEmail,
   sendWeeklyDigestEmail,
 } from './email-service';
+import { logger } from './logger';
 
 /**
  * Redis connection configuration
@@ -202,7 +203,11 @@ export function getEmailQueue(): Queue<EmailJobData> {
  * Process email job
  */
 async function processEmailJob(job: Job<EmailJobData>): Promise<EmailResult> {
-  console.log(`Processing email job ${job.id} (${job.data.type})`);
+  logger.info('Processing email job', {
+    jobId: job.id,
+    emailType: job.data.type,
+    attemptNumber: job.attemptsMade + 1,
+  });
 
   try {
     let result: EmailResult;
@@ -244,10 +249,20 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<EmailResult> {
       throw new Error(result.error || 'Failed to send email');
     }
 
-    console.log(`Email job ${job.id} completed successfully (emailId: ${result.emailId})`);
+    logger.info('Email job completed successfully', {
+      jobId: job.id,
+      emailId: result.emailId,
+      emailType: job.data.type,
+    });
     return result;
   } catch (error) {
-    console.error(`Email job ${job.id} failed:`, error);
+    logger.error('Email job failed', {
+      jobId: job.id,
+      emailType: job.data.type,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      attemptNumber: job.attemptsMade + 1,
+    });
     throw error;
   }
 }
@@ -271,18 +286,32 @@ export function startEmailWorker(): Worker<EmailJobData, EmailResult> {
 
   // Event handlers
   emailWorker.on('completed', (job) => {
-    console.log(`Email job ${job.id} completed`);
+    logger.info('Email worker job completed', {
+      jobId: job.id,
+      jobName: job.name,
+    });
   });
 
   emailWorker.on('failed', (job, error) => {
-    console.error(`Email job ${job?.id} failed:`, error);
+    logger.error('Email worker job failed', {
+      jobId: job?.id,
+      jobName: job?.name,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
   });
 
   emailWorker.on('error', (error) => {
-    console.error('Email worker error:', error);
+    logger.error('Email worker error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+    });
   });
 
-  console.log('Email worker started');
+  logger.info('Email worker started', {
+    concurrency: 5,
+    rateLimit: '10 emails per second',
+  });
   return emailWorker;
 }
 
@@ -293,7 +322,7 @@ export async function stopEmailWorker(): Promise<void> {
   if (emailWorker) {
     await emailWorker.close();
     emailWorker = null;
-    console.log('Email worker stopped');
+    logger.info('Email worker stopped');
   }
 }
 
@@ -313,7 +342,12 @@ export async function queueEmail(
     backoff: options.backoff,
   });
 
-  console.log(`Queued email job ${job.id} (${data.type})`);
+  logger.info('Queued email job', {
+    jobId: job.id,
+    emailType: data.type,
+    priority: options.priority,
+    delay: options.delay,
+  });
   return job;
 }
 
@@ -528,5 +562,5 @@ export async function clearQueue(): Promise<void> {
   const queue = getEmailQueue();
   await queue.drain();
   await queue.clean(0, 0); // Remove all jobs
-  console.log('Email queue cleared');
+  logger.info('Email queue cleared');
 }
