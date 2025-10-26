@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { User, Clock } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
@@ -8,7 +9,7 @@ type BlogCardProps = {
   featured?: boolean;
 };
 
-export function BlogCard({ post, onClick, featured = false }: BlogCardProps) {
+export const BlogCard = memo(function BlogCard({ post, onClick, featured = false }: BlogCardProps) {
   const readTime = post.reading_time_minutes || Math.ceil(post.content.length / 1000);
 
   if (featured) {
@@ -122,4 +123,4 @@ export function BlogCard({ post, onClick, featured = false }: BlogCardProps) {
       </div>
     </div>
   );
-}
+});

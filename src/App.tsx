@@ -6,9 +6,6 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { TooltipProvider } from './components/ui/Tooltip';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
-import { FloatingBubbles } from './components/animations/FloatingBubbles';
-import { LogoLoopHorizontal } from './components/animations/LogoLoopHorizontal';
-import { LogoLoopVertical } from './components/animations/LogoLoopVertical';
 import { Loader2 } from 'lucide-react';
 import { useKeyboardShortcuts, SkipNavLink } from './hooks/useKeyboardNavigation';
 import { initFocusVisible } from './utils/accessibility';
@@ -46,6 +43,11 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(mod => ({ de
 
 const CreatePostModal = lazy(() => import('./components/posts/CreatePostModal').then(mod => ({ default: mod.CreatePostModal })));
 const CreateTaskModal = lazy(() => import('./components/tasks/CreateTaskModal').then(mod => ({ default: mod.CreateTaskModal })));
+
+// Lazy load animation components (non-critical decorative elements)
+const FloatingBubbles = lazy(() => import('./components/animations/FloatingBubbles').then(mod => ({ default: mod.FloatingBubbles })));
+const LogoLoopHorizontal = lazy(() => import('./components/animations/LogoLoopHorizontal').then(mod => ({ default: mod.LogoLoopHorizontal })));
+const LogoLoopVertical = lazy(() => import('./components/animations/LogoLoopVertical').then(mod => ({ default: mod.LogoLoopVertical })));
 
 function AppContent() {
   const { user } = useAuth();
@@ -133,9 +135,11 @@ function AppContent() {
       {!isLandingPage && (
         <>
           <SkipNavLink />
-          <FloatingBubbles />
-          <LogoLoopHorizontal />
-          <LogoLoopVertical />
+          <Suspense fallback={null}>
+            <FloatingBubbles />
+            <LogoLoopHorizontal />
+            <LogoLoopVertical />
+          </Suspense>
           <Header onCreatePost={handleCreatePost} />
         </>
       )}

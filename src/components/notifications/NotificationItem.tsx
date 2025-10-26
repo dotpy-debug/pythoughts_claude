@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Notification as NotificationType } from '../../lib/supabase';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { formatDistanceToNow } from '../../utils/dateUtils';
@@ -8,7 +9,7 @@ type NotificationItemProps = {
   onClose: () => void;
 };
 
-export function NotificationItem({ notification, onClose }: NotificationItemProps) {
+export const NotificationItem = memo(function NotificationItem({ notification, onClose }: NotificationItemProps) {
   const { markAsRead } = useNotifications();
 
   const handleClick = () => {
@@ -77,4 +78,4 @@ export function NotificationItem({ notification, onClose }: NotificationItemProp
       </div>
     </div>
   );
-}
+});

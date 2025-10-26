@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { ArrowUp, ArrowDown, MessageCircle, User, Terminal, Flag, TrendingUp } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
@@ -19,7 +19,7 @@ type PostCardProps = {
   onClick: () => void;
 };
 
-export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
+export const PostCard = memo(function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
   const [reportModalOpen, setReportModalOpen] = useState(false);
 
   const handleVote = (e: React.MouseEvent, voteType: 1 | -1) => {
@@ -189,4 +189,4 @@ export function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
       />
     </article>
   );
-}
+});

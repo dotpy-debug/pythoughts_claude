@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Calendar, User, Tag, Clock } from 'lucide-react';
 import { Task } from '../../lib/supabase';
 import { Badge } from '../ui/Badge';
@@ -22,7 +23,7 @@ const statusColors: Record<Task['status'], 'default' | 'primary' | 'success' | '
   archived: 'purple',
 };
 
-export function TaskCard({ task, onClick }: TaskCardProps) {
+export const TaskCard = memo(function TaskCard({ task, onClick }: TaskCardProps) {
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed';
 
   return (
@@ -79,4 +80,4 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
       </div>
     </div>
   );
-}
+});

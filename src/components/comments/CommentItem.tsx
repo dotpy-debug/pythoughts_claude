@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { ArrowUp, ArrowDown, MessageCircle, User, ChevronDown, ChevronUp, Flag, Pin, Edit2 } from 'lucide-react';
 import { Comment, supabase } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
@@ -19,7 +19,7 @@ type CommentItemProps = {
   depth: number;
 };
 
-export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, postAuthorId, depth }: CommentItemProps) {
+export const CommentItem = memo(function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, postAuthorId, depth }: CommentItemProps) {
   const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
@@ -273,4 +273,4 @@ export function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, p
       />
     </div>
   );
-}
+});
