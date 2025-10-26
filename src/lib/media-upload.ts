@@ -37,7 +37,7 @@ export class MediaUploadService {
       });
 
       if (error) {
-        logger.error('Failed to create storage bucket', { error: error.message });
+        logger.error('Failed to create storage bucket', new Error(error.message));
         throw new Error('Storage initialization failed');
       }
     }
@@ -143,8 +143,7 @@ export class MediaUploadService {
 
   async uploadImage(
     file: File,
-    userId: string,
-    onProgress?: (progress: UploadProgress) => void
+    userId: string
   ): Promise<UploadedMedia> {
     const validation = this.validateFile(file, 'image');
     if (!validation.valid) {
@@ -172,7 +171,7 @@ export class MediaUploadService {
     const fileExt = processedFile.name.split('.').pop();
     const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
       .upload(fileName, processedFile, {
         cacheControl: '3600',
@@ -180,7 +179,7 @@ export class MediaUploadService {
       });
 
     if (uploadError) {
-      logger.error('Failed to upload image', { error: uploadError.message });
+      logger.error('Failed to upload image', new Error(uploadError.message));
       throw new Error('Upload failed');
     }
 
@@ -203,7 +202,7 @@ export class MediaUploadService {
 
     if (dbError) {
       await supabase.storage.from(STORAGE_BUCKET).remove([fileName]);
-      logger.error('Failed to save media record', { error: dbError.message });
+      logger.error('Failed to save media record', new Error(dbError.message));
       throw new Error('Failed to save media information');
     }
 
@@ -215,8 +214,7 @@ export class MediaUploadService {
 
   async uploadVideo(
     file: File,
-    userId: string,
-    onProgress?: (progress: UploadProgress) => void
+    userId: string
   ): Promise<UploadedMedia> {
     const validation = this.validateFile(file, 'video');
     if (!validation.valid) {
@@ -228,7 +226,7 @@ export class MediaUploadService {
     const fileExt = file.name.split('.').pop();
     const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
       .upload(fileName, file, {
         cacheControl: '3600',
@@ -236,7 +234,7 @@ export class MediaUploadService {
       });
 
     if (uploadError) {
-      logger.error('Failed to upload video', { error: uploadError.message });
+      logger.error('Failed to upload video', new Error(uploadError.message));
       throw new Error('Upload failed');
     }
 
@@ -257,7 +255,7 @@ export class MediaUploadService {
 
     if (dbError) {
       await supabase.storage.from(STORAGE_BUCKET).remove([fileName]);
-      logger.error('Failed to save media record', { error: dbError.message });
+      logger.error('Failed to save media record', new Error(dbError.message));
       throw new Error('Failed to save media information');
     }
 
@@ -287,13 +285,13 @@ export class MediaUploadService {
       .remove([media.storage_path]);
 
     if (storageError) {
-      logger.error('Failed to delete file from storage', { error: storageError.message });
+      logger.error('Failed to delete file from storage', new Error(storageError.message));
     }
 
     const { error: dbError } = await supabase.from('media_files').delete().eq('id', mediaId);
 
     if (dbError) {
-      logger.error('Failed to delete media record', { error: dbError.message });
+      logger.error('Failed to delete media record', new Error(dbError.message));
       throw new Error('Failed to delete media');
     }
   }
@@ -307,7 +305,7 @@ export class MediaUploadService {
       .limit(limit);
 
     if (error) {
-      logger.error('Failed to fetch user media', { error: error.message });
+      logger.error('Failed to fetch user media', new Error(error.message));
       throw new Error('Failed to load media');
     }
 

@@ -34,13 +34,14 @@ vi.mock('../../utils/security', () => ({
 describe('SignInForm Component', () => {
   const mockOnSuccess = vi.fn();
   const mockOnToggleMode = vi.fn();
+  const mockOnForgotPassword = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('renders sign in form with email and password inputs', () => {
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
@@ -48,7 +49,7 @@ describe('SignInForm Component', () => {
   });
 
   it('renders sign up link', () => {
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     expect(screen.getByText(/don't have an account\?/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
@@ -56,7 +57,7 @@ describe('SignInForm Component', () => {
 
   it('handles sign up link click', async () => {
     const user = userEvent.setup();
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     await user.click(screen.getByRole('button', { name: /sign up/i }));
     expect(mockOnToggleMode).toHaveBeenCalledTimes(1);
@@ -64,7 +65,7 @@ describe('SignInForm Component', () => {
 
   it('updates email and password fields on user input', async () => {
     const user = userEvent.setup();
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
     const passwordInput = screen.getByLabelText(/password/i) as HTMLInputElement;
@@ -80,7 +81,7 @@ describe('SignInForm Component', () => {
     const user = userEvent.setup();
     mockSignIn.mockResolvedValue({ error: null });
 
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     await user.type(screen.getByLabelText(/email/i), 'test@example.com');
     await user.type(screen.getByLabelText(/password/i), 'password123');
@@ -95,7 +96,7 @@ describe('SignInForm Component', () => {
     const user = userEvent.setup();
     mockSignIn.mockResolvedValue({ error: null });
 
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     await user.type(screen.getByLabelText(/email/i), 'test@example.com');
     await user.type(screen.getByLabelText(/password/i), 'password123');
@@ -112,7 +113,7 @@ describe('SignInForm Component', () => {
       error: { message: 'Invalid email or password' },
     });
 
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     await user.type(screen.getByLabelText(/email/i), 'wrong@example.com');
     await user.type(screen.getByLabelText(/password/i), 'wrongpassword');
@@ -132,7 +133,7 @@ describe('SignInForm Component', () => {
         )
     );
 
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     await user.type(screen.getByLabelText(/email/i), 'test@example.com');
     await user.type(screen.getByLabelText(/password/i), 'password123');
@@ -147,7 +148,7 @@ describe('SignInForm Component', () => {
   });
 
   it('requires email and password fields', () => {
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
@@ -157,7 +158,7 @@ describe('SignInForm Component', () => {
   });
 
   it('has correct input types', () => {
-    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} />);
+    render(<SignInForm onSuccess={mockOnSuccess} onToggleMode={mockOnToggleMode} onForgotPassword={mockOnForgotPassword} />);
 
     expect(screen.getByLabelText(/email/i)).toHaveAttribute('type', 'email');
     expect(screen.getByLabelText(/password/i)).toHaveAttribute('type', 'password');

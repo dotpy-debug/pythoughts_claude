@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../ui/button';
+import { Button } from '../ui/Button';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Card, CardContent } from '../ui/card';

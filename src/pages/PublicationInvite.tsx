@@ -13,7 +13,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Check, X, Clock, Mail, Users } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from '../components/ui/Button';
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logger';
 import { useAuth } from '../contexts/AuthContext';
