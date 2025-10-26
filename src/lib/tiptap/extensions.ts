@@ -18,9 +18,11 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
-import { lowlight } from 'lowlight';
+import { common, createLowlight } from 'lowlight';
 import { CustomHeading } from './custom-heading';
 import { Callout } from './callout-extension';
+
+const lowlight = createLowlight(common);
 
 export const editorExtensions = [
   StarterKit.configure({

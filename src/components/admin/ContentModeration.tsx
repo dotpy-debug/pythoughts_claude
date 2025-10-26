@@ -15,7 +15,6 @@ import {
   updateReportStatus,
   getPostsForModeration,
   deletePost,
-  moderatePost,
   toggleFeaturedPost,
   getCommentsForModeration,
   deleteComment,
@@ -28,15 +27,10 @@ import {
   FileText,
   MessageSquare,
   Trash2,
-  CheckCircle,
-  XCircle,
   Star,
   Flag,
-  Eye,
-  Edit,
   Loader2,
   Search,
-  Filter,
 } from 'lucide-react';
 
 type TabType = 'reports' | 'posts' | 'comments';

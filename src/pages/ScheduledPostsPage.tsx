@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Clock, Calendar, Edit2, X, ExternalLink } from 'lucide-react';
+import { Clock, Calendar, Edit2, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserScheduledPosts, cancelScheduledPost } from '../utils/scheduledPosts';
 import { Button } from '../components/ui/Button';

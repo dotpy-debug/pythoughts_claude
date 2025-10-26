@@ -151,7 +151,7 @@ export async function toggleBadgeFeatured(
       .single();
 
     if (fetchError || !userBadge) {
-      logger.error('Error fetching user badge', error as Error, { fetchError, userId, badgeId });
+      logger.error('Error fetching user badge', fetchError as Error, { fetchError, userId, badgeId });
       return { success: false, error: 'Badge not found' };
     }
 
@@ -166,7 +166,7 @@ export async function toggleBadgeFeatured(
         .eq('is_featured', true);
 
       if (countError) {
-        logger.error('Error counting featured badges', error as Error, { countError, userId });
+        logger.error('Error counting featured badges', countError as Error, { countError, userId });
         return { success: false, error: 'Failed to check featured badges' };
       }
 
@@ -183,7 +183,7 @@ export async function toggleBadgeFeatured(
       .eq('badge_id', badgeId);
 
     if (updateError) {
-      logger.error('Error toggling badge featured status', error as Error, { updateError, userId, badgeId });
+      logger.error('Error toggling badge featured status', updateError as Error, { updateError, userId, badgeId });
       return { success: false, error: 'Failed to update badge' };
     }
 

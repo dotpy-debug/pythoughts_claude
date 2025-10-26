@@ -13,7 +13,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getUsers,
-  getUserDetails,
   updateUserRole,
   suspendUser,
   unsuspendUser,
@@ -25,16 +24,8 @@ import {
 import type { Profile, UserSuspension } from '../../lib/supabase';
 import {
   Search,
-  Filter,
   User,
-  Shield,
   Ban,
-  UserX,
-  Mail,
-  Calendar,
-  Activity,
-  AlertTriangle,
-  CheckCircle,
   XCircle,
   Edit,
   Save,
@@ -76,7 +67,7 @@ export function UserManagement() {
         page,
         limit: 50,
         search: searchTerm || undefined,
-        role: roleFilter || undefined,
+        role: (roleFilter || undefined) as any,
         suspended: suspendedFilter,
       });
 
@@ -95,7 +86,7 @@ export function UserManagement() {
     if (!profile) return;
 
     setSelectedUser(user);
-    setNotes(user.admin_notes || '');
+    setNotes((user as any).admin_notes || '');
     setEditingNotes(false);
 
     // Load user's suspension history
@@ -347,15 +338,15 @@ export function UserManagement() {
                         <div className="flex items-center space-x-2">
                           <span
                             className={`px-2 py-1 text-xs font-semibold rounded border ${getRoleBadgeColor(
-                              user.role
+                              user.role || 'user'
                             )}`}
                           >
                             {user.role?.replace('_', ' ').toUpperCase()}
                           </span>
-                          {user.is_suspended && (
+                          {(user as any).is_suspended && (
                             <Ban className="w-5 h-5 text-red-400" />
                           )}
-                          {user.is_banned && (
+                          {(user as any).is_banned && (
                             <XCircle className="w-5 h-5 text-red-500" />
                           )}
                         </div>

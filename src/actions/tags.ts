@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logger';
-import type { Tag, TagFollow } from '../lib/supabase';
+import type { Tag } from '../lib/supabase';
 
 export type TagWithStats = Tag & {
   is_following?: boolean;

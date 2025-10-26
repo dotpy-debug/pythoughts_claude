@@ -46,8 +46,7 @@ export async function autoFlagContent(
     const { error } = await supabase.from('reports').insert(reportData);
 
     if (error) {
-      logger.error('Failed to create auto-flag report', {
-        error: error.message || 'Unknown error',
+      logger.error('Failed to create auto-flag report', new Error(error.message || 'Unknown error'), {
         code: error.code,
         contentType,
         contentId,

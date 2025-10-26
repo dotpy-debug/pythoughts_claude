@@ -94,10 +94,11 @@ export function PublicationInvite() {
       setInvitation(data as unknown as InvitationData);
       logger.info('Invitation loaded', { invitationId: data.id });
     } catch (err) {
-      logger.error('Failed to load invitation', {
-        error: err instanceof Error ? err.message : 'Unknown error',
-        token,
-      });
+      logger.error(
+        'Failed to load invitation',
+        err instanceof Error ? err : new Error(String(err)),
+        { token }
+      );
       setError(err instanceof Error ? err.message : 'Failed to load invitation');
     } finally {
       setLoading(false);
@@ -186,7 +187,7 @@ export function PublicationInvite() {
 
       if (updateError) {
         logger.warn('Failed to update invitation status', {
-          error: updateError.message,
+          errorMessage: updateError.message,
         });
       }
 
@@ -199,7 +200,7 @@ export function PublicationInvite() {
 
       if (countError) {
         logger.warn('Failed to update member count', {
-          error: countError.message,
+          errorMessage: countError.message,
         });
       }
 
@@ -212,9 +213,10 @@ export function PublicationInvite() {
       // Navigate to publication homepage
       navigate(`/publications/${invitation.publication.id}`);
     } catch (err) {
-      logger.error('Failed to accept invitation', {
-        error: err instanceof Error ? err.message : 'Unknown error',
-      });
+      logger.error(
+        'Failed to accept invitation',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(err instanceof Error ? err.message : 'Failed to accept invitation');
     } finally {
       setProcessing(false);
@@ -245,9 +247,10 @@ export function PublicationInvite() {
       // Navigate to home
       navigate('/');
     } catch (err) {
-      logger.error('Failed to decline invitation', {
-        error: err instanceof Error ? err.message : 'Unknown error',
-      });
+      logger.error(
+        'Failed to decline invitation',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(err instanceof Error ? err.message : 'Failed to decline invitation');
     } finally {
       setProcessing(false);

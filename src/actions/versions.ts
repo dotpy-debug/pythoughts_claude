@@ -108,7 +108,7 @@ export async function restorePostVersion(
       .single();
 
     if (postError || !post) {
-      logger.error('Error fetching post for version restore', error as Error, { postError, postId });
+      logger.error('Error fetching post for version restore', postError as Error, { postError, postId });
       return { success: false, error: 'Post not found' };
     }
 
@@ -126,7 +126,7 @@ export async function restorePostVersion(
       .single();
 
     if (versionError || !version) {
-      logger.error('Error fetching version for restore', error as Error, { versionError, postId, versionNumber });
+      logger.error('Error fetching version for restore', versionError as Error, { versionError, postId, versionNumber });
       return { success: false, error: 'Version not found' };
     }
 
@@ -145,7 +145,7 @@ export async function restorePostVersion(
       .eq('id', postId);
 
     if (updateError) {
-      logger.error('Error restoring post version', error as Error, { updateError, postId, versionNumber });
+      logger.error('Error restoring post version', updateError as Error, { updateError, postId, versionNumber });
       return { success: false, error: 'Failed to restore version' };
     }
 
@@ -260,7 +260,7 @@ export async function addVersionDescription(
       .eq('id', versionId);
 
     if (updateError) {
-      logger.error('Error adding version description', error as Error, { updateError, versionId });
+      logger.error('Error adding version description', updateError as Error, { updateError, versionId });
       return { success: false, error: 'Failed to add description' };
     }
 

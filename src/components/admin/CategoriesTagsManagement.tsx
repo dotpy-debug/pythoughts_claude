@@ -16,7 +16,6 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-  reorderCategories,
   getTags,
   createTag,
   updateTag,
@@ -33,14 +32,9 @@ import {
   Plus,
   Edit,
   Trash2,
-  Save,
-  X,
   Loader2,
   Search,
-  GitMerge,
-  Sparkles,
   Star,
-  TrendingUp,
   Trash,
 } from 'lucide-react';
 
@@ -140,20 +134,21 @@ export function CategoriesTagsManagement() {
     }
   };
 
-  const handleUpdateCategory = async () => {
-    if (!profile || !editingCategory) return;
+  // TODO: Wire up this handler to the UI
+  // const handleUpdateCategory = async () => {
+  //   if (!profile || !editingCategory) return;
 
-    const result = await updateCategory({
-      currentUserId: profile.id,
-      categoryId: editingCategory.id,
-      updates: categoryForm,
-    });
+  //   const result = await updateCategory({
+  //     currentUserId: profile.id,
+  //     categoryId: editingCategory.id,
+  //     updates: categoryForm,
+  //   });
 
-    if (result.success) {
-      setEditingCategory(null);
-      await loadData();
-    }
-  };
+  //   if (result.success) {
+  //     setEditingCategory(null);
+  //     await loadData();
+  //   }
+  // };
 
   const handleDeleteCategory = async (categoryId: string) => {
     if (!profile) return;
@@ -188,41 +183,43 @@ export function CategoriesTagsManagement() {
     }
   };
 
-  const handleUpdateTag = async () => {
-    if (!profile || !editingTag) return;
+  // TODO: Wire up this handler to the UI
+  // const handleUpdateTag = async () => {
+  //   if (!profile || !editingTag) return;
 
-    const result = await updateTag({
-      currentUserId: profile.id,
-      tagId: editingTag.id,
-      updates: tagForm,
-    });
+  //   const result = await updateTag({
+  //     currentUserId: profile.id,
+  //     tagId: editingTag.id,
+  //     updates: tagForm,
+  //   });
 
-    if (result.success) {
-      setEditingTag(null);
-      await loadData();
-    }
-  };
+  //   if (result.success) {
+  //     setEditingTag(null);
+  //     await loadData();
+  //   }
+  // };
 
-  const handleMergeTags = async () => {
-    if (!profile || !mergeSourceTag || !mergeTargetTag) return;
+  // TODO: Wire up this handler to the UI
+  // const handleMergeTags = async () => {
+  //   if (!profile || !mergeSourceTag || !mergeTargetTag) return;
 
-    const confirmed = window.confirm(
-      'Are you sure you want to merge these tags? All posts with the source tag will be moved to the target tag.'
-    );
-    if (!confirmed) return;
+  //   const confirmed = window.confirm(
+  //     'Are you sure you want to merge these tags? All posts with the source tag will be moved to the target tag.'
+  //   );
+  //   if (!confirmed) return;
 
-    const result = await mergeTags({
-      currentUserId: profile.id,
-      sourceTagId: mergeSourceTag,
-      targetTagId: mergeTargetTag,
-    });
+  //   const result = await mergeTags({
+  //     currentUserId: profile.id,
+  //     sourceTagId: mergeSourceTag,
+  //     targetTagId: mergeTargetTag,
+  //   });
 
-    if (result.success) {
-      setMergeSourceTag('');
-      setMergeTargetTag('');
-      await loadData();
-    }
-  };
+  //   if (result.success) {
+  //     setMergeSourceTag('');
+  //     setMergeTargetTag('');
+  //     await loadData();
+  //   }
+  // };
 
   const handleDeleteTag = async (tagId: string) => {
     if (!profile) return;

@@ -148,7 +148,7 @@ async function generateUniqueSlug(title: string): Promise<string> {
   }
 
   // Check if slug exists
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('posts')
     .select('slug')
     .eq('slug', baseSlug)
@@ -164,7 +164,7 @@ async function generateUniqueSlug(title: string): Promise<string> {
   let uniqueSlug = `${baseSlug}-${counter}`;
 
   while (true) {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('posts')
       .select('slug')
       .eq('slug', uniqueSlug)

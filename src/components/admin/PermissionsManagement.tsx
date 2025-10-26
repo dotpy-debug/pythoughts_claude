@@ -18,7 +18,6 @@ import {
   updateAdminRole,
   deleteAdminRole,
   getUsersByRole,
-  getPermissionDefinitions,
   AVAILABLE_PERMISSIONS,
 } from '../../actions/permissions';
 import type { AdminRole } from '../../lib/supabase';
