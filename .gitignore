@@ -37,3 +37,5 @@ certs/*.crt
 # Logs
 logs/
 *.log
+.next
+/.next/
