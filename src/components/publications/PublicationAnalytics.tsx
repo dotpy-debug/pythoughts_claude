@@ -15,6 +15,20 @@ import {
   Mail,
   TrendingUp,
 } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 type PublicationStats = {
   publication_id: string;
@@ -103,6 +117,10 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
         .single();
 
       if (statsError) {
+        logger.error('Error loading publication stats', {
+          error: statsError.message,
+          publicationId,
+        });
         throw statsError;
       }
 
@@ -120,12 +138,24 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
         .order('date', { ascending: true });
 
       if (analyticsError) {
+        logger.error('Error loading publication analytics', {
+          error: analyticsError.message,
+          publicationId,
+        });
         throw analyticsError;
       }
 
       setDailyAnalytics(analyticsData || []);
+
+      logger.info('Publication analytics loaded successfully', {
+        publicationId,
+        dataPoints: analyticsData?.length || 0,
+      });
     } catch (err) {
-      logger.error('Failed to load publication analytics', err as Error);
+      logger.error('Failed to load publication analytics', {
+        error: err instanceof Error ? err.message : 'Unknown error',
+        publicationId,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -287,31 +317,203 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
             />
           </div>
 
-          {/* Daily growth chart placeholder */}
+          {/* Subscriber Growth Chart */}
           <Card>
             <CardHeader>
               <CardTitle>Subscriber Growth</CardTitle>
-              <CardDescription>Daily subscriber additions</CardDescription>
+              <CardDescription>Daily subscriber additions over time</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                Chart visualization would go here
-                {/* TODO: Integrate chart library like recharts */}
+              <div className="h-[300px]">
+                {dailyAnalytics.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={dailyAnalytics}>
+                      <defs>
+                        <linearGradient id="colorSubscribers" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#00ff00" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#00ff00" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={(date) => format(new Date(date), 'MMM d')}
+                        stroke="#666"
+                      />
+                      <YAxis stroke="#666" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#1a1a1a',
+                          border: '1px solid #00ff00',
+                          borderRadius: '4px',
+                        }}
+                        labelFormatter={(date) => format(new Date(date), 'MMM d, yyyy')}
+                      />
+                      <Legend />
+                      <Area
+                        type="monotone"
+                        dataKey="new_subscribers"
+                        name="New Subscribers"
+                        stroke="#00ff00"
+                        fillOpacity={1}
+                        fill="url(#colorSubscribers)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                    No data available for the selected period
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Engagement Over Time Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Engagement Metrics</CardTitle>
+              <CardDescription>Views, reads, and interactions over time</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                {dailyAnalytics.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={dailyAnalytics}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={(date) => format(new Date(date), 'MMM d')}
+                        stroke="#666"
+                      />
+                      <YAxis stroke="#666" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#1a1a1a',
+                          border: '1px solid #00ff00',
+                          borderRadius: '4px',
+                        }}
+                        labelFormatter={(date) => format(new Date(date), 'MMM d, yyyy')}
+                      />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey="total_views"
+                        name="Views"
+                        stroke="#00ff00"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="total_reads"
+                        name="Reads"
+                        stroke="#0099ff"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="total_claps"
+                        name="Claps"
+                        stroke="#ff00ff"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                    No data available for the selected period
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="content" className="space-y-4">
+          {/* Daily Engagement Breakdown */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Daily Engagement Breakdown</CardTitle>
+              <CardDescription>Comments, bookmarks, and newsletters</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                {dailyAnalytics.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={dailyAnalytics}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                      <XAxis
+                        dataKey="date"
+                        tickFormatter={(date) => format(new Date(date), 'MMM d')}
+                        stroke="#666"
+                      />
+                      <YAxis stroke="#666" />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#1a1a1a',
+                          border: '1px solid #00ff00',
+                          borderRadius: '4px',
+                        }}
+                        labelFormatter={(date) => format(new Date(date), 'MMM d, yyyy')}
+                      />
+                      <Legend />
+                      <Bar dataKey="total_comments" name="Comments" fill="#00ff00" />
+                      <Bar dataKey="total_bookmarks" name="Bookmarks" fill="#0099ff" />
+                      <Bar dataKey="newsletters_sent" name="Newsletters" fill="#ff00ff" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                    No data available for the selected period
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Content Performance Summary */}
           <Card>
             <CardHeader>
               <CardTitle>Content Performance</CardTitle>
-              <CardDescription>Top performing posts</CardDescription>
+              <CardDescription>
+                Detailed post analytics coming soon
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-muted-foreground text-center py-8">
-                Top posts list would go here
-                {/* TODO: Add top posts query and display */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded">
+                  <span className="text-sm text-gray-300">Total Content</span>
+                  <span className="text-lg font-bold text-terminal-green">
+                    {stats.total_posts} posts
+                  </span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded">
+                  <span className="text-sm text-gray-300">Average Views per Post</span>
+                  <span className="text-lg font-bold text-terminal-green">
+                    {stats.total_posts > 0
+                      ? Math.round(stats.total_views / stats.total_posts)
+                      : 0}{' '}
+                    views
+                  </span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded">
+                  <span className="text-sm text-gray-300">Average Engagement</span>
+                  <span className="text-lg font-bold text-terminal-green">
+                    {stats.total_posts > 0
+                      ? (
+                          (stats.total_claps / stats.total_posts) *
+                          100
+                        ).toFixed(1)
+                      : 0}
+                    % interaction rate
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-4 text-center">
+                  Individual post rankings and detailed analytics will be available in a future update
+                </p>
               </div>
             </CardContent>
           </Card>

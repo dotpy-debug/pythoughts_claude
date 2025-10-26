@@ -14,6 +14,33 @@
 import { useEffect, useState, useCallback } from 'react';
 import { logger } from '../lib/logger';
 
+// TypeScript interfaces for Performance API entries
+interface LargestContentfulPaintEntry extends PerformanceEntry {
+  renderTime: number;
+  loadTime: number;
+}
+
+interface FirstInputEntry extends PerformanceEntry {
+  processingStart: number;
+  startTime: number;
+}
+
+interface LayoutShiftEntry extends PerformanceEntry {
+  value: number;
+  hadRecentInput: boolean;
+}
+
+interface EventTimingEntry extends PerformanceEntry {
+  duration: number;
+}
+
+// Type guard for PerformanceObserver options
+interface PerformanceObserverInit {
+  type?: string;
+  buffered?: boolean;
+  durationThreshold?: number;
+}
+
 export interface WebVitalsMetrics {
   lcp: number | null; // Largest Contentful Paint
   fid: number | null; // First Input Delay
@@ -167,12 +194,16 @@ export function useWebVitals(
       setMetrics((prev) => ({ ...prev, [name.toLowerCase()]: value }));
       setRatings((prev) => ({ ...prev, [name.toLowerCase()]: rating }));
 
-      // Log to console
+      // Log to logger
+      const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
+      const unit = name === 'cls' ? '' : 'ms';
+
       if (logToConsole) {
-        const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
-        console.log(
-          `${emoji} [Web Vitals] ${name}: ${value.toFixed(2)}${name === 'cls' ? '' : 'ms'} (${rating})`
-        );
+        logger.info(`${emoji} [Web Vitals] ${name}: ${value.toFixed(2)}${unit} (${rating})`, {
+          metric: name,
+          value,
+          rating,
+        });
       }
 
       // Report to analytics
@@ -197,44 +228,40 @@ export function useWebVitals(
     // LCP (Largest Contentful Paint)
     const lcpObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      const lastEntry = entries[entries.length - 1] as PerformanceEntry & {
-        renderTime: number;
-        loadTime: number;
-      };
+      const lastEntry = entries[entries.length - 1] as LargestContentfulPaintEntry;
       const value = lastEntry.renderTime || lastEntry.loadTime;
       const rating = getLCPRating(value);
       reportMetric('LCP', value, rating);
     });
 
     try {
-      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true } as PerformanceObserverInit);
     } catch (e) {
       // LCP not supported
+      logger.debug('LCP metric not supported in this browser');
     }
 
     // FID (First Input Delay)
     const fidObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      const firstInput = entries[0] as PerformanceEntry & {
-        processingStart: number;
-        startTime: number;
-      };
+      const firstInput = entries[0] as FirstInputEntry;
       const value = firstInput.processingStart - firstInput.startTime;
       const rating = getFIDRating(value);
       reportMetric('FID', value, rating);
     });
 
     try {
-      fidObserver.observe({ type: 'first-input', buffered: true });
+      fidObserver.observe({ type: 'first-input', buffered: true } as PerformanceObserverInit);
     } catch (e) {
       // FID not supported
+      logger.debug('FID metric not supported in this browser');
     }
 
     // CLS (Cumulative Layout Shift)
     let clsValue = 0;
     const clsObserver = new PerformanceObserver((entryList) => {
       for (const entry of entryList.getEntries()) {
-        const layoutShiftEntry = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
+        const layoutShiftEntry = entry as LayoutShiftEntry;
         if (!layoutShiftEntry.hadRecentInput) {
           clsValue += layoutShiftEntry.value;
         }
@@ -244,9 +271,10 @@ export function useWebVitals(
     });
 
     try {
-      clsObserver.observe({ type: 'layout-shift', buffered: true });
+      clsObserver.observe({ type: 'layout-shift', buffered: true } as PerformanceObserverInit);
     } catch (e) {
       // CLS not supported
+      logger.debug('CLS metric not supported in this browser');
     }
 
     // FCP (First Contentful Paint)
@@ -261,9 +289,10 @@ export function useWebVitals(
     });
 
     try {
-      fcpObserver.observe({ type: 'paint', buffered: true });
+      fcpObserver.observe({ type: 'paint', buffered: true } as PerformanceObserverInit);
     } catch (e) {
       // FCP not supported
+      logger.debug('FCP metric not supported in this browser');
     }
 
     // TTFB (Time to First Byte)
@@ -279,7 +308,7 @@ export function useWebVitals(
     const inpObserver = new PerformanceObserver((entryList) => {
       let maxDuration = 0;
       for (const entry of entryList.getEntries()) {
-        const eventEntry = entry as PerformanceEntry & { duration: number };
+        const eventEntry = entry as EventTimingEntry;
         if (eventEntry.duration > maxDuration) {
           maxDuration = eventEntry.duration;
         }
@@ -291,9 +320,14 @@ export function useWebVitals(
     });
 
     try {
-      inpObserver.observe({ type: 'event', buffered: true, durationThreshold: 16 });
+      inpObserver.observe({
+        type: 'event',
+        buffered: true,
+        durationThreshold: 16
+      } as PerformanceObserverInit);
     } catch (e) {
       // INP not supported
+      logger.debug('INP metric not supported in this browser');
     }
 
     // Cleanup
