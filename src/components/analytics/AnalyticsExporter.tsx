@@ -58,7 +58,7 @@ const DATE_PRESETS = [
 ];
 
 export function AnalyticsExporter({
-  userId,
+  userId: _userId,
   onExport,
   className,
 }: AnalyticsExporterProps) {
@@ -315,12 +315,13 @@ export function AnalyticsExporter({
             </label>
             <select
               value={options.schedule || ''}
-              onChange={(e) =>
+              onChange={(e) => {
+                const value = e.target.value;
                 setOptions((prev) => ({
                   ...prev,
-                  schedule: e.target.value || null,
-                }))
-              }
+                  schedule: value === '' ? null : (value as 'daily' | 'weekly' | 'monthly'),
+                }));
+              }}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-terminal-green font-mono focus:outline-none focus:border-terminal-green"
             >
               <option value="">One-time export</option>

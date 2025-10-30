@@ -2,10 +2,10 @@
  * Logo Component
  *
  * Unified logo component with predefined variants for different contexts
- * Wraps ShimmerLogo with convenience methods for consistent usage
+ * Wraps PyThoughtsLogo with convenience methods for consistent usage
  */
 
-import { ShimmerLogo } from '../animations/ShimmerLogo';
+import PyThoughtsLogo from '../ui/pythoughts-logo';
 
 interface LogoProps {
   /**
@@ -30,6 +30,14 @@ interface LogoProps {
   ariaLabel?: string;
 }
 
+// Size mapping to scale classes
+const sizeScaleMap = {
+  sm: 'scale-75',
+  md: 'scale-90',
+  lg: 'scale-100',
+  xl: 'scale-125',
+};
+
 /**
  * Default Logo component
  *
@@ -39,7 +47,14 @@ interface LogoProps {
  * ```
  */
 export function Logo({ showText = true, size = 'md', className, ariaLabel }: LogoProps) {
-  return <ShimmerLogo showText={showText} size={size} className={className} ariaLabel={ariaLabel} />;
+  const scaleClass = sizeScaleMap[size];
+  const combinedClassName = `${scaleClass} ${className || ''}`.trim();
+
+  return (
+    <div aria-label={ariaLabel || 'PyThoughts logo'}>
+      <PyThoughtsLogo compact={!showText} className={combinedClassName} />
+    </div>
+  );
 }
 
 /**
@@ -51,7 +66,7 @@ export function Logo({ showText = true, size = 'md', className, ariaLabel }: Log
  * ```
  */
 Logo.Navbar = function NavbarLogo() {
-  return <ShimmerLogo size="md" showText={true} ariaLabel="Pythoughts - Navigate to home" />;
+  return <Logo size="md" showText={true} ariaLabel="PyThoughts - Navigate to home" />;
 };
 
 /**
@@ -63,7 +78,7 @@ Logo.Navbar = function NavbarLogo() {
  * ```
  */
 Logo.Footer = function FooterLogo() {
-  return <ShimmerLogo size="lg" showText={true} ariaLabel="Pythoughts logo" />;
+  return <Logo size="lg" showText={true} ariaLabel="PyThoughts logo" />;
 };
 
 /**
@@ -75,7 +90,7 @@ Logo.Footer = function FooterLogo() {
  * ```
  */
 Logo.Hero = function HeroLogo() {
-  return <ShimmerLogo size="xl" showText={true} ariaLabel="Pythoughts - Terminal Blog Platform" />;
+  return <Logo size="xl" showText={true} ariaLabel="PyThoughts - Neural Network Blog Platform" />;
 };
 
 /**
@@ -87,7 +102,7 @@ Logo.Hero = function HeroLogo() {
  * ```
  */
 Logo.Icon = function IconLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' | 'xl' }) {
-  return <ShimmerLogo size={size} showText={false} ariaLabel="Pythoughts icon" />;
+  return <Logo size={size} showText={false} ariaLabel="PyThoughts icon" />;
 };
 
 /**
@@ -99,7 +114,7 @@ Logo.Icon = function IconLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' | 'xl
  * ```
  */
 Logo.Compact = function CompactLogo() {
-  return <ShimmerLogo size="sm" showText={false} ariaLabel="Pythoughts" />;
+  return <Logo size="sm" showText={false} ariaLabel="PyThoughts" />;
 };
 
 /**
@@ -114,10 +129,10 @@ Logo.Mobile = function MobileLogo() {
   return (
     <>
       <span className="sm:hidden">
-        <ShimmerLogo size="sm" showText={false} ariaLabel="Pythoughts" />
+        <Logo size="sm" showText={false} ariaLabel="PyThoughts" />
       </span>
       <span className="hidden sm:inline">
-        <ShimmerLogo size="md" showText={true} ariaLabel="Pythoughts" />
+        <Logo size="md" showText={true} ariaLabel="PyThoughts" />
       </span>
     </>
   );

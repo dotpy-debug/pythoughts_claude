@@ -18,9 +18,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
-import { sendPublicationInvitationEmail } from '@/lib/email-service';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
+import { sendPublicationInvitationEmail } from '../../lib/email-service';
 
 type MemberRole = 'editor' | 'writer' | 'contributor';
 
@@ -117,7 +117,7 @@ export function InviteMemberModal({
 
       if (!emailResult.success) {
         logger.warn('Failed to send invitation email', {
-          error: emailResult.error,
+          error: emailResult.error ? new Error(emailResult.error) : undefined,
           invitationId: invitation.id,
         });
         // Don't throw - invitation was created successfully, email is best-effort
@@ -183,7 +183,7 @@ export function InviteMemberModal({
             <Label htmlFor="role">Role *</Label>
             <Select
               value={role}
-              onValueChange={(value) => setRole(value as MemberRole)}
+              onValueChange={(value: string) => setRole(value as MemberRole)}
               disabled={isSubmitting}
             >
               <SelectTrigger id="role">

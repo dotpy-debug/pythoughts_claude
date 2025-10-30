@@ -392,7 +392,7 @@ export function createPerformanceMeasure(name: string) {
 
       try {
         performance.measure(name, `${name}-start`, `${name}-end`);
-      } catch (e) {
+      } catch (_e) {
         // Measure failed
       }
 
@@ -408,7 +408,7 @@ export function createPerformanceMeasure(name: string) {
         performance.clearMarks(`${name}-start`);
         performance.clearMarks(`${name}-end`);
         performance.clearMeasures(name);
-      } catch (e) {
+      } catch (_e) {
         // Clear failed
       }
     },

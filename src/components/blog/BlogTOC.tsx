@@ -261,7 +261,7 @@ export function useTOC(markdownContent: string, maxDepth: number = 3) {
  * Utility function to inject IDs into markdown headings
  */
 export function addHeadingIds(markdown: string): string {
-  return markdown.replace(/^(#{1,6})\s+(.+)$/gm, (match, hashes, text) => {
+  return markdown.replace(/^(#{1,6})\s+(.+)$/gm, (_match, hashes, text) => {
     const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
     return `${hashes} ${text} {#${id}}`;
   });

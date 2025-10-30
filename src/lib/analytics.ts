@@ -66,7 +66,7 @@ export class Analytics {
    */
   static async trackPostView(params: PostViewParams): Promise<void> {
     try {
-      const { data, error } = await supabase.rpc('track_post_view', {
+      const { error } = await supabase.rpc('track_post_view', {
         p_post_id: params.postId,
         p_user_id: params.userId || null,
         p_session_id: params.sessionId || this.getSessionId(),
@@ -90,7 +90,7 @@ export class Analytics {
    */
   static async trackEvent(event: AnalyticsEvent): Promise<void> {
     try {
-      const { data, error } = await supabase.rpc('track_event', {
+      const { error } = await supabase.rpc('track_event', {
         p_event_name: event.name,
         p_event_category: event.category || null,
         p_user_id: this.userId,
@@ -160,16 +160,11 @@ export class Analytics {
 
       // If scroll > 50%, mark as a "read"
       if (scrollPercentage > 50) {
-        const { error: analyticsError } = await supabase
-          .from('post_analytics')
-          .update({
-            reads: supabase.raw('reads + 1'),
-            avg_read_time_seconds: supabase.raw(
-              `(avg_read_time_seconds * reads + ${readTimeSeconds}) / (reads + 1)`
-            ),
-          })
-          .eq('post_id', postId)
-          .eq('date', new Date().toISOString().split('T')[0]);
+        // Use RPC function for atomic increment operations
+        const { error: analyticsError } = await supabase.rpc('increment_post_reads', {
+          p_post_id: postId,
+          p_read_time_seconds: readTimeSeconds,
+        });
 
         if (analyticsError) {
           logger.error('Failed to update read analytics', analyticsError);
@@ -315,6 +310,7 @@ export class Analytics {
     // Also track as conversion
     this.trackConversion({
       type: 'cta_click',
+      sessionId: this.getSessionId(),
       sourcePostId: postId,
       metadata: { cta_id: ctaId, cta_text: ctaText },
     });

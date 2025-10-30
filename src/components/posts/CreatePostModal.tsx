@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from 'react';
 import { Terminal, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase, Tag } from '../../lib/supabase';
-import { Input } from '../ui/Input';
+import { Input } from '../ui/input';
 import { Button } from '../ui/Button';
 import { MentionsInput } from '../mentions/MentionsInput';
 import { TagInput } from '../tags/TagInput';

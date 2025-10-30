@@ -106,7 +106,7 @@ interface PieChartProps {
   size?: number;
 }
 
-export function PieChart({ data, size = 200 }: PieChartProps) {
+export function PieChart({ data, size: _size = 200 }: PieChartProps) {
   if (data.length === 0) return null;
 
   const total = data.reduce((sum, d) => sum + d.value, 0);
@@ -144,13 +144,14 @@ export function PieChart({ data, size = 200 }: PieChartProps) {
     <div className="flex items-center gap-6">
       <svg viewBox="0 0 100 100" className="w-full max-w-[200px]">
         {slices.map((slice, i) => (
-          <path
-            key={i}
-            d={slice.path}
-            fill={slice.color}
-            className="hover:opacity-80 transition-opacity cursor-pointer"
-            title={`${slice.label}: ${slice.value} (${slice.percentage}%)`}
-          />
+          <g key={i}>
+            <title>{`${slice.label}: ${slice.value} (${slice.percentage}%)`}</title>
+            <path
+              d={slice.path}
+              fill={slice.color}
+              className="hover:opacity-80 transition-opacity cursor-pointer"
+            />
+          </g>
         ))}
       </svg>
       <div className="flex flex-col gap-2">

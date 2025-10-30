@@ -163,8 +163,7 @@ export function useTextHighlight(postId: string | undefined) {
       return;
     }
 
-    // Get the full text content to calculate offsets
-    const fullText = rootElement.textContent || '';
+    // Calculate text offsets from selection range
     const beforeRange = range.cloneRange();
     beforeRange.selectNodeContents(rootElement);
     beforeRange.setEnd(range.startContainer, range.startOffset);

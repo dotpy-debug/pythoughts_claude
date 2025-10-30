@@ -4,15 +4,8 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { Calendar } from '../ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { format } from 'date-fns';
@@ -35,7 +28,7 @@ export function NewsletterComposer({
   const [content, setContent] = useState('');
   const [previewText, setPreviewText] = useState('');
   const [scheduledFor, setScheduledFor] = useState<Date | undefined>(undefined);
-  const [status, setStatus] = useState<NewsletterStatus>('draft');
+  const [_status, _setStatus] = useState<NewsletterStatus>('draft');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -291,7 +284,7 @@ export function NewsletterComposer({
                   mode="single"
                   selected={scheduledFor}
                   onSelect={setScheduledFor}
-                  disabled={(date) => date < new Date()}
+                  disabled={(date: Date | undefined) => (date ? date < new Date() : false)}
                   initialFocus
                 />
                 <div className="p-3 border-t">

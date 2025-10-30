@@ -176,20 +176,13 @@ export function BulkImageUpload({
           )
         );
 
-        // Upload with progress tracking
-        const response = await MediaUploadService.uploadImage(
+        // Upload the file
+        const response = await new MediaUploadService().uploadImage(
           uploadFile.file,
-          userId,
-          (progress) => {
-            setFiles((prev) =>
-              prev.map((f) =>
-                f.id === uploadFile.id ? { ...f, progress } : f
-              )
-            );
-          }
+          userId
         );
 
-        const uploadedUrl = response.publicUrl;
+        const uploadedUrl = response.url;
 
         // Update status to success
         setFiles((prev) =>

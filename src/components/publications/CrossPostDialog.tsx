@@ -12,8 +12,8 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { Badge } from '../ui/badge';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { ExternalLink } from 'lucide-react';
 
 type Publication = {
@@ -100,7 +100,7 @@ export function CrossPostDialog({
       }
 
       const existingPublicationIds = new Set(
-        existingPosts?.map((p) => p.publication_id) || []
+        existingPosts?.map((p: { publication_id: string }) => p.publication_id) || []
       );
 
       // Filter publications

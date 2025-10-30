@@ -1,34 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
+import { BlogPost } from '../../../types/blog';
 import { BlogHero } from '../../../components/blog/reader/BlogHero';
 import { FloatingTOC } from '../../../components/blog/toc/FloatingTOC';
 import { BlogContent } from '../../../components/blog/reader/BlogContent';
 import { EngagementBar } from '../../../components/blog/reader/EngagementBar';
 import { CommentsPanel } from '../../../components/blog/reader/CommentsPanel';
-
-interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  subtitle: string | null;
-  content_html: string;
-  content_json: any;
-  toc_data: any;
-  created_at: string;
-  updated_at: string;
-  published_at: string;
-  reading_time: number;
-  view_count: number;
-  author_id: string;
-  cover_image: string | null;
-  tags: string[];
-  author: {
-    id: string;
-    username: string;
-    avatar_url: string | null;
-  };
-}
 
 interface BlogPostViewProps {
   post: BlogPost;

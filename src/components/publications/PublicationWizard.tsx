@@ -6,9 +6,9 @@ import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/hooks/useAuth';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
+import { logger } from '../../lib/logger';
 
 export type PublicationData = {
   // Basic Info
@@ -212,7 +212,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 <Input
                   id="slug"
                   value={formData.slug}
-                  onChange={(e) => handleInputChange('slug', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('slug', e.target.value)}
                   placeholder="my-awesome-publication"
                   pattern="[a-z0-9-]+"
                 />
@@ -227,7 +227,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               <Input
                 id="tagline"
                 value={formData.tagline}
-                onChange={(e) => handleInputChange('tagline', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('tagline', e.target.value)}
                 placeholder="Where great minds share ideas"
                 maxLength={200}
               />
@@ -238,7 +238,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('description', e.target.value)}
                 placeholder="Tell readers what your publication is about..."
                 rows={4}
                 maxLength={1000}
@@ -254,7 +254,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 id="logo"
                 type="url"
                 value={formData.logoUrl || ''}
-                onChange={(e) => handleInputChange('logoUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('logoUrl', e.target.value)}
                 placeholder="https://example.com/logo.png"
               />
               <p className="text-xs text-muted-foreground">
@@ -268,7 +268,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 id="cover"
                 type="url"
                 value={formData.coverImageUrl || ''}
-                onChange={(e) => handleInputChange('coverImageUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('coverImageUrl', e.target.value)}
                 placeholder="https://example.com/cover.jpg"
               />
               <p className="text-xs text-muted-foreground">
@@ -284,12 +284,12 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                     id="primaryColor"
                     type="color"
                     value={formData.primaryColor}
-                    onChange={(e) => handleInputChange('primaryColor', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('primaryColor', e.target.value)}
                     className="h-10 w-20"
                   />
                   <Input
                     value={formData.primaryColor}
-                    onChange={(e) => handleInputChange('primaryColor', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('primaryColor', e.target.value)}
                     placeholder="#b94a12"
                   />
                 </div>
@@ -302,12 +302,12 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                     id="accentColor"
                     type="color"
                     value={formData.accentColor}
-                    onChange={(e) => handleInputChange('accentColor', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('accentColor', e.target.value)}
                     className="h-10 w-20"
                   />
                   <Input
                     value={formData.accentColor}
-                    onChange={(e) => handleInputChange('accentColor', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('accentColor', e.target.value)}
                     placeholder="#0f1c28"
                   />
                 </div>
@@ -326,7 +326,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               </div>
               <Switch
                 checked={formData.isPublic}
-                onCheckedChange={(checked) => handleInputChange('isPublic', checked)}
+                onCheckedChange={(checked: boolean) => handleInputChange('isPublic', checked)}
               />
             </div>
 
@@ -339,7 +339,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               </div>
               <Switch
                 checked={formData.allowSubmissions}
-                onCheckedChange={(checked) => handleInputChange('allowSubmissions', checked)}
+                onCheckedChange={(checked: boolean) => handleInputChange('allowSubmissions', checked)}
               />
             </div>
 
@@ -352,7 +352,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               </div>
               <Switch
                 checked={formData.requireApproval}
-                onCheckedChange={(checked) => handleInputChange('requireApproval', checked)}
+                onCheckedChange={(checked: boolean) => handleInputChange('requireApproval', checked)}
                 disabled={!formData.allowSubmissions}
               />
             </div>
@@ -366,7 +366,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               </div>
               <Switch
                 checked={formData.allowCrossPosting}
-                onCheckedChange={(checked) => handleInputChange('allowCrossPosting', checked)}
+                onCheckedChange={(checked: boolean) => handleInputChange('allowCrossPosting', checked)}
               />
             </div>
 
@@ -379,7 +379,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               </div>
               <Switch
                 checked={formData.enableNewsletter}
-                onCheckedChange={(checked) => handleInputChange('enableNewsletter', checked)}
+                onCheckedChange={(checked: boolean) => handleInputChange('enableNewsletter', checked)}
               />
             </div>
           </TabsContent>
@@ -392,7 +392,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 id="website"
                 type="url"
                 value={formData.websiteUrl || ''}
-                onChange={(e) => handleInputChange('websiteUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('websiteUrl', e.target.value)}
                 placeholder="https://example.com"
               />
             </div>
@@ -404,7 +404,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 <Input
                   id="twitter"
                   value={formData.twitterHandle || ''}
-                  onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('twitterHandle', e.target.value)}
                   placeholder="yourpublication"
                 />
               </div>
@@ -416,7 +416,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 id="linkedin"
                 type="url"
                 value={formData.linkedinUrl || ''}
-                onChange={(e) => handleInputChange('linkedinUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('linkedinUrl', e.target.value)}
                 placeholder="https://linkedin.com/company/yourpublication"
               />
             </div>
@@ -427,7 +427,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 id="github"
                 type="url"
                 value={formData.githubUrl || ''}
-                onChange={(e) => handleInputChange('githubUrl', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('githubUrl', e.target.value)}
                 placeholder="https://github.com/yourpublication"
               />
             </div>
@@ -439,7 +439,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               <Input
                 id="metaTitle"
                 value={formData.metaTitle || ''}
-                onChange={(e) => handleInputChange('metaTitle', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('metaTitle', e.target.value)}
                 placeholder="My Awesome Publication - Great Writing"
                 maxLength={60}
               />
@@ -453,7 +453,7 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
               <Textarea
                 id="metaDescription"
                 value={formData.metaDescription || ''}
-                onChange={(e) => handleInputChange('metaDescription', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => handleInputChange('metaDescription', e.target.value)}
                 placeholder="Discover amazing content from talented writers..."
                 rows={3}
                 maxLength={160}

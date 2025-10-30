@@ -44,8 +44,9 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to search photos';
+      const errorObj = err instanceof Error ? err : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Pexels search failed', { error: errorMessage, query: searchQuery });
+      logger.error('Pexels search failed', errorObj, { query: searchQuery });
     } finally {
       setLoading(false);
     }
@@ -64,8 +65,9 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load curated photos';
+      const errorObj = err instanceof Error ? err : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Pexels curated load failed', { error: errorMessage });
+      logger.error('Pexels curated load failed', errorObj);
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,7 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
       }
     } catch (err) {
       logger.warn('Failed to cache Pexels image', {
-        error: err instanceof Error ? err.message : String(err),
+        errorMessage: err instanceof Error ? err.message : String(err),
         photoId: photo.id,
       });
     }

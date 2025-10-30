@@ -40,10 +40,8 @@ class RouteErrorBoundaryClass extends Component<Props & { navigate: (path: strin
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     const { routeName } = this.props;
 
-    logger.error('Route Error Boundary caught an error', {
+    logger.error('Route Error Boundary caught an error', error, {
       route: routeName || 'unknown',
-      error: error.message,
-      stack: error.stack,
       componentStack: errorInfo.componentStack,
       url: window.location.href,
       timestamp: new Date().toISOString(),

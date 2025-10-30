@@ -1,0 +1,101 @@
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+
+src/app/api/revalidate/route.ts(56,9): error TS2554: Expected 2 arguments, but got 1.
+src/components/admin/CategoriesTagsManagement.tsx(442,29): error TS2552: Cannot find name 'setEditingCategory'. Did you mean '_setEditingCategory'?
+src/components/auth/SignInForm.tsx(3,23): error TS1261: Already included file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/input.tsx' differs from file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/Input.tsx' only in casing.
+  The file is in the program because:
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/auth/SignInForm.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/auth/SignUpForm.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/auth/ForgotPasswordForm.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/tasks/TaskDetailModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/drafts/DraftEditor.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/reading-lists/AddToReadingListModal.tsx'
+    Imported via '../components/ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/pages-vite/ReadingListsPage.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/posts/CreatePostModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/tasks/CreateTaskModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/InviteMemberModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/NewsletterComposer.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationWizard.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/RevenueSharing.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/StyleGuideEditor.tsx'
+    Matched by include pattern 'src' in 'tsconfig.app.json'
+src/components/blog/collaboration/PresenceBar.tsx(36,33): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(iterable: Iterable<{ [x: string]: any; }> | ArrayLike<{ [x: string]: any; }>): { [x: string]: any; }[]', gave the following error.
+    Argument of type 'MapIterator<{ [x: string]: any; }> | undefined' is not assignable to parameter of type 'Iterable<{ [x: string]: any; }> | ArrayLike<{ [x: string]: any; }>'.
+      Type 'undefined' is not assignable to type 'Iterable<{ [x: string]: any; }> | ArrayLike<{ [x: string]: any; }>'.
+  Overload 2 of 4, '(arrayLike: ArrayLike<unknown>): unknown[]', gave the following error.
+    Argument of type 'MapIterator<{ [x: string]: any; }> | undefined' is not assignable to parameter of type 'ArrayLike<unknown>'.
+      Type 'undefined' is not assignable to type 'ArrayLike<unknown>'.
+src/components/charts/BarChart.tsx(7,57): error TS6133: '_horizontal' is declared but its value is never read.
+src/components/charts/SimpleChart.tsx(152,13): error TS2322: Type '{ key: number; d: string; fill: string; className: string; title: string; }' is not assignable to type 'SVGProps<SVGPathElement>'.
+  Property 'title' does not exist on type 'SVGProps<SVGPathElement>'.
+src/components/comments/CommentEditForm.tsx(127,9): error TS2322: Type '{ value: string; onChange: Dispatch<SetStateAction<string>>; onKeyDown: (e: KeyboardEvent<Element>) => void; placeholder: string; className: string; autoFocus: true; }' is not assignable to type 'IntrinsicAttributes & MentionsInputProps'.
+  Property 'onKeyDown' does not exist on type 'IntrinsicAttributes & MentionsInputProps'.
+src/components/media/BulkImageUpload.tsx(180,51): error TS2339: Property 'uploadImage' does not exist on type 'typeof MediaUploadService'.
+src/components/posts/MarkdownRenderer.tsx(97,30): error TS2339: Property 'inline' does not exist on type 'ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement> & ExtraProps'.
+src/components/posts/PostCard.test.tsx(28,3): error TS2741: Property 'is_admin' is missing in type '{ id: string; username: string; avatar_url: string; bio: string; created_at: string; updated_at: string; }' but required in type 'Profile'.
+src/components/publications/InviteMemberModal.tsx(120,11): error TS2322: Type 'string | undefined' is not assignable to type 'Error | undefined'.
+  Type 'string' is not assignable to type 'Error'.
+src/components/publications/InviteMemberModal.tsx(187,15): error TS2322: Type '{ children: Element[]; value: MemberRole; onValueChange: (value: string) => void; disabled: boolean; }' is not assignable to type 'IntrinsicAttributes & SelectProps'.
+  Property 'disabled' does not exist on type 'IntrinsicAttributes & SelectProps'.
+src/components/publications/InviteMemberModal.tsx(189,30): error TS2322: Type '{ children: Element; id: string; }' is not assignable to type 'IntrinsicAttributes & SelectTriggerProps & RefAttributes<HTMLButtonElement>'.
+  Property 'id' does not exist on type 'IntrinsicAttributes & SelectTriggerProps & RefAttributes<HTMLButtonElement>'.
+src/components/publications/ModerationDashboard.tsx(2,75): error TS1261: Already included file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/card.tsx' differs from file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/Card.tsx' only in casing.
+  The file is in the program because:
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/ModerationDashboard.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/NewsletterComposer.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationAnalytics.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationHomepage.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationWizard.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/RevenueSharing.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/StyleGuideEditor.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/SubmissionReview.tsx'
+    Matched by include pattern 'src' in 'tsconfig.app.json'
+src/components/publications/NewsletterComposer.tsx(284,19): error TS2322: Type '{ mode: string; selected: Date | undefined; onSelect: Dispatch<SetStateAction<Date | undefined>>; disabled: (date: Date | undefined) => boolean; initialFocus: true; }' is not assignable to type 'IntrinsicAttributes & CalendarProps'.
+  Property 'mode' does not exist on type 'IntrinsicAttributes & CalendarProps'.
+src/components/publications/PublicationAnalytics.tsx(159,11): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string, metadata?: LogMetadata | undefined): void', gave the following error.
+    Type 'string' is not assignable to type 'Error'.
+  Overload 2 of 2, '(message: string, error: Error, metadata?: LogMetadata | undefined): void', gave the following error.
+    Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/components/publications/PublicationAnalytics.tsx(344,84): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(354,85): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(390,84): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(400,85): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(454,84): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(464,85): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | numbe

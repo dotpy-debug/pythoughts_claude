@@ -1,5 +1,5 @@
 import { useState, useRef, DragEvent, ChangeEvent } from 'react';
-import { Upload, X, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
+import { Upload, X, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { uploadFile, STORAGE_BUCKETS } from '../../lib/storage';
 import { logger } from '../../lib/logger';
@@ -76,7 +76,7 @@ export function ImageUpload({
         setError(result.error || 'Failed to upload image');
         setPreview('');
         logger.error('Image upload failed', {
-          error: result.error,
+          errorMessage: result.error,
           fileName: file.name,
         });
         return;
@@ -95,11 +95,14 @@ export function ImageUpload({
       const errorMessage = 'Failed to upload image. Please try again.';
       setError(errorMessage);
       setPreview('');
-      logger.error('Image upload error', {
-        error: err instanceof Error ? err.message : 'Unknown error',
-        stack: err instanceof Error ? err.stack : undefined,
-        fileName: file.name,
-      });
+      if (err instanceof Error) {
+        logger.error('Image upload error', err, { fileName: file.name });
+      } else {
+        logger.error('Image upload error', {
+          errorMessage: 'Unknown error',
+          fileName: file.name,
+        });
+      }
     } finally {
       setUploading(false);
     }

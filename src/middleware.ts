@@ -12,13 +12,12 @@ export function middleware(request: NextRequest) {
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: http: 'unsafe-inline';
     style-src 'self' 'nonce-${nonce}' 'unsafe-inline';
-    img-src 'self' blob: data: https://*.supabase.co;
+    img-src 'self' blob: data: https://*.supabase.co https://*.supabase.in https://images.pexels.com https://images.unsplash.com https://cdn.jsdelivr.net https:;
     font-src 'self' data:;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'self';
-    block-all-mixed-content;
     upgrade-insecure-requests;
   `
     .replace(/\s{2,}/g, ' ')

@@ -143,7 +143,7 @@ const server = Server.configure({
    * Connection hook
    * Called when a client connects
    */
-  async onConnect({ documentName, instance, connection }) {
+  async onConnect({ documentName, instance, connection: _connection }) {
     const connectionCount = instance.documents.get(documentName)?.getConnectionsCount() || 0;
     console.log(`[Hocuspocus] Client connected to ${documentName}. Total connections: ${connectionCount}`);
   },

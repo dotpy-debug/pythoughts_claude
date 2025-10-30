@@ -1,4 +1,4 @@
-import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/react';
+import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
@@ -32,7 +32,7 @@ import {
   Youtube as YoutubeIcon,
   Table as TableIcon,
   Highlighter,
-  Type,
+
 } from 'lucide-react';
 import { ShadcnButton } from '../ui/ShadcnButton';
 import { useState } from 'react';
@@ -53,7 +53,7 @@ export function TipTapEditor({
   onChange,
   placeholder = 'Start writing your blog post...',
   onImageClick,
-  onPexelsClick,
+
   maxLength = 50000,
 }: TipTapEditorProps) {
   const [showLinkInput, setShowLinkInput] = useState(false);

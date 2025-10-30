@@ -96,6 +96,11 @@ export interface UploadResult {
    * Error message if failed
    */
   error?: string;
+
+  /**
+   * Alternative error message property for compatibility
+   */
+  errorMessage?: string;
 }
 
 /**
@@ -185,7 +190,7 @@ export async function uploadFile(
     path = '',
     cacheControl = 3600,
     upsert = false,
-    isPublic = true,
+    isPublic: _isPublic = true,
   } = options;
 
   try {
@@ -193,7 +198,7 @@ export async function uploadFile(
     const validation = validateFile(file, options);
     if (!validation.valid) {
       logger.warn('File validation failed', {
-        error: validation.error,
+        error: validation.error ? new Error(validation.error) : new Error('Validation failed'),
         fileName: file.name,
         fileSize: file.size,
         fileType: file.type,
@@ -202,6 +207,7 @@ export async function uploadFile(
       return {
         success: false,
         error: validation.error,
+        errorMessage: validation.error,
       };
     }
 
@@ -217,7 +223,7 @@ export async function uploadFile(
     });
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(bucket)
       .upload(filePath, file, {
         cacheControl: `${cacheControl}`,
@@ -225,8 +231,7 @@ export async function uploadFile(
       });
 
     if (error) {
-      logger.error('Storage upload error', {
-        error: error.message,
+      logger.error('Storage upload error', new Error(error.message), {
         bucket,
         filePath,
       });
@@ -234,6 +239,7 @@ export async function uploadFile(
       return {
         success: false,
         error: error.message,
+        errorMessage: error.message,
       };
     }
 
@@ -254,15 +260,16 @@ export async function uploadFile(
       path: filePath,
     };
   } catch (error) {
-    logger.error('Unexpected error during file upload', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error during file upload', errorObj, {
       fileName: file.name,
     });
 
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred',
+      error: errorMsg,
+      errorMessage: errorMsg,
     };
   }
 }
@@ -329,8 +336,7 @@ export async function deleteFile(
       .remove([filePath]);
 
     if (error) {
-      logger.error('Storage deletion error', {
-        error: error.message,
+      logger.error('Storage deletion error', new Error(error.message), {
         bucket,
         filePath,
       });
@@ -344,9 +350,8 @@ export async function deleteFile(
 
     return true;
   } catch (error) {
-    logger.error('Unexpected error during file deletion', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error during file deletion', errorObj, {
       filePath,
     });
     return false;
@@ -377,8 +382,7 @@ export async function deleteMultipleFiles(
       .remove(filePaths);
 
     if (error) {
-      logger.error('Storage bulk deletion error', {
-        error: error.message,
+      logger.error('Storage bulk deletion error', new Error(error.message), {
         bucket,
         count: filePaths.length,
       });
@@ -392,9 +396,8 @@ export async function deleteMultipleFiles(
 
     return true;
   } catch (error) {
-    logger.error('Unexpected error during bulk file deletion', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error during bulk file deletion', errorObj, {
       count: filePaths.length,
     });
     return false;
@@ -439,8 +442,7 @@ export async function createSignedUrl(
       .createSignedUrl(filePath, expiresIn);
 
     if (error) {
-      logger.error('Error creating signed URL', {
-        error: error.message,
+      logger.error('Error creating signed URL', new Error(error.message), {
         bucket,
         filePath,
       });
@@ -449,8 +451,8 @@ export async function createSignedUrl(
 
     return data.signedUrl;
   } catch (error) {
-    logger.error('Unexpected error creating signed URL', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error creating signed URL', errorObj, {
       filePath,
     });
     return null;
@@ -475,8 +477,7 @@ export async function listFiles(
       .list(path);
 
     if (error) {
-      logger.error('Error listing files', {
-        error: error.message,
+      logger.error('Error listing files', new Error(error.message), {
         bucket,
         path,
       });
@@ -485,8 +486,8 @@ export async function listFiles(
 
     return data || [];
   } catch (error) {
-    logger.error('Unexpected error listing files', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error listing files', errorObj, {
       bucket,
       path,
     });

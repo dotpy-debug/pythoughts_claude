@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Users, TrendingUp, Award, FileText } from 'lucide-react';
+import { User, Users, Award, FileText } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeURL } from '../../utils/security';

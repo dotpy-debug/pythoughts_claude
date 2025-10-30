@@ -153,7 +153,7 @@ export async function importMarkdown(fileInput: HTMLInputElement): Promise<Impor
  */
 export function sanitizeFilename(filename: string): string {
   return filename
-    .replace(/[^a-z0-9_\-]/gi, '_') // Replace invalid characters
+    .replace(/[^a-z0-9_-]/gi, '_') // Replace invalid characters
     .replace(/_{2,}/g, '_') // Remove duplicate underscores
     .replace(/^_|_$/g, '') // Remove leading/trailing underscores
     .toLowerCase()
@@ -187,7 +187,7 @@ function formatDate(date: Date): string {
 export async function copyMarkdownToClipboard(markdown: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(markdown);
-  } catch (error) {
+  } catch (_error) {
     // Fallback for older browsers
     const textarea = document.createElement('textarea');
     textarea.value = markdown;
@@ -206,7 +206,7 @@ export async function copyMarkdownToClipboard(markdown: string): Promise<void> {
 export async function readMarkdownFromClipboard(): Promise<string> {
   try {
     return await navigator.clipboard.readText();
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Failed to read from clipboard. Please grant clipboard access.');
   }
 }
@@ -235,7 +235,7 @@ export function downloadMetadata(metadata: PostMetadata, filename: string = 'met
  */
 export function downloadMultipleMarkdown(
   posts: Array<{ content: string; metadata: PostMetadata }>,
-  zipFilename: string = 'posts'
+  _zipFilename: string = 'posts'
 ): void {
   // Note: This is a simple implementation that downloads files one by one
   // For true ZIP support, you'd need to add a library like JSZip

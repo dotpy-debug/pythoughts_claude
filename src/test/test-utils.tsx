@@ -32,8 +32,10 @@ function customRender(
   return render(ui, { wrapper, ...options });
 }
 
-// Re-export everything
+// Re-export everything from testing library
 export * from '@testing-library/react';
+
+// Override render with our custom version that includes providers
 export { customRender as render };
 
 /**

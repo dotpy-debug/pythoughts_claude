@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input } from '../ui/Input';
+import { Input } from '../ui/input';
 import { Button } from '../ui/Button';
 import { supabase } from '../../lib/supabase';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
@@ -29,7 +29,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
       } else {
         setSuccess(true);
       }
-    } catch (err) {
+    } catch (_err) {
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -98,7 +98,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
         type="email"
         required
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
         placeholder="you@example.com"
         autoFocus
       />

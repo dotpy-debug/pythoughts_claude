@@ -53,12 +53,16 @@ export function FeaturedToggle({
         logger.info('Featured status toggled successfully', { postId, featured: result.featured });
       } else {
         setError(result.error || 'Failed to toggle featured status');
-        logger.error('Failed to toggle featured status', { postId, error: result.error });
+        logger.error('Failed to toggle featured status', { postId, errorMessage: result.error });
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setError(errorMessage);
-      logger.error('Unexpected error toggling featured status', { postId, error: err });
+      if (err instanceof Error) {
+        logger.error('Unexpected error toggling featured status', err, { postId });
+      } else {
+        logger.error('Unexpected error toggling featured status', { postId, errorMessage: String(err) });
+      }
     } finally {
       setIsToggling(false);
     }

@@ -87,7 +87,7 @@ export function useRateLimit(limitKey: ClientRateLimitKey) {
     try {
       // Load current state
       const stored = localStorage.getItem(storageKey);
-      let data: RequestTimestamp = stored
+      const data: RequestTimestamp = stored
         ? JSON.parse(stored)
         : { timestamps: [], lastCleanup: now };
 
@@ -214,7 +214,7 @@ export function withRateLimit<TArgs extends unknown[], TReturn>(
     try {
       // Load current state
       const stored = localStorage.getItem(storageKey);
-      let data: RequestTimestamp = stored
+      const data: RequestTimestamp = stored
         ? JSON.parse(stored)
         : { timestamps: [], lastCleanup: now };
 

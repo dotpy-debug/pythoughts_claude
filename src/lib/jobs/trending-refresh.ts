@@ -33,7 +33,7 @@ export async function refreshTrendingPosts(): Promise<void> {
 
     if (refreshError) {
       logger.error('Error refreshing trending materialized view', {
-        error: refreshError.message || 'Unknown error',
+        errorMessage: refreshError.message || 'Unknown error',
         code: refreshError.code,
         details: refreshError.details,
       });
@@ -57,7 +57,7 @@ export async function refreshTrendingPosts(): Promise<void> {
 
     if (recentError) {
       logger.error('Error fetching recent posts for trending update', {
-        error: recentError.message || 'Unknown error',
+        errorMessage: recentError.message || 'Unknown error',
         code: recentError.code,
       });
     } else if (recentPosts && recentPosts.length > 0) {
@@ -97,7 +97,7 @@ export async function getTrendingRefreshStats(): Promise<{
 
     if (error) {
       logger.error('Error getting trending refresh stats', {
-        error: error.message || 'Unknown error',
+        errorMessage: error.message || 'Unknown error',
         code: error.code,
       });
       return {

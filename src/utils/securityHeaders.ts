@@ -18,7 +18,7 @@ export const securityHeaders = {
         "default-src 'self'",
         "script-src 'self' https://cdn.jsdelivr.net", // Allow CDN scripts if needed
         "style-src 'self' 'unsafe-inline'", // unsafe-inline needed for styled components
-        "img-src 'self' data: https:",
+        "img-src 'self' blob: data: https://*.supabase.co https://*.supabase.in https://images.pexels.com https://images.unsplash.com https:",
         "font-src 'self' data:",
         "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
         "frame-ancestors 'none'",
@@ -30,7 +30,7 @@ export const securityHeaders = {
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Dev mode needs eval for HMR
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: https:",
+        "img-src 'self' blob: data: https://*.supabase.co https://*.supabase.in https://images.pexels.com https://images.unsplash.com https:",
         "font-src 'self' data:",
         "connect-src 'self' https://*.supabase.co wss://*.supabase.co ws://localhost:*",
         "frame-ancestors 'none'",

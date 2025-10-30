@@ -80,13 +80,13 @@ export function TaskAssignedEmail({
 
             <Section style={taskBox}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
-                <Text style={taskTitle}>{taskTitle}</Text>
+                <Text style={_taskTitle}>{taskTitle}</Text>
                 <span style={{ ...priorityBadge, backgroundColor: getPriorityColor() }}>
                   {getPriorityLabel()}
                 </span>
               </div>
 
-              <Text style={taskDescription}>{taskDescription}</Text>
+              <Text style={_taskDescription}>{taskDescription}</Text>
 
               {dueDate && (
                 <div style={dueDateContainer}>
@@ -180,14 +180,14 @@ const taskBox = {
   margin: '20px 0',
 };
 
-const taskTitle = {
+const _taskTitle = {
   color: '#00ff00',
   fontSize: '18px',
   fontWeight: 'bold',
   margin: '0',
 };
 
-const taskDescription = {
+const _taskDescription = {
   color: '#00ff00',
   fontSize: '14px',
   lineHeight: '1.6',

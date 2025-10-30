@@ -22,7 +22,7 @@ interface CommentsPanelProps {
 export function CommentsPanel({ postId, className }: CommentsPanelProps) {
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [newComment, setNewComment] = useState('');
+  const [_newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function CommentsPanel({ postId, className }: CommentsPanelProps) {
 
   const handleSubmitComment = async (
     content: string,
-    parentId?: string
+    _parentId?: string
   ) => {
     if (!content.trim()) return;
 

@@ -13,7 +13,7 @@ export type ReadingTimeTrackerOptions = {
  * Automatically tracks how long a user spends reading a post and how far they scroll
  */
 export function useReadingTime(options: ReadingTimeTrackerOptions) {
-  const { postId, userId, onMilestone, updateInterval = 5000 } = options;
+  const { postId, userId: _userId, onMilestone, updateInterval = 5000 } = options;
 
   const [readTime, setReadTime] = useState(0);
   const [scrollPercentage, setScrollPercentage] = useState(0);

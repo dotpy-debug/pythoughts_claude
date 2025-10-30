@@ -54,7 +54,7 @@ export function useRealTimeAnalytics(
   const {
     refreshInterval = 30000,
     enableRealtime = true,
-    metric = 'all',
+    metric: _metric = 'all',
   } = options;
 
   const [metrics, setMetrics] = useState<Record<string, LiveMetric>>({

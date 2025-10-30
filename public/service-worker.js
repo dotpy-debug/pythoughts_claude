@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 const CACHE_NAME = 'pythoughts-v1';
 const OFFLINE_URL = '/offline.html';
 

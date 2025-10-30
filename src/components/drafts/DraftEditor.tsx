@@ -3,7 +3,7 @@ import { Terminal, Save, Eye, Send, X, Clock, Calendar, AlertCircle } from 'luci
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Category } from '../../lib/supabase';
-import { Input } from '../ui/Input';
+import { Input } from '../ui/input';
 import { Button } from '../ui/Button';
 import { TagInput } from '../tags/TagBadge';
 import { ImageUpload } from '../uploads/ImageUpload';

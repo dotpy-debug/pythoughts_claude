@@ -5,8 +5,8 @@ import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { Plus, X } from 'lucide-react';
 
 type StyleGuide = {

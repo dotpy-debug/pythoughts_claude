@@ -4,7 +4,7 @@ import { Menu, X, User, LogOut, SquarePen as PenSquare, Search, Users, TrendingU
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthModal } from '../auth/AuthModal';
 import { NotificationBell } from '../notifications/NotificationBell';
-import { ShimmerLogo } from '../animations/ShimmerLogo';
+import { Logo } from '../branding/Logo';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 
@@ -160,7 +160,7 @@ export function Header({ onCreatePost }: HeaderProps) {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <Link to="/" className="flex items-center">
-                <ShimmerLogo showText={true} size="md" />
+                <Logo showText={true} size="md" />
               </Link>
 
               <nav className="hidden md:flex space-x-1">

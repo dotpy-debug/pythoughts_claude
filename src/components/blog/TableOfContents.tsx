@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown, ChevronRight, List } from 'lucide-react';
-import { TocItem, scrollToHeading, getActiveHeading, flattenToc } from '../../utils/toc-generator';
+import { ChevronRight, List } from 'lucide-react';
+import { TocItem, scrollToHeading, flattenToc } from '../../utils/toc-generator';
 
 interface TableOfContentsProps {
   items: TocItem[];

@@ -143,7 +143,7 @@ export function useDraftRecovery(
                 logger.info('Removed expired draft backup', { key, ageHours });
               }
             }
-          } catch (error) {
+          } catch (_error) {
             // If we can't parse it, remove it
             localStorage.removeItem(key);
           }

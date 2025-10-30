@@ -55,7 +55,7 @@ export function TrendingPage() {
       setLoading(!append);
 
       // Calculate date range
-      let dateFilter = new Date();
+      const dateFilter = new Date();
       if (timeRange === '24h') {
         dateFilter.setHours(dateFilter.getHours() - 24);
       } else if (timeRange === '7d') {
@@ -118,7 +118,7 @@ export function TrendingPage() {
 
       // Get view counts for posts
       const postIds = postsData.map(p => p.id);
-      let viewCounts: Record<string, number> = {};
+      const viewCounts: Record<string, number> = {};
 
       if (postIds.length > 0) {
         const { data: viewsData } = await supabase

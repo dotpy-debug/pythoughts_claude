@@ -1,0 +1,219 @@
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+
+src/app/api/revalidate/route.ts(56,9): error TS2554: Expected 2 arguments, but got 1.
+src/components/admin/CategoriesTagsManagement.tsx(442,29): error TS2552: Cannot find name 'setEditingCategory'. Did you mean '_setEditingCategory'?
+src/components/auth/SignInForm.test.tsx(2,18): error TS2305: Module '"../../test/test-utils"' has no exported member 'screen'.
+src/components/auth/SignInForm.test.tsx(2,26): error TS2305: Module '"../../test/test-utils"' has no exported member 'waitFor'.
+src/components/auth/SignInForm.tsx(3,23): error TS1261: Already included file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/input.tsx' differs from file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/Input.tsx' only in casing.
+  The file is in the program because:
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/auth/SignInForm.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/auth/SignUpForm.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/auth/ForgotPasswordForm.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/tasks/TaskDetailModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/drafts/DraftEditor.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/reading-lists/AddToReadingListModal.tsx'
+    Imported via '../components/ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/pages-vite/ReadingListsPage.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/posts/CreatePostModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/tasks/CreateTaskModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/InviteMemberModal.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/NewsletterComposer.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationWizard.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/RevenueSharing.tsx'
+    Imported via '../ui/input' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/StyleGuideEditor.tsx'
+    Matched by include pattern 'src' in 'tsconfig.app.json'
+src/components/blog/collaboration/PresenceBar.tsx(36,33): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(iterable: Iterable<{ [x: string]: any; }> | ArrayLike<{ [x: string]: any; }>): { [x: string]: any; }[]', gave the following error.
+    Argument of type 'MapIterator<{ [x: string]: any; }> | undefined' is not assignable to parameter of type 'Iterable<{ [x: string]: any; }> | ArrayLike<{ [x: string]: any; }>'.
+      Type 'undefined' is not assignable to type 'Iterable<{ [x: string]: any; }> | ArrayLike<{ [x: string]: any; }>'.
+  Overload 2 of 4, '(arrayLike: ArrayLike<unknown>): unknown[]', gave the following error.
+    Argument of type 'MapIterator<{ [x: string]: any; }> | undefined' is not assignable to parameter of type 'ArrayLike<unknown>'.
+      Type 'undefined' is not assignable to type 'ArrayLike<unknown>'.
+src/components/charts/BarChart.tsx(7,57): error TS6133: '_horizontal' is declared but its value is never read.
+src/components/charts/SimpleChart.tsx(152,13): error TS2322: Type '{ key: number; d: string; fill: string; className: string; title: string; }' is not assignable to type 'SVGProps<SVGPathElement>'.
+  Property 'title' does not exist on type 'SVGProps<SVGPathElement>'.
+src/components/comments/CommentEditForm.tsx(127,9): error TS2322: Type '{ value: string; onChange: Dispatch<SetStateAction<string>>; onKeyDown: (e: KeyboardEvent<Element>) => void; placeholder: string; className: string; autoFocus: true; }' is not assignable to type 'IntrinsicAttributes & MentionsInputProps'.
+  Property 'onKeyDown' does not exist on type 'IntrinsicAttributes & MentionsInputProps'.
+src/components/media/BulkImageUpload.tsx(180,51): error TS2339: Property 'uploadImage' does not exist on type 'typeof MediaUploadService'.
+src/components/posts/MarkdownRenderer.tsx(97,30): error TS2339: Property 'inline' does not exist on type 'ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement> & ExtraProps'.
+src/components/posts/PostCard.test.tsx(2,18): error TS2305: Module '"../../test/test-utils"' has no exported member 'screen'.
+src/components/posts/PostCard.test.tsx(28,3): error TS2741: Property 'is_admin' is missing in type '{ id: string; username: string; avatar_url: string; bio: string; created_at: string; updated_at: string; }' but required in type 'Profile'.
+src/components/publications/InviteMemberModal.tsx(12,8): error TS2307: Cannot find module '../ui/select' or its corresponding type declarations.
+src/components/publications/InviteMemberModal.tsx(21,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/InviteMemberModal.tsx(22,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/InviteMemberModal.tsx(23,48): error TS2307: Cannot find module '@/lib/email-service' or its corresponding type declarations.
+src/components/publications/ModerationDashboard.tsx(2,75): error TS1261: Already included file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/card.tsx' differs from file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/Card.tsx' only in casing.
+  The file is in the program because:
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/ModerationDashboard.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/NewsletterComposer.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationAnalytics.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationHomepage.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationWizard.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/RevenueSharing.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/StyleGuideEditor.tsx'
+    Imported via '../ui/card' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/SubmissionReview.tsx'
+    Matched by include pattern 'src' in 'tsconfig.app.json'
+src/components/publications/ModerationDashboard.tsx(3,58): error TS2307: Cannot find module '../ui/tabs' or its corresponding type declarations.
+src/components/publications/ModerationDashboard.tsx(13,8): error TS2307: Cannot find module '../ui/table' or its corresponding type declarations.
+src/components/publications/ModerationDashboard.tsx(14,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/ModerationDashboard.tsx(15,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/NewsletterComposer.tsx(7,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/NewsletterComposer.tsx(8,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/NewsletterComposer.tsx(9,26): error TS2307: Cannot find module '../ui/calendar' or its corresponding type declarations.
+src/components/publications/NewsletterComposer.tsx(10,57): error TS2307: Cannot find module '../ui/popover' or its corresponding type declarations.
+src/components/publications/PublicationAnalytics.tsx(3,58): error TS2307: Cannot find module '../ui/tabs' or its corresponding type declarations.
+src/components/publications/PublicationAnalytics.tsx(159,11): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string, metadata?: LogMetadata | undefined): void', gave the following error.
+    Type 'string' is not assignable to type 'Error'.
+  Overload 2 of 2, '(message: string, error: Error, metadata?: LogMetadata | undefined): void', gave the following error.
+    Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/components/publications/PublicationAnalytics.tsx(344,84): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(354,85): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(390,84): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(400,85): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(454,84): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationAnalytics.tsx(464,85): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/publications/PublicationHomepage.tsx(4,58): error TS2307: Cannot find module '../ui/tabs' or its corresponding type declarations.
+src/components/publications/PublicationHomepage.tsx(6,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/PublicationHomepage.tsx(7,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/PublicationWizard.tsx(6,24): error TS2307: Cannot find module '../ui/switch' or its corresponding type declarations.
+src/components/publications/PublicationWizard.tsx(8,58): error TS2307: Cannot find module '../ui/tabs' or its corresponding type declarations.
+src/components/publications/PublicationWizard.tsx(9,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/PublicationWizard.tsx(10,25): error TS2307: Cannot find module '@/hooks/useAuth' or its corresponding type declarations.
+src/components/publications/PublicationWizard.tsx(11,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/RevenueSharing.tsx(12,8): error TS2307: Cannot find module '../ui/select' or its corresponding type declarations.
+src/components/publications/RevenueSharing.tsx(20,8): error TS2307: Cannot find module '../ui/table' or its corresponding type declarations.
+src/components/publications/RevenueSharing.tsx(22,24): error TS2307: Cannot find module '../ui/switch' or its corresponding type declarations.
+src/components/publications/RevenueSharing.tsx(23,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/RevenueSharing.tsx(24,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/StyleGuideEditor.tsx(8,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/StyleGuideEditor.tsx(9,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/StyleGuideEditor.tsx(297,50): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+src/components/publications/StyleGuideEditor.tsx(330,48): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+src/components/publications/StyleGuideEditor.tsx(400,17): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+src/components/publications/StyleGuideEditor.tsx(427,23): error TS2322: Type '"icon"' is not assignable to type 'ButtonSize | undefined'.
+src/components/publications/SubmissionReview.tsx(15,26): error TS2307: Cannot find module '@/lib/supabase' or its corresponding type declarations.
+src/components/publications/SubmissionReview.tsx(16,24): error TS2307: Cannot find module '@/lib/logger' or its corresponding type declarations.
+src/components/publications/SubmissionReview.tsx(202,17): error TS2322: Type '"default"' is not assignable to type 'ButtonVariant | undefined'.
+src/components/publications/SubmissionReview.tsx(216,17): error TS2322: Type '"destructive"' is not assignable to type 'ButtonVariant | undefined'.
+src/components/publications/SubmissionReview.tsx(284,15): error TS2322: Type '"default" | "destructive"' is not assignable to type 'ButtonVariant | undefined'.
+  Type '"default"' is not assignable to type 'ButtonVariant | undefined'.
+src/components/tasks/CreateTaskModal.tsx(150,34): error TS2322: Type '"purple"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+src/components/tasks/KanbanBoard.tsx(158,15): error TS2322: Type 'string' is not assignable to type '"todo" | "in_progress" | "completed" | "archived" | undefined'.
+src/components/tasks/TaskCard.tsx(4,23): error TS1261: Already included file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/badge.tsx' differs from file name 'D:/New_Projects/pythoughts_claude-main/src/components/ui/Badge.tsx' only in casing.
+  The file is in the program because:
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/tasks/TaskCard.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/tasks/TaskDetailModal.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/tasks/CreateTaskModal.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/CrossPostDialog.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/ModerationDashboard.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/PublicationHomepage.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/RevenueSharing.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/StyleGuideEditor.tsx'
+    Imported via '../ui/badge' from file 'D:/New_Projects/pythoughts_claude-main/src/components/publications/SubmissionReview.tsx'
+    Matched by include pattern 'src' in 'tsconfig.app.json'
+src/components/tasks/TaskCard.tsx(38,16): error TS2322: Type '"warning" | "default" | "primary" | "danger"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+  Type '"primary"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+src/components/tasks/TaskCard.tsx(50,16): error TS2322: Type '"purple" | "default" | "primary" | "success"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+  Type '"purple"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+src/components/tasks/TaskCard.tsx(54,28): error TS2322: Type '"purple"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+src/components/tasks/TaskDetailModal.tsx(136,20): error TS2322: Type '"primary" | "success"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+  Type '"primary"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+src/components/tasks/TaskDetailModal.tsx(153,20): error TS2322: Type '"warning" | "danger"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+  Type '"danger"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+src/components/tasks/TaskDetailModal.tsx(159,30): error TS2322: Type '"purple"' is not assignable to type '"info" | "warning" | "default" | "secondary" | "outline" | "success" | "destructive" | null | undefined'.
+src/components/ui/Button.test.tsx(2,18): error TS2305: Module '"../../test/test-utils"' has no exported member 'screen'.
+src/components/ui/checkbox.tsx(3,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/components/ui/dialog.tsx(3,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/components/ui/label.tsx(2,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/components/ui/textarea.tsx(2,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/emails/TaskAssignedEmail.tsx(83,23): error TS2559: Type 'string' has no properties in common with type 'CSSProperties'.
+src/emails/TaskAssignedEmail.tsx(89,21): error TS2559: Type 'string' has no properties in common with type 'CSSProperties'.
+src/emails/TaskAssignedEmail.tsx(183,7): error TS6133: '_taskTitle' is declared but its value is never read.
+src/emails/TaskAssignedEmail.tsx(190,7): error TS6133: '_taskDescription' is declared but its value is never read.
+src/emails/VoteNotificationEmail.tsx(47,48): error TS2322: Type 'number' is not assignable to type 'ReactNode & string'.
+src/hooks/useLandingStats.ts(74,58): error TS2345: Argument of type 'LandingStats' is not assignable to parameter of type 'LogMetadata'.
+  Index signature for type 'string' is missing in type 'LandingStats'.
+src/hooks/useLazyLoad.ts(150,17): error TS2552: Cannot find name 'isVisible'. Did you mean '_isVisible'?
+src/hooks/useLazyLoad.ts(197,16): error TS6133: 'isVisible' is declared but its value is never read.
+src/hooks/useReadingTime.ts(16,19): error TS6133: 'userId' is declared but its value is never read.
+src/hooks/useRealTimeAnalytics.ts(57,5): error TS6133: 'metric' is declared but its value is never read.
+src/hooks/useTextHighlight.ts(167,11): error TS6133: '_fullText' is declared but its value is never read.
+src/lib/analytics-enhanced.ts(346,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string, metadata?: LogMetadata | undefined): void', gave the following error.
+    Type 'string' is not assignable to type 'Error'.
+  Overload 2 of 2, '(message: string, error: Error, metadata?: LogMetadata | undefined): void', gave the following error.
+    Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/lib/analytics-enhanced.ts(501,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string, metadata?: LogMetadata | undefined): void', gave the following error.
+    Type 'string' is not assignable to type 'Error'.
+  Overload 2 of 2, '(message: string, error: Error, metadata?: LogMetadata | undefined): void', gave the following error.
+    Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/lib/analytics.ts(69,15): error TS6133: 'data' is declared but its value is never read.
+src/lib/analytics.ts(93,15): error TS6133: 'data' is declared but its value is never read.
+src/lib/analytics.ts(166,29): error TS2339: Property 'raw' does not exist on type 'SupabaseClient<any, "public", "public", any, any>'.
+src/lib/analytics.ts(167,45): error TS2339: Property 'raw' does not exist on type 'SupabaseClient<any, "public", "public", any, any>'.
+src/lib/analytics.ts(316,26): error TS2345: Argument of type '{ type: string; sourcePostId: string | undefined; metadata: { cta_id: string; cta_text: string; }; }' is not assignable to parameter of type 'ConversionEventParams'.
+  Property 'sessionId' is missing in type '{ type: string; sourcePostId: string | undefined; metadata: { cta_id: string; cta_text: string; }; }' but required in type 'ConversionEventParams'.
+src/lib/email-service.ts(178,9): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string, metadata?: LogMetadata | undefined): void', gave the following error.
+    Type 'string' is not assignable to type 'Error'.
+  Overload 2 of 2, '(message: string, error: Error, metadata?: LogMetadata | undefined): void', gave the following error.
+    Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/lib/email-service.ts(207,7): error TS2353: Object literal may only specify known properties, and 'errorMessage' does not exist in type 'EmailResult'.
+src/lib/image-optimization.ts(93,67): error TS2358: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.
+src/lib/image-optimization.ts(94,39): error TS2358: The left-hand side of an 'instanceof' expression must be of type 'any', an object type or a type parameter.
+src/lib/image-optimization.ts(170,5): error TS6133: 'stripExif' is declared but its value is never read.
+src/lib/jobs/trending-refresh.ts(36,9): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string, metadata?: LogMetadata | undefined): void', gave the following error.
+    Type 'string' is not assignable to type 'Error'.
+  Overload 2 of 2, '(message: string, error: Error, metadata?: LogMetadata | undefined): void', gave the following error.
+    Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/lib/jobs/trending-refresh.ts(60,9): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string, metadata?: LogMetadata | undefined): void', gave the following error.
+    Type 'string' is not assignable to type 'Error'.
+  Overload 2 of 2, '(message: string, error: Error, metadata?: LogMetadata | undefined): void', gave the following error.
+    Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/lib/markdown-import-export.ts(238,3): error TS6133: 'zipFilename' is declared but its value is never read.
+src/lib/middleware-patterns.ts(487,7): error TS2353: Object literal may only specify known properties, and 'errorMessage' does not exist in type '{ postId: string; error: string; }'.
+src/lib/rate-limiter.ts(1,26): error TS6133: 'CACHE_TTL' is declared but its value is never read.
+src/lib/storage.ts(188,5): error TS6133: 'isPublic' is declared but its value is never read.
+src/lib/storage.ts(195,126): error TS2554: Expected 1-2 arguments, but got 3.
+src/lib/storage.ts(234,9): error TS2353: Object literal may only specify known properties, and 'errorMessage' does not exist in type 'UploadResult'.

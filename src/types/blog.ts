@@ -18,6 +18,7 @@ export interface BlogPost {
   id: string;
   title: string;
   slug: string;
+  subtitle?: string | null;
   summary?: string;
   content_json: JSONContent; // tiptap document (canonical source)
   content_html: string; // pre-rendered HTML for reading
@@ -29,8 +30,10 @@ export interface BlogPost {
   status: 'draft' | 'published' | 'scheduled';
   tags: string[];
   category?: string;
+  reading_time?: number; // Legacy field - use reading_time_minutes
   reading_time_minutes: number;
   word_count: number;
+  view_count?: number;
 
   // SEO metadata
   meta_title?: string;

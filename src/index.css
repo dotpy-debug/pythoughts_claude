@@ -73,6 +73,19 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* Shadow glow effects for featured content */
+  .shadow-glow-green {
+    box-shadow: 0 0 20px rgba(166, 227, 161, 0.3), 0 0 40px rgba(166, 227, 161, 0.1);
+  }
+
+  .shadow-glow-blue {
+    box-shadow: 0 0 20px rgba(137, 180, 250, 0.3), 0 0 40px rgba(137, 180, 250, 0.1);
+  }
+
+  .shadow-glow-purple {
+    box-shadow: 0 0 20px rgba(203, 166, 247, 0.3), 0 0 40px rgba(203, 166, 247, 0.1);
+  }
 }
 
 .animate-spin {
@@ -120,6 +133,23 @@
   }
 }
 
+/* Fade-in-up animation for featured content */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+  opacity: 0;
+}
+
 .shimmer-container {
   position: relative;
 }
@@ -156,7 +186,8 @@
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .shimmer-overlay,
-  .shimmer-text {
+  .shimmer-text,
+  .fade-in-up {
     animation: none;
   }
   .shimmer-text {
@@ -164,6 +195,10 @@
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+  .fade-in-up {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

@@ -20,8 +20,8 @@ import {
 } from '../ui/table';
 import { Badge } from '../ui/badge';
 import { Switch } from '../ui/switch';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { DollarSign, TrendingUp } from 'lucide-react';
 
 type ShareType = 'flat' | 'performance_based' | 'custom';
@@ -348,7 +348,7 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
               <Label htmlFor="type">Share Type</Label>
               <Select
                 value={shareType}
-                onValueChange={(value) => setShareType(value as ShareType)}
+                onValueChange={(value: string) => setShareType(value as ShareType)}
                 disabled={isSaving}
               >
                 <SelectTrigger id="type">

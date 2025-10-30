@@ -213,7 +213,7 @@ export function DynamicVirtualScroll<T>({
     const heights = new Map<number, number>();
     itemRefs.current.forEach((element, index) => {
       if (element) {
-        heights.set(index, element.getBoundingClientHeight);
+        heights.set(index, element.getBoundingClientRect().height);
       }
     });
     setItemHeights(heights);

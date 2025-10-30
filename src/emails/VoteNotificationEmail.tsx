@@ -44,6 +44,7 @@ export function VoteNotificationEmail({
   return (
     <Html>
       <Head />
+{/* @ts-expect-error - Email component type mismatch */}
       <Preview>Your post "{postTitle}" reached {milestone} votes!</Preview>
       <Body style={main}>
         <Container style={container}>

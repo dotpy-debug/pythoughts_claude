@@ -49,7 +49,22 @@ async function fetchBlogPosts(): Promise<BlogPost[]> {
 
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select(`
+      id,
+      slug,
+      title,
+      subtitle,
+      content_html,
+      toc_data,
+      created_at,
+      updated_at,
+      published_at,
+      reading_time,
+      view_count,
+      author_id,
+      image_url,
+      tags
+    `)
     .eq('post_type', 'blog')
     .eq('status', 'published')
     .order('published_at', { ascending: false });
@@ -60,7 +75,23 @@ async function fetchBlogPosts(): Promise<BlogPost[]> {
   }
 
   console.log(`✅ Fetched ${data?.length || 0} blog posts`);
-  return (data || []) as BlogPost[];
+  // Map image_url -> cover_image for downstream HTML generation
+  return (data || []).map((row: any) => ({
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    subtitle: row.subtitle,
+    content_html: row.content_html,
+    toc_data: row.toc_data,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    published_at: row.published_at,
+    reading_time: row.reading_time,
+    view_count: row.view_count,
+    author_id: row.author_id,
+    cover_image: row.image_url || null,
+    tags: row.tags || [],
+  })) as BlogPost[];
 }
 
 /**
@@ -225,7 +256,7 @@ async function prerenderBlogs() {
 
     try {
       await fs.mkdir(blogDir, { recursive: true });
-    } catch (err) {
+    } catch (_err) {
       // Directory might already exist, continue
     }
 

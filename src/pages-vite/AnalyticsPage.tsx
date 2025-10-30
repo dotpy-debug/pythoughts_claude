@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, TrendingUp, Eye, Heart, MessageCircle, Users, FileText, Calendar, Clock, ExternalLink, BookOpen } from 'lucide-react';
+import { Loader2, TrendingUp, Eye, Heart, MessageCircle, Users, FileText, Calendar, ExternalLink, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Post } from '../lib/supabase';
 import { ShadcnCard, ShadcnCardContent } from '../components/ui/ShadcnCard';
@@ -68,7 +68,7 @@ export function AnalyticsPage() {
       setLoading(true);
 
       // Calculate date range
-      let dateFilter = new Date();
+      const dateFilter = new Date();
       if (timeRange === '7d') {
         dateFilter.setDate(dateFilter.getDate() - 7);
       } else if (timeRange === '30d') {

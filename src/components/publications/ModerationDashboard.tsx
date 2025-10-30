@@ -11,8 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { formatDistanceToNow } from 'date-fns';
 import { Shield, AlertTriangle, CheckCircle, XCircle, Eye } from 'lucide-react';
 

@@ -48,8 +48,6 @@ const CreateTaskModal = lazy(() => import('./components/tasks/CreateTaskModal').
 
 // Lazy load animation components (non-critical decorative elements)
 const FloatingBubbles = lazy(() => import('./components/animations/FloatingBubbles').then(mod => ({ default: mod.FloatingBubbles })));
-const LogoLoopHorizontal = lazy(() => import('./components/animations/LogoLoopHorizontal').then(mod => ({ default: mod.LogoLoopHorizontal })));
-const LogoLoopVertical = lazy(() => import('./components/animations/LogoLoopVertical').then(mod => ({ default: mod.LogoLoopVertical })));
 
 function AppContent() {
   const { user } = useAuth();
@@ -139,8 +137,6 @@ function AppContent() {
           <SkipNavLink />
           <Suspense fallback={null}>
             <FloatingBubbles />
-            <LogoLoopHorizontal />
-            <LogoLoopVertical />
           </Suspense>
           <Header onCreatePost={handleCreatePost} />
         </>

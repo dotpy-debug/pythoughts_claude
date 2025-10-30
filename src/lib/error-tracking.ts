@@ -151,9 +151,6 @@ class ErrorTracker {
    */
   captureError(error: Error, context: ErrorContext = {}): void {
     const errorData = {
-      error: error.message,
-      stack: error.stack,
-      name: error.name,
       user: context.user || this.userContext,
       tags: { ...this.globalTags, ...context.tags },
       extra: context.extra,
@@ -164,7 +161,7 @@ class ErrorTracker {
       timestamp: new Date().toISOString(),
     };
 
-    logger.error('Error captured by error tracker', errorData);
+    logger.error('Error captured by error tracker', error, errorData);
 
     // Example Sentry usage:
     // Sentry.withScope((scope) => {

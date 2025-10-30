@@ -201,12 +201,58 @@
 }
 
 /* Images */
-.blog-prose img {
+.blog-prose img,
+.blog-prose .blog-image {
   border-radius: 0.75rem;
   margin: 2rem auto;
   max-width: 100%;
+  width: auto;
   height: auto;
+  display: block;
   border: 1px solid var(--prose-border);
+  background: rgba(255, 255, 255, 0.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-prose img:hover,
+.blog-prose .blog-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(39, 201, 63, 0.15);
+}
+
+/* Image loading state */
+.blog-prose img[loading="lazy"] {
+  min-height: 200px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Image captions (if using figure) */
+.blog-prose figure {
+  margin: 2rem 0;
+}
+
+.blog-prose figcaption {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--prose-quotes);
+  margin-top: 0.75rem;
+  font-style: italic;
 }
 
 /* Horizontal Rule */

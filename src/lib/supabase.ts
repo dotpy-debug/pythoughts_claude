@@ -36,6 +36,9 @@ export type Profile = {
   // Minimal field set from upstream; include optional role for compatibility
   role?: 'user' | 'moderator' | 'editor' | 'admin' | 'super_admin';
   is_admin: boolean;
+  is_banned?: boolean;
+  is_suspended?: boolean;
+  admin_notes?: string;
   created_at: string;
   updated_at: string;
 };

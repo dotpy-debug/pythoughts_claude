@@ -23,7 +23,7 @@ interface EngagementBarProps {
 }
 
 export function EngagementBar({
-  postId,
+  postId: _postId,
   initialLikes = 0,
   initialComments = 0,
   initialIsLiked = false,

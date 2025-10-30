@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
+import { BlogPost } from '../../../types/blog';
 import { BlogPostView } from './BlogPostView';
+import { JSONContent } from '@tiptap/react';
 
 // Initialize Supabase client for Server Components
 const supabase = createClient(
@@ -14,29 +16,6 @@ export const revalidate = 3600;
 
 // Enable dynamic rendering fallback
 export const dynamicParams = true;
-
-interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  subtitle: string | null;
-  content_html: string;
-  content_json: any;
-  toc_data: any;
-  created_at: string;
-  updated_at: string;
-  published_at: string;
-  reading_time: number;
-  view_count: number;
-  author_id: string;
-  cover_image: string | null;
-  tags: string[];
-  author: {
-    id: string;
-    username: string;
-    avatar_url: string | null;
-  };
-}
 
 /**
  * Generate static params for top 100 blog posts (SSG)
@@ -67,6 +46,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
       slug,
       title,
       subtitle,
+      summary,
       content_html,
       content_json,
       toc_data,
@@ -74,10 +54,14 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
       updated_at,
       published_at,
       reading_time,
+      reading_time_minutes,
+      word_count,
       view_count,
       author_id,
-      cover_image,
+      cover_image:image_url,
+      cover_image_alt,
       tags,
+      status,
       author:profiles!author_id (
         id,
         username,
@@ -93,7 +77,12 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
     return null;
   }
 
-  return data as unknown as BlogPost;
+  // Transform database response to BlogPost type
+  return {
+    ...data,
+    content_json: data.content_json as JSONContent,
+    toc_data: data.toc_data || [],
+  } as unknown as BlogPost;
 }
 
 /**
@@ -112,21 +101,21 @@ export async function generateMetadata({
     };
   }
 
-  const publishedTime = new Date(post.published_at).toISOString();
+  const publishedTime = post.published_at ? new Date(post.published_at).toISOString() : undefined;
   const modifiedTime = new Date(post.updated_at).toISOString();
 
   return {
     title: post.title,
     description: post.subtitle || post.title,
     keywords: post.tags,
-    authors: [{ name: post.author.username }],
+    authors: post.author ? [{ name: post.author.username }] : [],
     openGraph: {
       title: post.title,
       description: post.subtitle || post.title,
       type: 'article',
       publishedTime,
       modifiedTime,
-      authors: [post.author.username],
+      authors: post.author ? [post.author.username] : [],
       tags: post.tags,
       images: post.cover_image
         ? [
@@ -166,12 +155,11 @@ export default async function BlogPostPage({
   }
 
   // Increment view count asynchronously (fire and forget)
-  supabase
+  void supabase
     .from('posts')
-    .update({ view_count: post.view_count + 1 })
+    .update({ view_count: (post.view_count ?? 0) + 1 })
     .eq('id', post.id)
-    .then()
-    .catch((err) => console.error('Failed to increment view count:', err));
+    .then(null, (err: Error) => console.error('Failed to increment view count:', err));
 
   return <BlogPostView post={post} />;
 }

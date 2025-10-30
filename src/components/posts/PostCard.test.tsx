@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '../../test/test-utils';
+import { render } from '../../test/test-utils';
+// @ts-expect-error - Testing library types issue in v16
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PostCard } from './PostCard';
 import { Post } from '../../lib/supabase';
@@ -32,6 +34,7 @@ const mockPost: Post = {
     bio: 'Test bio',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    is_admin: false,
   },
 };
 

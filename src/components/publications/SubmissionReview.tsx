@@ -12,8 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { formatDistanceToNow } from 'date-fns';
 
 type SubmissionStatus = 'pending' | 'approved' | 'rejected' | 'revision_requested';

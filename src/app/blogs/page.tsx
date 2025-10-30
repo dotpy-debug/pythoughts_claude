@@ -49,7 +49,7 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       slug,
       title,
       subtitle,
-      cover_image,
+      cover_image:image_url,
       published_at,
       reading_time,
       view_count,

@@ -1,10 +1,6 @@
 import { FileText, MessageCircle, Bookmark, Users, Tag, TrendingUp, Search, Bell, Inbox } from 'lucide-react';
 import { EmptyState } from './EmptyState';
 
-type EmptyStateActionProps = {
-  onClick: () => void;
-};
-
 export function EmptyPosts({ onCreatePost }: { onCreatePost?: () => void }) {
   return (
     <EmptyState

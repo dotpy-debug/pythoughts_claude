@@ -14,6 +14,8 @@ type MentionsInputProps = {
   placeholder?: string;
   className?: string;
   rows?: number;
+  onKeyDown?: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
+  autoFocus?: boolean;
 };
 
 export function MentionsInput({
@@ -22,6 +24,8 @@ export function MentionsInput({
   placeholder,
   className = '',
   rows = 4,
+  onKeyDown,
+  autoFocus,
 }: MentionsInputProps) {
   const [showMentions, setShowMentions] = useState(false);
   const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
@@ -132,6 +136,11 @@ export function MentionsInput({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Call custom onKeyDown handler if provided
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+
     if (!showMentions || mentionUsers.length === 0) return;
 
     switch (e.key) {
@@ -167,6 +176,7 @@ export function MentionsInput({
         placeholder={placeholder}
         rows={rows}
         className={className}
+        autoFocus={autoFocus}
       />
 
       {showMentions && mentionUsers.length > 0 && (

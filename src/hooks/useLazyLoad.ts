@@ -15,16 +15,12 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { logger } from '../lib/logger';
 
 // Type definitions for fetch priority (experimental API)
-interface HTMLElementWithFetchPriority extends HTMLElement {
-  fetchPriority?: 'high' | 'low' | 'auto';
-}
-
 interface HTMLImageElementWithFetchPriority extends HTMLImageElement {
-  fetchPriority?: 'high' | 'low' | 'auto';
+  fetchPriority: 'high' | 'low' | 'auto';
 }
 
 interface HTMLLinkElementWithFetchPriority extends HTMLLinkElement {
-  fetchPriority?: 'high' | 'low' | 'auto';
+  fetchPriority: 'high' | 'low' | 'auto';
 }
 
 export interface LazyLoadOptions {
@@ -103,7 +99,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}): {
     disabled = false,
   } = options;
 
-  const [isVisible, setIsVisible] = useState(disabled);
+  const [_isVisible, setIsVisible] = useState(disabled);
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
   const ref = useRef<HTMLElement>(null);
   const hasEntered = useRef(false);
@@ -151,7 +147,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}): {
     };
   }, [rootMargin, threshold, onEnter, onExit, preload, disabled]);
 
-  return { ref, isVisible, entry };
+  return { ref, isVisible: _isVisible, entry };
 }
 
 /**
@@ -198,7 +194,7 @@ export function useLazyLoadImage(
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const { ref, isVisible } = useLazyLoad({
+  const { ref, isVisible: _isVisible } = useLazyLoad({
     ...lazyOptions,
     onEnter: () => {
       // Start loading image

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { format, subDays } from 'date-fns';
 import {
   BarChart3,
@@ -117,8 +117,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
         .single();
 
       if (statsError) {
-        logger.error('Error loading publication stats', {
-          error: statsError.message,
+        logger.error('Error loading publication stats', statsError, {
           publicationId,
         });
         throw statsError;
@@ -138,8 +137,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
         .order('date', { ascending: true });
 
       if (analyticsError) {
-        logger.error('Error loading publication analytics', {
-          error: analyticsError.message,
+        logger.error('Error loading publication analytics', analyticsError, {
           publicationId,
         });
         throw analyticsError;
@@ -152,10 +150,15 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
         dataPoints: analyticsData?.length || 0,
       });
     } catch (err) {
-      logger.error('Failed to load publication analytics', {
-        error: err instanceof Error ? err.message : 'Unknown error',
-        publicationId,
-      });
+      if (err instanceof Error) {
+        logger.error('Failed to load publication analytics', err, {
+          publicationId,
+        });
+      } else {
+        logger.error('Failed to load publication analytics', new Error('Unknown error'), {
+          publicationId,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -211,7 +214,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
             Publication performance and insights
           </p>
         </div>
-        <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as typeof timeRange)}>
+        <Tabs value={timeRange} onValueChange={(v: string) => setTimeRange(v as typeof timeRange)}>
           <TabsList>
             <TabsTrigger value="7d">7 days</TabsTrigger>
             <TabsTrigger value="30d">30 days</TabsTrigger>
@@ -337,7 +340,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
                       <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                       <XAxis
                         dataKey="date"
-                        tickFormatter={(date) => format(new Date(date), 'MMM d')}
+                        tickFormatter={(date: Date | undefined) => date ? format(new Date(date), 'MMM d') : ''}
                         stroke="#666"
                       />
                       <YAxis stroke="#666" />
@@ -347,7 +350,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
                           border: '1px solid #00ff00',
                           borderRadius: '4px',
                         }}
-                        labelFormatter={(date) => format(new Date(date), 'MMM d, yyyy')}
+                        labelFormatter={(date: Date | undefined) => date ? format(new Date(date), 'MMM d, yyyy') : ''}
                       />
                       <Legend />
                       <Area
@@ -383,7 +386,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
                       <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                       <XAxis
                         dataKey="date"
-                        tickFormatter={(date) => format(new Date(date), 'MMM d')}
+                        tickFormatter={(date: Date | undefined) => date ? format(new Date(date), 'MMM d') : ''}
                         stroke="#666"
                       />
                       <YAxis stroke="#666" />
@@ -393,7 +396,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
                           border: '1px solid #00ff00',
                           borderRadius: '4px',
                         }}
-                        labelFormatter={(date) => format(new Date(date), 'MMM d, yyyy')}
+                        labelFormatter={(date: Date | undefined) => date ? format(new Date(date), 'MMM d, yyyy') : ''}
                       />
                       <Legend />
                       <Line
@@ -447,7 +450,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
                       <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                       <XAxis
                         dataKey="date"
-                        tickFormatter={(date) => format(new Date(date), 'MMM d')}
+                        tickFormatter={(date: Date | undefined) => date ? format(new Date(date), 'MMM d') : ''}
                         stroke="#666"
                       />
                       <YAxis stroke="#666" />
@@ -457,7 +460,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
                           border: '1px solid #00ff00',
                           borderRadius: '4px',
                         }}
-                        labelFormatter={(date) => format(new Date(date), 'MMM d, yyyy')}
+                        labelFormatter={(date: Date | undefined) => date ? format(new Date(date), 'MMM d, yyyy') : ''}
                       />
                       <Legend />
                       <Bar dataKey="total_comments" name="Comments" fill="#00ff00" />

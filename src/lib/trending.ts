@@ -155,8 +155,7 @@ export async function getTrendingPosts(
     .limit(limit);
 
   if (error) {
-    logger.error('Trending posts database query error', {
-      error: error.message,
+    logger.error('Trending posts database query error', new Error(error.message), {
       limit,
     });
     throw error;
@@ -212,8 +211,7 @@ export async function getTrendingPostsByCategory(
     .limit(limit);
 
   if (error) {
-    logger.error('Trending category query error', {
-      error: error.message,
+    logger.error('Trending category query error', new Error(error.message), {
       category,
       limit,
     });
@@ -244,8 +242,7 @@ export async function updatePostTrendingScore(postId: string): Promise<void> {
     });
 
     if (error) {
-      logger.error('Error updating trending score', {
-        error: error.message,
+      logger.error('Error updating trending score', new Error(error.message), {
         postId,
       });
       throw error;
@@ -254,8 +251,8 @@ export async function updatePostTrendingScore(postId: string): Promise<void> {
     // Invalidate all trending caches
     await invalidateTrendingCache();
   } catch (error) {
-    logger.error('Failed to update trending score', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to update trending score', errorObj, {
       postId,
     });
   }
@@ -279,17 +276,15 @@ export async function batchUpdateTrendingScores(
       const { error } = await supabase.rpc('refresh_trending_posts');
 
       if (error) {
-        logger.error('Error refreshing trending view', {
-          error: error.message,
-        });
+        logger.error('Error refreshing trending view', new Error(error.message));
         throw error;
       }
     }
 
     await invalidateTrendingCache();
   } catch (error) {
-    logger.error('Batch trending update failed', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Batch trending update failed', errorObj, {
       postIdsCount: postIds?.length,
     });
   }
@@ -312,9 +307,8 @@ export async function invalidateTrendingCache(): Promise<void> {
       });
     }
   } catch (error) {
-    logger.error('Trending cache invalidation error', {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-    });
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Trending cache invalidation error', errorObj);
   }
 }
 
@@ -342,9 +336,7 @@ export async function getTrendingStats(): Promise<{
   const { data, error } = await supabase.rpc('get_trending_stats');
 
   if (error) {
-    logger.error('Trending stats query error', {
-      error: error.message,
-    });
+    logger.error('Trending stats query error', new Error(error.message));
     return {
       totalTrendingPosts: 0,
       topCategory: null,

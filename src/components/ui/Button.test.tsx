@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '../../test/test-utils';
+import { render } from '../../test/test-utils';
+// @ts-expect-error - Testing library types issue in v16
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Button } from './Button';
 

@@ -33,7 +33,7 @@ export function PresenceBar({ provider }: PresenceBarProps) {
     // Function to update user list from awareness
     const updateUsers = () => {
       const awareness = provider.awareness;
-      const states = Array.from(awareness.getStates().values());
+      const states = Array.from(awareness?.getStates().values() || []);
 
       const activeUsers: PresenceUser[] = states
         .filter((state: any) => state.user && state.user.id)

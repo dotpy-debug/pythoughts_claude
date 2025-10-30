@@ -236,7 +236,7 @@ export function useWebVitals(
 
     try {
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true } as PerformanceObserverInit);
-    } catch (e) {
+    } catch (_e) {
       // LCP not supported
       logger.debug('LCP metric not supported in this browser');
     }
@@ -252,7 +252,7 @@ export function useWebVitals(
 
     try {
       fidObserver.observe({ type: 'first-input', buffered: true } as PerformanceObserverInit);
-    } catch (e) {
+    } catch (_e) {
       // FID not supported
       logger.debug('FID metric not supported in this browser');
     }
@@ -272,7 +272,7 @@ export function useWebVitals(
 
     try {
       clsObserver.observe({ type: 'layout-shift', buffered: true } as PerformanceObserverInit);
-    } catch (e) {
+    } catch (_e) {
       // CLS not supported
       logger.debug('CLS metric not supported in this browser');
     }
@@ -290,7 +290,7 @@ export function useWebVitals(
 
     try {
       fcpObserver.observe({ type: 'paint', buffered: true } as PerformanceObserverInit);
-    } catch (e) {
+    } catch (_e) {
       // FCP not supported
       logger.debug('FCP metric not supported in this browser');
     }
@@ -325,7 +325,7 @@ export function useWebVitals(
         buffered: true,
         durationThreshold: 16
       } as PerformanceObserverInit);
-    } catch (e) {
+    } catch (_e) {
       // INP not supported
       logger.debug('INP metric not supported in this browser');
     }

@@ -123,6 +123,11 @@ export interface EmailResult {
    * Error message (if failed)
    */
   error?: string;
+
+  /**
+   * Alternative error message property for compatibility
+   */
+  errorMessage?: string;
 }
 
 /**
@@ -175,13 +180,15 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 
     if (response.error) {
       logger.error('Resend API error', {
-        error: response.error.message,
+        errorMessage: response.error.message,
         to: options.to,
         subject: options.subject,
       });
+      const errorMsg = response.error.message || 'Failed to send email';
       return {
         success: false,
-        error: response.error.message || 'Failed to send email',
+        error: errorMsg,
+        errorMessage: errorMsg,
       };
     }
 
@@ -202,9 +209,11 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
       to: options.to,
       subject: options.subject,
     });
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
+      error: errorMsg,
+      errorMessage: errorMsg,
     };
   }
 }

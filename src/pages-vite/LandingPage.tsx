@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Code, Users, Zap, TrendingUp, BookOpen, CheckCircle, Terminal, ArrowRight, Star } from 'lucide-react';
-import { ShimmerLogo } from '../components/animations/ShimmerLogo';
+import PyThoughtsLogo from '../components/ui/pythoughts-logo';
 import { AuthModal } from '../components/auth/AuthModal';
+import { DynamicStatsBar } from '../components/landing/DynamicStatsBar';
+import { FeaturedBlogSection } from '../components/blogs/FeaturedBlogSection';
+import { BlogOfTheDaySection } from '../components/blogs/BlogOfTheDaySection';
+import { LatestBlogsSection } from '../components/blogs/LatestBlogsSection';
 
 export function LandingPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -67,7 +71,7 @@ export function LandingPage() {
     <div className="min-h-screen bg-gray-950">
       <header className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <ShimmerLogo showText={true} size="md" />
+          <PyThoughtsLogo compact={false} className="scale-90" />
           <div className="flex items-center space-x-4">
             <button
               onClick={() => openAuthModal('signin')}
@@ -89,7 +93,7 @@ export function LandingPage() {
         <section className="py-20 sm:py-28 text-center">
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="flex justify-center mb-8">
-              <ShimmerLogo showText={false} size="lg" />
+              <PyThoughtsLogo compact={true} className="scale-125" />
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-100 font-mono leading-tight">
@@ -119,8 +123,16 @@ export function LandingPage() {
                 Sign In
               </button>
             </div>
+
+            {/* Dynamic Stats Bar */}
+            <div className="pt-12">
+              <DynamicStatsBar />
+            </div>
           </div>
         </section>
+
+        {/* Featured Blogs Section */}
+        <FeaturedBlogSection maxBlogs={3} showEngagement={true} autoRefresh={true} />
 
         <section className="py-20 border-t border-gray-800">
           <div className="text-center mb-16">
@@ -149,6 +161,12 @@ export function LandingPage() {
             ))}
           </div>
         </section>
+
+        {/* Blog of the Day Section */}
+        <BlogOfTheDaySection showAuthorBio={true} showSocialShare={false} />
+
+        {/* Latest Blogs Section */}
+        <LatestBlogsSection maxBlogs={6} />
 
         <section className="py-20 border-t border-gray-800">
           <div className="max-w-4xl mx-auto">
@@ -208,9 +226,9 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2">
-              <ShimmerLogo showText={false} size="sm" />
+              <PyThoughtsLogo compact={true} className="scale-75" />
               <span className="text-gray-400 font-mono text-sm">
-                © 2025 Pythoughts.com - Where Python Thoughts Connect
+                © 2025 PyThoughts.com - Where Python Thoughts Connect
               </span>
             </div>
             <div className="flex items-center space-x-6 text-sm font-mono">

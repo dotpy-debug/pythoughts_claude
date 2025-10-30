@@ -15,7 +15,7 @@ import { X, Video, Check, AlertCircle, Youtube } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import {
   parseVideoUrl,
-  isValidVideoUrl,
+
   type VideoData,
 } from '../../lib/video-utils';
 

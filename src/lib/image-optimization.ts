@@ -90,10 +90,9 @@ export async function loadImage(source: File | Blob | string): Promise<HTMLImage
     const img = new Image();
 
     img.onload = () => {
-      if (typeof source === 'string' || source instanceof Blob || source instanceof File) {
-        if (source instanceof Blob || source instanceof File) {
-          URL.revokeObjectURL(img.src);
-        }
+      // Revoke object URL if source was a Blob or File to free memory
+      if (typeof source !== 'string') {
+        URL.revokeObjectURL(img.src);
       }
       resolve(img);
     };
@@ -167,7 +166,7 @@ export async function optimizeImage(
     maxHeight,
     format = 'jpeg',
     quality = 0.85,
-    stripExif = true,
+    stripExif: _stripExif = true,
   } = options;
 
   // Load original image

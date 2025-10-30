@@ -43,7 +43,7 @@ export function KanbanTaskCard({ task, onClick, isDragging }: KanbanTaskCardProp
       {...attributes}
       {...listeners}
       className="bg-gray-800 border border-gray-700 rounded-lg p-3 cursor-grab active:cursor-grabbing hover:border-terminal-green transition-all shadow-sm hover:shadow-md group"
-      onClick={(e) => {
+      onClick={(_e) => {
         // Don't trigger click when dragging
         if (!isDragging && !isSortableDragging) {
           onClick?.();

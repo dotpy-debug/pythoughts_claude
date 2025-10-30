@@ -1,0 +1,476 @@
+
+> vite-react-typescript-starter@0.0.0 lint
+> eslint .
+
+
+D:\New_Projects\pythoughts_claude-main\scripts\generate-seo-files.ts
+  117:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\scripts\prerender-blogs.ts
+   33:13  error    Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+   79:33  error    Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  259:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\New_Projects\pythoughts_claude-main\server\collaboration.ts
+  146:45  warning  'connection' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\New_Projects\pythoughts_claude-main\src\actions\admin.ts
+  427:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\analytics.ts
+  238:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\categories-admin.ts
+  499:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\content-moderation.ts
+  90:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\database-admin.ts
+  120:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  180:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  236:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\permissions.ts
+  182:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\publications-admin.ts
+  242:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  382:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  463:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\reputation.ts
+  225:112  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\tags.ts
+  109:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  199:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\actions\versions.ts
+  194:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  252:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\app\blog\[slug]\page.tsx
+  24:23  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  91:23  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\app\blogs\page.tsx
+  14:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\app\layout.tsx
+  5:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\components\RouteErrorBoundary.tsx
+  173:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\AdminDashboard.tsx
+  48:6  warning  React Hook useEffect has a missing dependency: 'loadStats'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\AnalyticsDashboard.tsx
+   41:6   warning  React Hook useEffect has a missing dependency: 'loadAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  134:63  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\CategoriesTagsManagement.tsx
+   78:6   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  488:67  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\ContentModeration.tsx
+  66:6   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  76:35  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  86:33  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\DatabaseBrowser.tsx
+   47:46  error    Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+   53:54  error    Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+   54:67  error    Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+   55:38  error    Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+   62:6   warning  React Hook useEffect has missing dependencies: 'loadStats' and 'loadTables'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   68:6   warning  React Hook useEffect has a missing dependency: 'loadTableData'. Either include it or remove the dependency array                 react-hooks/exhaustive-deps
+  146:37  error    Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+  199:31  error    Unexpected any. Specify a different type                                                                                         @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\PermissionsManagement.tsx
+  42:46  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  56:6   warning  React Hook useEffect has a missing dependency: 'loadRoles'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+  62:6   warning  React Hook useEffect has a missing dependency: 'loadRoleUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\PublicationsManagement.tsx
+   67:6   warning  React Hook useEffect has missing dependencies: 'loadPublications' and 'loadStats'. Either include them or remove the dependency array                  react-hooks/exhaustive-deps
+   73:6   warning  React Hook useEffect has missing dependencies: 'loadPublicationDetails' and 'selectedPublication'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  537:49  error    Unexpected any. Specify a different type                                                                                                               @typescript-eslint/no-explicit-any
+  584:53  error    Unexpected any. Specify a different type                                                                                                               @typescript-eslint/no-explicit-any
+  587:56  error    Unexpected any. Specify a different type                                                                                                               @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\SystemSettings.tsx
+  32:71  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  39:6   warning  React Hook useEffect has a missing dependency: 'loadSettings'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  51:39  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  85:66  error    Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\admin\UserManagement.tsx
+   58:6   warning  React Hook useEffect has a missing dependency: 'loadUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   70:44  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   89:23  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  115:27  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  346:37  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  349:37  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+  568:69  error    Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\analytics\AnalyticsExporter.tsx
+  170:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\auth\AdminRoute.tsx
+  93:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\components\auth\ForgotPasswordForm.tsx
+  32:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\New_Projects\pythoughts_claude-main\src\components\auth\PasswordStrengthMeter.tsx
+  19:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\components\blog\BlogTOC.tsx
+  240:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  263:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  273:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\components\blog\TableOfContents.tsx
+  107:6  warning  React Hook useEffect has a missing dependency: 'handleItemClick'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\blog\collaboration\PresenceBar.tsx
+  39:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  40:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\blogs\BlogCompactCard.tsx
+  40:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\blogs\BlogHeroCard.tsx
+  43:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\blogs\BlogOfTheDaySection.tsx
+  90:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  91:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  92:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\bookmarks\BookmarkButton.tsx
+  21:6  warning  React Hook useEffect has a missing dependency: 'checkBookmarkStatus'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\comments\CommentEditForm.tsx
+  105:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\comments\CommentReactions.tsx
+  22:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  75:6   warning  React Hook useEffect has a missing dependency: 'loadUserReactions'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\discovery\AuthorRecommendations.tsx
+  31:6  warning  React Hook useEffect has a missing dependency: 'loadAuthors'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\discovery\TrendingTopics.tsx
+  24:6  warning  React Hook useEffect has a missing dependency: 'loadTrendingTopics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\drafts\DraftEditor.tsx
+  103:6  warning  React Hook useEffect has a missing dependency: 'hasShownRecoveryPrompt'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\editor\PexelsSearchModal.tsx
+  133:6  warning  React Hook useEffect has a missing dependency: 'photos.length'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\editor\extensions\VimeoExtension.ts
+  104:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\media\BulkImageUpload.tsx
+  135:5  warning  React Hook useCallback has a missing dependency: 'uploadFiles'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\media\ImageCropModal.tsx
+  25:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+D:\New_Projects\pythoughts_claude-main\src\components\media\MediaLibrary.tsx
+  23:6  warning  React Hook useEffect has a missing dependency: 'loadMedia'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\moderation\ReportModal.tsx
+  51:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\navigation\Breadcrumb.tsx
+  167:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\components\posts\MarkdownRenderer.tsx
+   27:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+   43:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   46:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   49:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   52:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   55:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   58:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   61:23  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   69:26  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+   89:21  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+  118:25  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+  126:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+  132:22  warning  'node' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+
+D:\New_Projects\pythoughts_claude-main\src\components\publications\CrossPostDialog.tsx
+   58:6   warning  React Hook useEffect has a missing dependency: 'loadAvailablePublications'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  108:21  error    Unexpected any. Specify a different type                                                                                      @typescript-eslint/no-explicit-any
+  116:18  error    Unexpected any. Specify a different type                                                                                      @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\publications\ModerationDashboard.tsx
+   25:13  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+   73:6   warning  React Hook useEffect has a missing dependency: 'loadModerationData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   97:37  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  135:44  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  157:15  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  162:47  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  163:47  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\publications\PublicationAnalytics.tsx
+  107:6  warning  React Hook useEffect has a missing dependency: 'loadAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\publications\PublicationHomepage.tsx
+   73:6   warning  React Hook useEffect has a missing dependency: 'loadPublication'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  117:40  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  158:42  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\publications\RevenueSharing.tsx
+   72:6   warning  React Hook useEffect has missing dependencies: 'loadMembers' and 'loadRevenueShares'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   97:33  error    Unexpected any. Specify a different type                                                                                                  @typescript-eslint/no-explicit-any
+  141:33  error    Unexpected any. Specify a different type                                                                                                  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\publications\StyleGuideEditor.tsx
+  55:6  warning  React Hook useEffect has a missing dependency: 'loadStyleGuide'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\reading-lists\AddToReadingListModal.tsx
+  28:6  warning  React Hook useEffect has a missing dependency: 'loadReadingLists'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\reading\ReadingProgressBar.tsx
+   50:6  warning  React Hook useCallback has a missing dependency: 'saveProgress'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  126:6  warning  React Hook useEffect has a missing dependency: 'saveProgress'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\recommendations\RecommendedPosts.tsx
+   37:6   warning  React Hook useEffect has a missing dependency: 'loadRecommendations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  103:42  error    Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\seo\SEOHead.tsx
+  259:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\components\tags\TagExploration.tsx
+  22:6  warning  React Hook useEffect has a missing dependency: 'loadTags'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+  30:6  warning  React Hook useEffect has a missing dependency: 'handleSearch'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\tasks\KanbanBoard.tsx
+  53:6  warning  React Hook useEffect has a missing dependency: 'loadTasks'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\ui\popover.tsx
+  67:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\components\ui\textarea.tsx
+  4:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+D:\New_Projects\pythoughts_claude-main\src\components\versions\VersionHistoryModal.tsx
+  38:6  warning  React Hook useEffect has a missing dependency: 'loadVersions'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\components\video\VideoEmbedModal.tsx
+  120:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\contexts\AuthContext.tsx
+  170:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\contexts\NotificationContext.tsx
+  185:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\contexts\ThemeContext.tsx
+  61:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\hooks\useDraftRecovery.ts
+   69:6   warning  React Hook useCallback has a missing dependency: 'clearDraftBackup'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  146:20  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                                       @typescript-eslint/no-unused-vars
+
+D:\New_Projects\pythoughts_claude-main\src\hooks\useKeyboardNavigation.tsx
+   26:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   56:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  104:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  117:9   error    Unexpected lexical declaration in case block                                                                                    no-case-declarations
+  125:9   error    Unexpected lexical declaration in case block                                                                                    no-case-declarations
+  159:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  175:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  210:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  233:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\hooks\usePerformanceMonitor.ts
+  181:3  warning  React Hook useEffect contains a call to 'setMetrics'. Without a list of dependencies, this can lead to an infinite chain of updates. To fix this, pass [trackRenders, slowRenderThreshold, excessiveRendersThreshold, addWarning] as a second argument to the useEffect Hook  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\hooks\useWebVitals.ts
+  239:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  255:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  275:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  293:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  328:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\New_Projects\pythoughts_claude-main\src\lib\email-queue.ts
+  159:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  245:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\lib\error-tracking.ts
+   31:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  300:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  300:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  319:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  319:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\lib\markdown-converter.ts
+   30:18  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   72:7   error  Unexpected lexical declaration in case block  no-case-declarations
+   82:7   error  Unexpected lexical declaration in case block  no-case-declarations
+   83:7   error  Unexpected lexical declaration in case block  no-case-declarations
+   99:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  109:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  110:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  111:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  115:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  119:7   error  Unexpected lexical declaration in case block  no-case-declarations
+  149:42  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  169:9   error  Unexpected lexical declaration in case block  no-case-declarations
+  170:9   error  Unexpected lexical declaration in case block  no-case-declarations
+  318:12  error  Unnecessary escape character: \-              no-useless-escape
+  318:14  error  Unnecessary escape character: \*              no-useless-escape
+  318:16  error  Unnecessary escape character: \+              no-useless-escape
+  321:37  error  Unnecessary escape character: \-              no-useless-escape
+  321:39  error  Unnecessary escape character: \*              no-useless-escape
+  321:41  error  Unnecessary escape character: \+              no-useless-escape
+  322:46  error  Unnecessary escape character: \-              no-useless-escape
+  322:48  error  Unnecessary escape character: \*              no-useless-escape
+  322:50  error  Unnecessary escape character: \+              no-useless-escape
+  368:12  error  Unnecessary escape character: \-              no-useless-escape
+  368:14  error  Unnecessary escape character: \*              no-useless-escape
+  371:37  error  Unnecessary escape character: \-              no-useless-escape
+  371:39  error  Unnecessary escape character: \*              no-useless-escape
+  373:46  error  Unnecessary escape character: \-              no-useless-escape
+  373:48  error  Unnecessary escape character: \*              no-useless-escape
+  458:8   error  Unnecessary escape character: \-              no-useless-escape
+  458:10  error  Unnecessary escape character: \*              no-useless-escape
+  458:12  error  Unnecessary escape character: \+              no-useless-escape
+  460:8   error  Unnecessary escape character: \-              no-useless-escape
+  460:10  error  Unnecessary escape character: \*              no-useless-escape
+
+D:\New_Projects\pythoughts_claude-main\src\lib\markdown-import-export.ts
+  156:24  error    Unnecessary escape character: \-                                                  no-useless-escape
+  190:12  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  209:12  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\New_Projects\pythoughts_claude-main\src\lib\tiptap\callout-extension.ts
+  11:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\BookmarksPage.tsx
+  33:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\EnhancedAnalyticsPage.tsx
+   76:41  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  135:71  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  137:44  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  150:6   warning  React Hook useEffect has a missing dependency: 'loadAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  223:43  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  227:45  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  235:45  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\FollowersPage.tsx
+  67:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\FollowingPage.tsx
+  67:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\ModerationPage.tsx
+  51:6   warning  React Hook useEffect has a missing dependency: 'loadReports'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  90:25  error    Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\PublicationDetailPage.tsx
+  206:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  208:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  209:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  219:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\PublicationInvite.tsx
+  60:6  warning  React Hook useEffect has a missing dependency: 'loadInvitation'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\PublicationSettingsPage.tsx
+  399:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  401:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  402:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  412:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\PublicationsPage.tsx
+   53:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\ReadingListsPage.tsx
+  24:6  warning  React Hook useEffect has a missing dependency: 'loadReadingLists'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\ScheduledPostsPage.tsx
+  31:6  warning  React Hook useEffect has a missing dependency: 'loadScheduledPosts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\SearchResultsPage.tsx
+   91:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  149:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  185:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\SeriesDetailPage.tsx
+   50:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  115:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\SeriesPage.tsx
+  169:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\SettingsPage.tsx
+  58:6  warning  React Hook useEffect has a missing dependency: 'loadBlockedUsers'. Either include it or remove the dependency array             react-hooks/exhaustive-deps
+  64:6  warning  React Hook useEffect has a missing dependency: 'loadNotificationPreferences'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\pages-vite\settings\EmailPreferencesPage.tsx
+  63:6  warning  React Hook useEffect has a missing dependency: 'loadPreferences'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\services\featured.ts
+  157:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  315:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  460:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\test\test-utils.tsx
+  10:10  warning  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+  36:1   warning  This rule can't verify that `export *` only exports components                                          react-refresh/only-export-components
+
+D:\New_Projects\pythoughts_claude-main\src\utils\autoFlag.ts
+  31:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\New_Projects\pythoughts_claude-main\src\utils\performance.ts
+   19:46  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+   19:56  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+   43:46  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+   43:56  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+   76:49  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+   76:59  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  114:49  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  114:59  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  156:49  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  156:59  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  209:52  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  209:62  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  242:45  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  242:55  error    Unexpected any. Specify a different type                                                                                                                              @typescript-eslint/no-explicit-any
+  362:5   warning  React Hook useCallback has unnecessary dependencies: 'delay' and 'setter'. Either exclude them or remove the dependency array                                         react-hooks/exhaustive-deps
+  395:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                          @typescript-eslint/no-unused-vars
+  411:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                          @typescript-eslint/no-unused-vars
+  489:6   warning  React Hook useEffect was passed a dependency list that is not an array literal. This means we can't statically verify whether you've passed the correct dependencies  react-hooks/exhaustive-deps
+  489:6   warning  React Hook useEffect has a missing dependency: 'callback'. Either include it or remove the dependency array                                                           react-hooks/exhaustive-deps
+
+D:\New_Projects\pythoughts_claude-main\src\utils\seo.tsx
+   11:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   47:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   64:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   93:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  116:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  147:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  250:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  288:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+✖ 271 problems (164 errors, 107 warnings)
+

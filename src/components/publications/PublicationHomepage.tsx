@@ -3,8 +3,8 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Card, CardContent } from '../ui/card';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '../../lib/supabase';
+import { logger } from '../../lib/logger';
 import { Users, Mail, ExternalLink, Twitter, Linkedin, Github } from 'lucide-react';
 
 type Publication = {
@@ -288,41 +288,49 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
             {/* Social Links */}
             <div className="flex gap-2 mb-4">
               {publication.websiteUrl && (
-                <Button variant="ghost" size="sm" asChild>
-                  <a href={publication.websiteUrl} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
+                <a
+                  href={publication.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-terminal-green transition-all px-3 py-1.5 text-sm rounded"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
               )}
               {publication.twitterHandle && (
-                <Button variant="ghost" size="sm" asChild>
-                  <a
-                    href={`https://twitter.com/${publication.twitterHandle}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Twitter className="h-4 w-4" />
-                  </a>
-                </Button>
+                <a
+                  href={`https://twitter.com/${publication.twitterHandle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-terminal-green transition-all px-3 py-1.5 text-sm rounded"
+                >
+                  <Twitter className="h-4 w-4" />
+                </a>
               )}
               {publication.linkedinUrl && (
-                <Button variant="ghost" size="sm" asChild>
-                  <a href={publication.linkedinUrl} target="_blank" rel="noopener noreferrer">
-                    <Linkedin className="h-4 w-4" />
-                  </a>
-                </Button>
+                <a
+                  href={publication.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-terminal-green transition-all px-3 py-1.5 text-sm rounded"
+                >
+                  <Linkedin className="h-4 w-4" />
+                </a>
               )}
               {publication.githubUrl && (
-                <Button variant="ghost" size="sm" asChild>
-                  <a href={publication.githubUrl} target="_blank" rel="noopener noreferrer">
-                    <Github className="h-4 w-4" />
-                  </a>
-                </Button>
+                <a
+                  href={publication.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-gray-400 hover:bg-gray-800 hover:text-terminal-green transition-all px-3 py-1.5 text-sm rounded"
+                >
+                  <Github className="h-4 w-4" />
+                </a>
               )}
             </div>
 
             {publication.enableNewsletter && (
-              <Button onClick={handleSubscribe} variant={isSubscribed ? 'outline' : 'default'}>
+              <Button onClick={handleSubscribe} variant={isSubscribed ? 'outline' : 'primary'}>
                 {isSubscribed ? 'Subscribed' : 'Subscribe'}
               </Button>
             )}

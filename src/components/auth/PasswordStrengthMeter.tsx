@@ -44,7 +44,7 @@ export function calculatePasswordStrength(password: string): {
 }
 
 export function PasswordStrengthMeter({ password, showRequirements = true }: PasswordStrengthMeterProps) {
-  const { strength, score, criteria } = useMemo(
+  const { strength, score: _score, criteria } = useMemo(
     () => calculatePasswordStrength(password),
     [password]
   );

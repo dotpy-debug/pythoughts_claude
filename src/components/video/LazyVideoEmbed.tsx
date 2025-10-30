@@ -16,7 +16,7 @@ import { Play } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import {
   parseVideoUrl,
-  getYouTubeThumbnail,
+
   type VideoData,
 } from '../../lib/video-utils';
 

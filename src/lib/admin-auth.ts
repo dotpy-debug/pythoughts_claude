@@ -12,7 +12,6 @@
 
 import { supabase, type Profile, type AdminActivityLog } from './supabase';
 import { logger } from './logger';
-import { ExternalServiceError, ErrorLogger } from './errors';
 
 /**
  * Admin role types in order of privilege level

@@ -86,7 +86,7 @@ export async function getMultiMetricTimeSeries(
 
   if (error) {
     logger.error('Error fetching time series analytics', {
-      error: error.message,
+      errorMessage: error.message,
       userId,
       metrics,
       days,
@@ -105,7 +105,7 @@ export async function getMultiMetricTimeSeries(
 
   if (postsError) {
     logger.error('Error fetching posts data for analytics', {
-      error: postsError.message,
+      errorMessage: postsError.message,
       userId,
       dateRange: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
     });
@@ -123,7 +123,7 @@ export async function getMultiMetricTimeSeries(
 
   if (commentsError) {
     logger.error('Error fetching comments data for analytics', {
-      error: commentsError.message,
+      errorMessage: commentsError.message,
       userId,
       postCount: postsData?.length || 0,
     });
@@ -223,7 +223,7 @@ export async function getCohortAnalysis(
 
   if (error) {
     logger.error('Error fetching cohort data for analysis', {
-      error: error.message,
+      errorMessage: error.message,
       weeks,
     });
     return [];
@@ -343,7 +343,7 @@ export async function getEngagementHeatmap(
 
   if (error || !data) {
     logger.error('Error fetching heatmap data for engagement analysis', {
-      error: error?.message || 'No data returned',
+      errorMessage: error?.message || 'No data returned',
       userId,
       days,
       startDate: startDate.toISOString(),
@@ -498,7 +498,7 @@ export async function getTopPerformingPosts(
 
   if (error || !posts) {
     logger.error('Error fetching top performing posts', {
-      error: error?.message || 'No posts returned',
+      errorMessage: error?.message || 'No posts returned',
       userId,
       metric,
       limit,

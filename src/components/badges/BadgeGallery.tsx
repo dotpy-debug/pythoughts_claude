@@ -51,7 +51,7 @@ export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProps) {
           )
         );
       } else {
-        logger.error('Failed to toggle badge featured status', { error: result.error });
+        logger.error('Failed to toggle badge featured status', result.error ? new Error(result.error) : new Error('Unknown error'));
         alert(result.error || 'Failed to update badge');
       }
     } catch (error) {

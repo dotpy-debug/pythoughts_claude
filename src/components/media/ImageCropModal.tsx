@@ -22,7 +22,7 @@ interface CroppedArea {
   height: number;
 }
 
-interface CroppedAreaPixels extends CroppedArea {}
+type CroppedAreaPixels = CroppedArea;
 
 interface ImageCropModalProps {
   /**
@@ -188,7 +188,7 @@ export function ImageCropModal({
   }, []);
 
   const onCropAreaChange = useCallback(
-    (croppedArea: CroppedArea, croppedAreaPixels: CroppedAreaPixels) => {
+    (_croppedArea: CroppedArea, croppedAreaPixels: CroppedAreaPixels) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
     []

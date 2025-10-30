@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Input } from '../ui/Input';
+import { Input } from '../ui/input';
 import { Button } from '../ui/Button';
 import { PasswordStrengthMeter } from './PasswordStrengthMeter';
 import { isValidUsername, isValidEmail, checkRateLimit } from '../../utils/security';

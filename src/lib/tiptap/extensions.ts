@@ -58,8 +58,12 @@ export const editorExtensions = [
     nested: true,
   }),
   Image.configure({
+    inline: false,
+    allowBase64: true,
     HTMLAttributes: {
       class: 'blog-image',
+      loading: 'lazy',
+      decoding: 'async',
     },
   }),
   Link.configure({

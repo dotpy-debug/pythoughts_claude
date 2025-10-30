@@ -14,12 +14,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import {
   getCategories,
   createCategory,
-  updateCategory,
   deleteCategory,
   getTags,
   createTag,
-  updateTag,
-  mergeTags,
   deleteTag,
   cleanupUnusedTags,
   getFeaturedTags,
@@ -47,7 +44,7 @@ export function CategoriesTagsManagement() {
 
   // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [_editingCategory, _setEditingCategory] = useState<Category | null>(null);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryForm, setCategoryForm] = useState({
     name: '',
@@ -63,15 +60,15 @@ export function CategoriesTagsManagement() {
   const [tagSearch, setTagSearch] = useState('');
   const [tagSortBy, setTagSortBy] = useState<'name' | 'post_count' | 'follower_count'>('name');
   const [tagPage, setTagPage] = useState(1);
-  const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const [_editingTag, _setEditingTag] = useState<Tag | null>(null);
   const [showTagForm, setShowTagForm] = useState(false);
   const [tagForm, setTagForm] = useState({
     name: '',
     slug: '',
     description: '',
   });
-  const [mergeSourceTag, setMergeSourceTag] = useState<string>('');
-  const [mergeTargetTag, setMergeTargetTag] = useState<string>('');
+  const [_mergeSourceTag, _setMergeSourceTag] = useState<string>('');
+  const [_mergeTargetTag, _setMergeTargetTag] = useState<string>('');
   const [featuredTags, setFeaturedTags] = useState<string[]>([]);
 
   useEffect(() => {
@@ -442,7 +439,7 @@ export function CategoriesTagsManagement() {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => {
-                            setEditingCategory(category);
+                            _setEditingCategory(category);
                             setCategoryForm({
                               name: category.name,
                               slug: category.slug,

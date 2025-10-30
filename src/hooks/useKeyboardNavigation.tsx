@@ -112,21 +112,22 @@ export function useArrowKeyNavigation(itemCount: number, options: {
     const currentIndex = focusedIndexRef.current;
 
     switch (event.key) {
-      case 'ArrowDown':
+      case 'ArrowDown': {
         event.preventDefault();
         const nextIndex = currentIndex + 1;
         focusedIndexRef.current = loop
           ? nextIndex % itemCount
           : Math.min(nextIndex, itemCount - 1);
         break;
-
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         event.preventDefault();
         const prevIndex = currentIndex - 1;
         focusedIndexRef.current = loop
           ? (prevIndex + itemCount) % itemCount
           : Math.max(prevIndex, 0);
         break;
+      }
 
       case 'Enter':
         event.preventDefault();

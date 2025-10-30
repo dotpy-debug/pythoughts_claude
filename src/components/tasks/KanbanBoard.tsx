@@ -12,7 +12,7 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Plus, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { getTasksByStatus, updateTask } from '../../actions/tasks';
 import type { TaskWithDetails, TaskFilters } from '../../actions/tasks';
 import { useAuth } from '../../contexts/AuthContext';
@@ -155,7 +155,7 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
         if (task) {
           await updateTask(
             task.id,
-            { status: overContainer },
+            { status: overContainer as 'todo' | 'in_progress' | 'completed' | 'archived' },
             user.id
           );
         }

@@ -4,7 +4,7 @@ import { BookOpen, Plus, Lock, Globe, Trash2, Edit, Loader2 } from 'lucide-react
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, ReadingList } from '../lib/supabase';
 import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { Input } from '../components/ui/input';
 
 export function ReadingListsPage() {
   const { user } = useAuth();

@@ -1,4 +1,4 @@
-import { getRedisClient, CACHE_TTL } from './redis';
+import { getRedisClient, CACHE_TTL as _CACHE_TTL } from './redis';
 import { logger } from './logger';
 import { ExternalServiceError } from './errors';
 

@@ -68,21 +68,21 @@ function serializeNode(node: JSONContent, context: { listLevel?: number } = {}):
     case 'paragraph':
       return serializeChildren(content) + '\n\n';
 
-    case 'heading':
+    case 'heading': {
       const level = attrs?.level || 1;
       return '#'.repeat(level) + ' ' + serializeChildren(content) + '\n\n';
-
+    }
     case 'blockquote':
       return serializeChildren(content)
         .split('\n')
         .map(line => line ? `> ${line}` : '>')
         .join('\n') + '\n\n';
 
-    case 'codeBlock':
+    case 'codeBlock': {
       const language = attrs?.language || '';
       const code = serializeChildren(content);
       return '```' + language + '\n' + code + '\n```\n\n';
-
+    }
     case 'bulletList':
       return serializeList(content, '- ', context.listLevel) + '\n';
 
@@ -95,30 +95,30 @@ function serializeNode(node: JSONContent, context: { listLevel?: number } = {}):
     case 'taskList':
       return serializeTaskList(content) + '\n';
 
-    case 'taskItem':
+    case 'taskItem': {
       const checked = attrs?.checked ? '[x]' : '[ ]';
       return checked + ' ' + serializeChildren(content);
-
+    }
     case 'horizontalRule':
       return '---\n\n';
 
     case 'hardBreak':
       return '  \n';
 
-    case 'image':
+    case 'image': {
       const alt = attrs?.alt || '';
       const src = attrs?.src || '';
       const title = attrs?.title || '';
       return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`;
-
-    case 'youtube':
+    }
+    case 'youtube': {
       const youtubeId = attrs?.videoId || extractYouTubeId(attrs?.src);
       return `{{youtube:${youtubeId}}}\n\n`;
-
-    case 'vimeo':
+    }
+    case 'vimeo': {
       const vimeoId = attrs?.videoId || '';
       return `{{vimeo:${vimeoId}}}\n\n`;
-
+    }
     case 'table':
       return serializeTable(content) + '\n';
 
@@ -165,11 +165,12 @@ function applyMarks(text: string, marks: any[]): string {
       case 'strike':
         result = `~~${result}~~`;
         break;
-      case 'link':
+      case 'link': {
         const href = mark.attrs?.href || '';
         const title = mark.attrs?.title;
         result = title ? `[${result}](${href} "${title}")` : `[${result}](${href})`;
         break;
+      }
       case 'highlight':
         result = `==${result}==`;
         break;
@@ -315,11 +316,11 @@ export function markdownToTipTap(markdown: string): JSONContent {
     }
 
     // Unordered list
-    if (/^[\-\*\+]\s/.test(line)) {
+    if (/^[-*+]\s/.test(line)) {
       const listItems: JSONContent[] = [];
 
-      while (i < lines.length && /^[\-\*\+]\s/.test(lines[i])) {
-        const itemText = lines[i].replace(/^[\-\*\+]\s/, '');
+      while (i < lines.length && /^[-*+]\s/.test(lines[i])) {
+        const itemText = lines[i].replace(/^[-*+]\s/, '');
         listItems.push({
           type: 'listItem',
           content: [
@@ -365,12 +366,12 @@ export function markdownToTipTap(markdown: string): JSONContent {
     }
 
     // Task list
-    if (/^[\-\*]\s\[(x|\s)\]\s/i.test(line)) {
+    if (/^[-*]\s\[(x|\s)\]\s/i.test(line)) {
       const taskItems: JSONContent[] = [];
 
-      while (i < lines.length && /^[\-\*]\s\[(x|\s)\]\s/i.test(lines[i])) {
+      while (i < lines.length && /^[-*]\s\[(x|\s)\]\s/i.test(lines[i])) {
         const checked = /\[x\]/i.test(lines[i]);
-        const itemText = lines[i].replace(/^[\-\*]\s\[(x|\s)\]\s/i, '');
+        const itemText = lines[i].replace(/^[-*]\s\[(x|\s)\]\s/i, '');
 
         taskItems.push({
           type: 'taskItem',
@@ -455,9 +456,9 @@ function isSpecialLine(line: string): boolean {
     /^#{1,6}\s/.test(line) ||
     /^```/.test(line) ||
     /^> /.test(line) ||
-    /^[\-\*\+]\s/.test(line) ||
+    /^[-*+]\s/.test(line) ||
     /^\d+\.\s/.test(line) ||
-    /^[\-\*]\s\[/.test(line) ||
+    /^[-*]\s\[/.test(line) ||
     /^\{\{(youtube|vimeo):/.test(line) ||
     /^!\[/.test(line) ||
     /^[-*_]{3,}$/.test(line)

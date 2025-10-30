@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Highlighter, StickyNote, X } from 'lucide-react';
+import { StickyNote, X } from 'lucide-react';
 import { HighlightColor, TextSelection } from '../../hooks/useTextHighlight';
 
 const HIGHLIGHT_COLORS: { color: HighlightColor; label: string; className: string }[] = [

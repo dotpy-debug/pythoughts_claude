@@ -25,12 +25,19 @@ export function BlogHero({ post, onFollowClick }: BlogHeroProps) {
     <section className="relative mb-12">
       {/* Cover Image (optional) */}
       {post.cover_image && (
-        <div className="relative w-full h-[400px] mb-8 rounded-2xl overflow-hidden">
+        <div className="relative w-full h-[400px] mb-8 rounded-2xl overflow-hidden bg-[#161b22]">
           <img
             src={post.cover_image}
             alt={post.cover_image_alt || post.title}
             className="w-full h-full object-cover"
             loading="eager"
+            decoding="async"
+            onError={(e) => {
+              // Hide image on error
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              console.warn('Failed to load cover image:', post.cover_image);
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117] via-[#0d1117]/50 to-transparent" />
         </div>

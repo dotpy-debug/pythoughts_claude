@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Calendar, User, Tag, Clock } from 'lucide-react';
 import { Task } from '../../lib/supabase';
-import { Badge } from '../ui/Badge';
+import { Badge } from '../ui/badge';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 
 interface TaskCardProps {

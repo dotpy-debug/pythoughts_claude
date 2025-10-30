@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Image, Video, Trash2, Loader2, Copy, Check } from 'lucide-react';
+import { Upload, Video, Trash2, Loader2, Copy, Check } from 'lucide-react';
 import { mediaUpload, UploadedMedia } from '../../lib/media-upload';
 import { useAuth } from '../../contexts/AuthContext';
 import { ShadcnButton } from '../ui/ShadcnButton';
@@ -31,8 +31,9 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
       setMedia(userMedia);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load media';
+      const errorObj = err instanceof Error ? err : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Failed to load media library', { error: errorMessage });
+      logger.error('Failed to load media library', errorObj);
     } finally {
       setLoading(false);
     }
@@ -57,8 +58,9 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
       setMedia((prev) => [...uploadedMedia, ...prev]);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed';
+      const errorObj = err instanceof Error ? err : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Media upload failed', { error: errorMessage });
+      logger.error('Media upload failed', errorObj);
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -73,8 +75,9 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
       setMedia((prev) => prev.filter((m) => m.id !== mediaId));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Delete failed';
+      const errorObj = err instanceof Error ? err : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Media delete failed', { error: errorMessage });
+      logger.error('Media delete failed', errorObj);
     }
   };
 
@@ -84,9 +87,8 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
       setCopiedUrl(url);
       setTimeout(() => setCopiedUrl(null), 2000);
     } catch (err) {
-      logger.error('Failed to copy URL', {
-        error: err instanceof Error ? err.message : String(err),
-      });
+      const errorObj = err instanceof Error ? err : new Error(String(err));
+      logger.error('Failed to copy URL', errorObj);
     }
   };
 
@@ -117,7 +119,7 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
             className="hidden"
             disabled={uploading}
           />
-          <ShadcnButton as="span" disabled={uploading}>
+          <span className={`inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 ${uploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-800'} h-10 px-4 py-2 bg-gray-900 text-white border border-gray-700`}>
             {uploading ? (
               <>
                 <Loader2 className="animate-spin mr-2" size={16} />
@@ -129,7 +131,7 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
                 Upload Media
               </>
             )}
-          </ShadcnButton>
+          </span>
         </label>
       </div>
 
@@ -152,7 +154,9 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
               className="hidden"
               disabled={uploading}
             />
-            <ShadcnButton as="span">Upload Your First Media</ShadcnButton>
+            <span className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 cursor-pointer hover:bg-gray-800 h-10 px-4 py-2 bg-gray-900 text-white border border-gray-700">
+              Upload Your First Media
+            </span>
           </label>
         </div>
       ) : (

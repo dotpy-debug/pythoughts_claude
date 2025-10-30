@@ -1,31 +1,47 @@
-import { ReactNode } from 'react';
+import { HTMLAttributes } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../../lib/utils';
 
-type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'purple';
+const badgeVariants = cva(
+  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold font-mono transition-colors focus:outline-none focus:ring-2 focus:ring-terminal-green focus:ring-offset-2',
+  {
+    variants: {
+      variant: {
+        default:
+          'border-transparent bg-terminal-green text-gray-900 hover:bg-terminal-blue',
+        primary:
+          'border-transparent bg-terminal-blue text-white hover:bg-blue-600',
+        secondary:
+          'border-transparent bg-gray-800 text-gray-100 hover:bg-gray-700',
+        destructive:
+          'border-transparent bg-red-500 text-white hover:bg-red-600',
+        danger:
+          'border-transparent bg-red-500 text-white hover:bg-red-600',
+        outline: 'text-gray-400 border-gray-700',
+        success:
+          'border-transparent bg-terminal-green/20 text-terminal-green border-terminal-green/30',
+        warning:
+          'border-transparent bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
+        info:
+          'border-transparent bg-terminal-blue/20 text-terminal-blue border-terminal-blue/30',
+        purple:
+          'border-transparent bg-purple-500/20 text-purple-400 border-purple-500/30',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  }
+);
 
-interface BadgeProps {
-  children: ReactNode;
-  variant?: BadgeVariant;
-  className?: string;
-}
+export interface BadgeProps
+  extends HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
 
-const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-gray-100 text-gray-700',
-  primary: 'bg-logrocket-blue-100 text-logrocket-blue-700',
-  success: 'bg-green-100 text-green-700',
-  warning: 'bg-yellow-100 text-yellow-700',
-  danger: 'bg-red-100 text-red-700',
-  purple: 'bg-logrocket-purple-100 text-logrocket-purple-700',
-};
+export type BadgeVariant = NonNullable<BadgeProps['variant']>;
 
-export function Badge({ children, variant = 'default', className = '' }: BadgeProps) {
+export function Badge({ className, variant, ...props }: BadgeProps) {
   return (
-    <span
-      className={`
-        inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold
-        ${variantClasses[variant]} ${className}
-      `}
-    >
-      {children}
-    </span>
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
   );
 }

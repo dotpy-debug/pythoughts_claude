@@ -44,7 +44,11 @@ export function VersionHistoryModal({
       const data = await getPostVersions(postId);
       setVersions(data);
     } catch (err) {
-      logger.error('Error loading versions', { error: err, postId });
+      if (err instanceof Error) {
+        logger.error('Error loading versions', err, { postId });
+      } else {
+        logger.error('Error loading versions', { errorMessage: String(err), postId });
+      }
       setError('Failed to load version history');
     } finally {
       setLoading(false);
@@ -70,7 +74,11 @@ export function VersionHistoryModal({
         setError(result.error || 'Failed to restore version');
       }
     } catch (err) {
-      logger.error('Error restoring version', { error: err, postId, versionNumber });
+      if (err instanceof Error) {
+        logger.error('Error restoring version', err, { postId, versionNumber });
+      } else {
+        logger.error('Error restoring version', { errorMessage: String(err), postId, versionNumber });
+      }
       setError('An unexpected error occurred');
     } finally {
       setRestoring(false);
