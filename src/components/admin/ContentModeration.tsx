@@ -8,7 +8,7 @@
  * - Bulk actions
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getContentReports,
@@ -59,13 +59,7 @@ export function ContentModeration() {
 
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    if (profile) {
-      loadData();
-    }
-  }, [profile, activeTab, page, reportStatus, postFilter, postSearch]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -106,7 +100,13 @@ export function ContentModeration() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile, activeTab, page, reportStatus, postFilter, postSearch]);
+
+  useEffect(() => {
+    if (profile) {
+      loadData();
+    }
+  }, [profile, loadData]);
 
   const handleReportAction = async (
     reportId: string,

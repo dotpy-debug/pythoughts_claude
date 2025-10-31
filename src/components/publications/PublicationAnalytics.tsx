@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { supabase } from '../../lib/supabase';
@@ -102,11 +102,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
 
-  useEffect(() => {
-    loadAnalytics();
-  }, [publicationId, timeRange]);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     setIsLoading(true);
     try {
       // Load publication stats from materialized view
@@ -162,7 +158,11 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [publicationId, timeRange]);
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [loadAnalytics]);
 
   const calculateTotals = () => {
     return dailyAnalytics.reduce(

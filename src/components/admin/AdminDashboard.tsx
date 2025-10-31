@@ -8,9 +8,9 @@
  * - Recent activity
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getDashboardStats } from '../../actions/admin';
+import { getDashboardStats, type DashboardStats } from '../../actions/admin';
 import {
   Users,
   FileText,
@@ -28,26 +28,13 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-interface DashboardStats {
-  totalUsers: number;
-  totalPosts: number;
-  totalComments: number;
-  pendingReports: number;
-  activeSuspensions: number;
-  newUsersToday: number;
-}
-
 export function AdminDashboard() {
   const { profile } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('overview');
 
-  useEffect(() => {
-    loadStats();
-  }, [profile]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -61,7 +48,11 @@ export function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   const navigationItems = [
     {

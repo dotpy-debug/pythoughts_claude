@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Badge } from '../ui/badge';
@@ -68,11 +68,7 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadModerationData();
-  }, [publicationId]);
-
-  const loadModerationData = async () => {
+  const loadModerationData = useCallback(async () => {
     setIsLoading(true);
     try {
       // Load moderation logs
@@ -168,7 +164,11 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [publicationId]);
+
+  useEffect(() => {
+    loadModerationData();
+  }, [loadModerationData]);
 
   const getActionIcon = (actionType: string) => {
     switch (actionType) {

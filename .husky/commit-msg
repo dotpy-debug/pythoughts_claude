@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Get the commit message
+commit_msg=$(cat "$1")
+
+# Check if commit message follows conventional commits format
+# Format: type(scope): subject
+# Example: feat(auth): add 2FA support
+commit_regex='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,100}'
+
+if ! echo "$commit_msg" | grep -iqE "$commit_regex"; then
+  echo ""
+  echo "ERROR: Invalid commit message format!"
+  echo ""
+  echo "Commit message must follow the Conventional Commits specification:"
+  echo "  <type>(<scope>): <subject>"
+  echo ""
+  echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+  echo "Scope: Optional, indicates what part of the codebase is affected"
+  echo "Subject: Brief description (1-100 chars)"
+  echo ""
+  echo "Examples:"
+  echo "  feat(auth): add two-factor authentication"
+  echo "  fix(blog): resolve markdown rendering issue"
+  echo "  docs: update README with setup instructions"
+  echo ""
+  exit 1
+fi

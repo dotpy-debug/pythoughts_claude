@@ -8,7 +8,7 @@
  * - Publication analytics
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getPublications,
@@ -59,20 +59,7 @@ export function PublicationsManagement() {
     pendingSubmissions: 0,
   });
 
-  useEffect(() => {
-    if (profile) {
-      loadPublications();
-      loadStats();
-    }
-  }, [profile, searchTerm]);
-
-  useEffect(() => {
-    if (selectedPublication) {
-      loadPublicationDetails();
-    }
-  }, [selectedPublication?.id, activeTab]);
-
-  const loadPublications = async () => {
+  const loadPublications = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -90,18 +77,18 @@ export function PublicationsManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile, searchTerm]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     if (!profile) return;
 
     const result = await getPublicationStats({ currentUserId: profile.id });
     if (result.stats) {
       setStats(result.stats);
     }
-  };
+  }, [profile]);
 
-  const loadPublicationDetails = async () => {
+  const loadPublicationDetails = useCallback(async () => {
     if (!profile || !selectedPublication) return;
 
     if (activeTab === 'members') {
@@ -121,7 +108,20 @@ export function PublicationsManagement() {
         setSubmissions(result.submissions);
       }
     }
-  };
+  }, [profile, selectedPublication, activeTab]);
+
+  useEffect(() => {
+    if (profile) {
+      loadPublications();
+      loadStats();
+    }
+  }, [profile, loadPublications, loadStats]);
+
+  useEffect(() => {
+    if (selectedPublication) {
+      loadPublicationDetails();
+    }
+  }, [selectedPublication, loadPublicationDetails]);
 
   const handleToggleVisibility = async (pub: Publication) => {
     if (!profile) return;

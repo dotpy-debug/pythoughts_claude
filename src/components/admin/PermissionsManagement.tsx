@@ -10,7 +10,7 @@
  * - Audit logs
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getAdminRoles,
@@ -49,19 +49,7 @@ export function PermissionsManagement() {
     permissions: {} as Record<string, boolean>,
   });
 
-  useEffect(() => {
-    if (profile && isSuperAdmin) {
-      loadRoles();
-    }
-  }, [profile, isSuperAdmin]);
-
-  useEffect(() => {
-    if (selectedRole && profile) {
-      loadRoleUsers(selectedRole.name);
-    }
-  }, [selectedRole, profile]);
-
-  const loadRoles = async () => {
+  const loadRoles = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -75,9 +63,9 @@ export function PermissionsManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile]);
 
-  const loadRoleUsers = async (roleName: string) => {
+  const loadRoleUsers = useCallback(async (roleName: string) => {
     if (!profile) return;
 
     try {
@@ -91,7 +79,19 @@ export function PermissionsManagement() {
     } catch (error) {
       console.error('Error loading role users:', error);
     }
-  };
+  }, [profile]);
+
+  useEffect(() => {
+    if (profile && isSuperAdmin) {
+      loadRoles();
+    }
+  }, [profile, isSuperAdmin, loadRoles]);
+
+  useEffect(() => {
+    if (selectedRole && profile) {
+      loadRoleUsers(selectedRole.name);
+    }
+  }, [selectedRole, profile, loadRoleUsers]);
 
   const handleCreateRole = async () => {
     if (!profile) return;

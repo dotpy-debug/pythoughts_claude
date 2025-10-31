@@ -235,7 +235,7 @@ async function getTrendingPosts() {
     title: post.title,
     vote_count: post.vote_count,
     comment_count: post.comment_count,
-    view_count: (post.post_stats as any)?.[0]?.view_count || 0,
+    view_count: (post.post_stats as Array<{ view_count: number }> | undefined)?.[0]?.view_count || 0,
   }));
 }
 

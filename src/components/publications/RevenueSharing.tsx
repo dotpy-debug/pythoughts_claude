@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -66,12 +66,7 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadRevenueShares();
-    loadMembers();
-  }, [publicationId]);
-
-  const loadRevenueShares = async () => {
+  const loadRevenueShares = useCallback(async () => {
     setIsLoading(true);
     try {
       const { data, error: fetchError } = await supabase
@@ -118,9 +113,9 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [publicationId]);
 
-  const loadMembers = async () => {
+  const loadMembers = useCallback(async () => {
     try {
       const { data, error: fetchError } = await supabase
         .from('publication_members')
@@ -147,7 +142,12 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
     } catch (err) {
       logger.error('Failed to load members', err as Error);
     }
-  };
+  }, [publicationId]);
+
+  useEffect(() => {
+    loadRevenueShares();
+    loadMembers();
+  }, [loadRevenueShares, loadMembers]);
 
   const handleAddShare = async () => {
     if (!selectedMember) {

@@ -9,7 +9,7 @@
  * - Data export functionality
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getAnalytics, exportAnalytics, type AnalyticsData } from '../../actions/analytics';
 import { LineChart, BarChart, PieChart, StatCard } from '../charts/SimpleChart';
@@ -34,13 +34,7 @@ export function AnalyticsDashboard() {
   const [dateRange, setDateRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [exporting, setExporting] = useState(false);
 
-  useEffect(() => {
-    if (profile) {
-      loadAnalytics();
-    }
-  }, [profile, dateRange]);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -58,7 +52,13 @@ export function AnalyticsDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile, dateRange]);
+
+  useEffect(() => {
+    if (profile) {
+      loadAnalytics();
+    }
+  }, [profile, loadAnalytics]);
 
   const handleExport = async (format: 'json' | 'csv') => {
     if (!profile) return;

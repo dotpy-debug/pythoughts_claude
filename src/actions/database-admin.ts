@@ -12,6 +12,7 @@
 import { supabase } from '../lib/supabase';
 import { requireRole, logAdminActivity, ADMIN_ROLES } from '../lib/admin-auth';
 import { logger } from '../lib/logger';
+import type { DatabaseRecord } from '../types/common';
 
 /**
  * Get list of all tables in the database
@@ -117,7 +118,7 @@ export async function browseTableData(params: {
   limit?: number;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
-}): Promise<{ data: any[]; total: number; error?: string }> {
+}): Promise<{ data: DatabaseRecord[]; total: number; error?: string }> {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
@@ -177,7 +178,7 @@ export async function searchTableData(params: {
   searchValue: string;
   page?: number;
   limit?: number;
-}): Promise<{ data: any[]; total: number; error?: string }> {
+}): Promise<{ data: DatabaseRecord[]; total: number; error?: string }> {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
@@ -233,7 +234,7 @@ export async function updateTableRecord(params: {
   currentUserId: string;
   tableName: string;
   recordId: string;
-  updates: Record<string, any>;
+  updates: DatabaseRecord;
 }): Promise<{ success: boolean; error?: string }> {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);

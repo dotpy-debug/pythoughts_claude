@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run lint-staged for code quality checks
+npx lint-staged
+
+# Run TypeScript type checking on staged files
+echo "Running TypeScript type checking..."
+npm run typecheck
+
+# Prevent commits with console.log (warning only, doesn't block)
+echo "Checking for console.log statements..."
+git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$' | while read file; do
+  if git diff --cached "$file" | grep -E '^\+.*console\.(log|warn|error|info|debug)' > /dev/null; then
+    echo "Warning: Found console statements in $file"
+  fi
+done

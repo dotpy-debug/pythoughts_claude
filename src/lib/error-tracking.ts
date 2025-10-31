@@ -28,7 +28,7 @@ export interface ErrorContext {
   /**
    * Extra data to attach to the error
    */
-  extra?: Record<string, any>;
+  extra?: Record<string, unknown>;
 
   /**
    * Error severity level
@@ -46,7 +46,7 @@ export interface ErrorBreadcrumb {
   message: string;
   category: string;
   level: 'fatal' | 'error' | 'warning' | 'info' | 'debug';
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 class ErrorTracker {
@@ -297,11 +297,11 @@ export function initErrorTracking(config: {
 /**
  * Helper to wrap async functions with error tracking
  */
-export function withErrorTracking<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
+export function withErrorTracking<TArgs extends unknown[], TReturn>(
+  fn: (...args: TArgs) => Promise<TReturn>,
   context: Omit<ErrorContext, 'user'> = {}
-): T {
-  return (async (...args: Parameters<T>) => {
+): (...args: TArgs) => Promise<TReturn> {
+  return async (...args: TArgs): Promise<TReturn> => {
     try {
       return await fn(...args);
     } catch (error) {
@@ -310,17 +310,17 @@ export function withErrorTracking<T extends (...args: any[]) => Promise<any>>(
       }
       throw error;
     }
-  }) as T;
+  };
 }
 
 /**
  * Helper to wrap sync functions with error tracking
  */
-export function withErrorTrackingSync<T extends (...args: any[]) => any>(
-  fn: T,
+export function withErrorTrackingSync<TArgs extends unknown[], TReturn>(
+  fn: (...args: TArgs) => TReturn,
   context: Omit<ErrorContext, 'user'> = {}
-): T {
-  return ((...args: Parameters<T>) => {
+): (...args: TArgs) => TReturn {
+  return (...args: TArgs): TReturn => {
     try {
       return fn(...args);
     } catch (error) {
@@ -329,7 +329,7 @@ export function withErrorTrackingSync<T extends (...args: any[]) => any>(
       }
       throw error;
     }
-  }) as T;
+  };
 }
 
 // Export convenience functions

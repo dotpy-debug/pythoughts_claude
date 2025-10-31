@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '../ui/Button';
 import { Label } from '../ui/label';
 import { Checkbox } from '../ui/checkbox';
@@ -51,13 +51,7 @@ export function CrossPostDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadAvailablePublications();
-    }
-  }, [isOpen, postId]);
-
-  const loadAvailablePublications = async () => {
+  const loadAvailablePublications = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -131,7 +125,13 @@ export function CrossPostDialog({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [postId, currentPublicationId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadAvailablePublications();
+    }
+  }, [isOpen, loadAvailablePublications]);
 
   const handleTogglePublication = (publicationId: string) => {
     setSelectedPublications((prev) => {

@@ -87,7 +87,13 @@ export async function updateReportStatus(params: {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
 
-    const updates: any = {
+    const updates: {
+      status: string;
+      assigned_to: string;
+      updated_at: string;
+      resolution_notes?: string;
+      resolved_at?: string;
+    } = {
       status: params.status,
       assigned_to: params.currentUserId,
       updated_at: new Date().toISOString(),

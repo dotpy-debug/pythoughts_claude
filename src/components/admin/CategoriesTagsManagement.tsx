@@ -9,7 +9,7 @@
  * - Analytics and statistics
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getCategories,
@@ -71,13 +71,7 @@ export function CategoriesTagsManagement() {
   const [_mergeTargetTag, _setMergeTargetTag] = useState<string>('');
   const [featuredTags, setFeaturedTags] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (profile) {
-      loadData();
-    }
-  }, [profile, activeTab, tagPage, tagSearch, tagSortBy]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -114,7 +108,13 @@ export function CategoriesTagsManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile, activeTab, tagPage, tagSearch, tagSortBy]);
+
+  useEffect(() => {
+    if (profile) {
+      loadData();
+    }
+  }, [profile, loadData]);
 
   const handleCreateCategory = async () => {
     if (!profile) return;

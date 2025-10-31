@@ -11,6 +11,7 @@
 import { supabase } from '../lib/supabase';
 import { requireRole, logAdminActivity, ADMIN_ROLES } from '../lib/admin-auth';
 import { logger } from '../lib/logger';
+import type { PublicationMemberWithProfile, PublicationSubmissionWithRelations, DatabaseRecord } from '../types/common';
 
 export interface Publication {
   id: string;
@@ -219,7 +220,7 @@ export async function deletePublication(params: {
 export async function getPublicationMembers(params: {
   currentUserId: string;
   publicationId: string;
-}): Promise<{ members: PublicationMember[]; error?: string }> {
+}): Promise<{ members: PublicationMemberWithProfile[]; error?: string }> {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
 
@@ -239,7 +240,7 @@ export async function getPublicationMembers(params: {
       return { members: [], error: 'Failed to fetch members' };
     }
 
-    return { members: (data as any) ?? [] };
+    return { members: (data as PublicationMemberWithProfile[]) ?? [] };
   } catch (error) {
     logger.error('Exception in getPublicationMembers', { errorDetails: error });
     return {
@@ -345,7 +346,7 @@ export async function getPublicationSubmissions(params: {
   currentUserId: string;
   publicationId?: string;
   status?: 'pending' | 'approved' | 'rejected' | 'revision_requested';
-}): Promise<{ submissions: PublicationSubmission[]; total: number; error?: string }> {
+}): Promise<{ submissions: PublicationSubmissionWithRelations[]; total: number; error?: string }> {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
 
@@ -379,7 +380,7 @@ export async function getPublicationSubmissions(params: {
     }
 
     return {
-      submissions: (data as any) ?? [],
+      submissions: (data as PublicationSubmissionWithRelations[]) ?? [],
       total: count ?? 0,
     };
   } catch (error) {
@@ -460,7 +461,7 @@ export async function getPublicationAnalytics(params: {
   currentUserId: string;
   publicationId: string;
   dateRange?: '7d' | '30d' | '90d';
-}): Promise<{ analytics: any; error?: string }> {
+}): Promise<{ analytics: DatabaseRecord[] | null; error?: string }> {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
 

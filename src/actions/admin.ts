@@ -22,6 +22,18 @@ import {
 import { logger } from '../lib/logger';
 
 /**
+ * Dashboard statistics type
+ */
+export interface DashboardStats {
+  totalUsers: number;
+  totalPosts: number;
+  totalComments: number;
+  pendingReports: number;
+  activeSuspensions: number;
+  newUsersToday: number;
+}
+
+/**
  * Get all users with pagination and filtering
  */
 export async function getUsers(params: {
@@ -424,7 +436,7 @@ export async function updateUserNotes(params: {
  */
 export async function getDashboardStats(params: {
   currentUserId: string;
-}): Promise<{ stats: any; error?: string }> {
+}): Promise<{ stats: DashboardStats | null; error?: string }> {
   try {
     await requireAdmin(params.currentUserId);
 

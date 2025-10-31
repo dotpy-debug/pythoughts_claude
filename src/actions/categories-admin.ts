@@ -11,6 +11,7 @@
 import { supabase, type Category, type Tag } from '../lib/supabase';
 import { requireRole, logAdminActivity, ADMIN_ROLES } from '../lib/admin-auth';
 import { logger } from '../lib/logger';
+import type { FeaturedTagsSetting } from '../types/common';
 
 /**
  * Get all categories with statistics
@@ -496,7 +497,8 @@ export async function getFeaturedTags(params: {
       return { tags: [], error: 'Failed to fetch featured tags' };
     }
 
-    const tags = (data?.value as any)?.tags || [];
+    const settingValue = data?.value as FeaturedTagsSetting | null;
+    const tags = settingValue?.tags || [];
     return { tags };
   } catch (error) {
     logger.error('Exception in getFeaturedTags', { errorDetails: error });

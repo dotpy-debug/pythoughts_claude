@@ -335,7 +335,7 @@ export type Tag = {
   id: string;
   name: string;
   slug: string;
-  description: string;
+  description: string | null;
   follower_count: number;
   post_count: number;
   created_at: string;

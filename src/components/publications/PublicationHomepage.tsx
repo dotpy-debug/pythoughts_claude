@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
@@ -68,11 +68,7 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('posts');
 
-  useEffect(() => {
-    loadPublication();
-  }, [slug]);
-
-  const loadPublication = async () => {
+  const loadPublication = useCallback(async () => {
     setIsLoading(true);
     try {
       // Load publication
@@ -186,7 +182,11 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [slug]);
+
+  useEffect(() => {
+    loadPublication();
+  }, [loadPublication]);
 
   const handleSubscribe = async () => {
     try {

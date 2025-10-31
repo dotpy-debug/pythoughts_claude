@@ -179,7 +179,7 @@ export async function deleteAdminRole(params: {
 export async function getUsersByRole(params: {
   currentUserId: string;
   role: string;
-}): Promise<{ users: any[]; total: number; error?: string }> {
+}): Promise<{ users: Array<{ id: string; username: string; avatar_url: string | null; role: string; created_at: string }>; total: number; error?: string }> {
   try {
     await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 

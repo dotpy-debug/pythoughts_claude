@@ -10,7 +10,7 @@
  * WARNING: Only accessible to super admins
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getDatabaseTables,
@@ -54,20 +54,7 @@ export function DatabaseBrowser() {
   const [editedFields, setEditedFields] = useState<Record<string, any>>({});
   const [stats, setStats] = useState<any>(null);
 
-  useEffect(() => {
-    if (profile && isSuperAdmin) {
-      loadTables();
-      loadStats();
-    }
-  }, [profile, isSuperAdmin]);
-
-  useEffect(() => {
-    if (selectedTable && profile) {
-      loadTableData();
-    }
-  }, [selectedTable, page, profile]);
-
-  const loadTables = async () => {
+  const loadTables = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -81,9 +68,9 @@ export function DatabaseBrowser() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     if (!profile) return;
 
     try {
@@ -94,9 +81,9 @@ export function DatabaseBrowser() {
     } catch (error) {
       console.error('Error loading stats:', error);
     }
-  };
+  }, [profile]);
 
-  const loadTableData = async () => {
+  const loadTableData = useCallback(async () => {
     if (!profile || !selectedTable) return;
 
     setLoading(true);
@@ -117,7 +104,20 @@ export function DatabaseBrowser() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile, selectedTable, page]);
+
+  useEffect(() => {
+    if (profile && isSuperAdmin) {
+      loadTables();
+      loadStats();
+    }
+  }, [profile, isSuperAdmin, loadTables, loadStats]);
+
+  useEffect(() => {
+    if (selectedTable && profile) {
+      loadTableData();
+    }
+  }, [selectedTable, profile, loadTableData]);
 
   const handleSearch = async () => {
     if (!profile || !selectedTable || !searchColumn || !searchValue) return;

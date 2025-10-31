@@ -9,7 +9,7 @@
  * - Activity tracking
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   getUsers,
@@ -51,13 +51,7 @@ export function UserManagement() {
   const [suspendType, setSuspendType] = useState<'warning' | 'temporary' | 'permanent'>('warning');
   const [suspendDays, setSuspendDays] = useState(7);
 
-  useEffect(() => {
-    if (profile) {
-      loadUsers();
-    }
-  }, [profile, page, searchTerm, roleFilter, suspendedFilter]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -80,7 +74,13 @@ export function UserManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile, page, searchTerm, roleFilter, suspendedFilter]);
+
+  useEffect(() => {
+    if (profile) {
+      loadUsers();
+    }
+  }, [profile, loadUsers]);
 
   const handleUserClick = async (user: Profile) => {
     if (!profile) return;

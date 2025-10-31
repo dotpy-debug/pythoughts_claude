@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logger';
+import type { UserReputationWithProfile } from '../types/common';
 
 export type UserReputation = {
   user_id: string;
@@ -222,7 +223,7 @@ export async function getAllBadges(): Promise<Badge[]> {
 /**
  * Get top users by reputation
  */
-export async function getTopUsersByReputation(limit: number = 10): Promise<Array<UserReputation & { profiles?: any }>> {
+export async function getTopUsersByReputation(limit: number = 10): Promise<UserReputationWithProfile[]> {
   try {
     const { data, error } = await supabase
       .from('user_reputation')

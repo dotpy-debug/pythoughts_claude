@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logger';
 import { PostVersion } from '../lib/supabase';
+import type { VersionChanges } from '../types/common';
 
 /**
  * Get all versions for a specific post
@@ -167,13 +168,7 @@ export async function comparePostVersions(
   version2: number
 ): Promise<{
   success: boolean;
-  changes?: {
-    title?: { old: string; new: string };
-    content?: { old: string; new: string; lengthDiff: number };
-    subtitle?: { old: string; new: string };
-    image_url?: { old: string; new: string };
-    category?: { old: string; new: string };
-  };
+  changes?: VersionChanges;
   error?: string;
 }> {
   try {
@@ -191,7 +186,7 @@ export async function comparePostVersions(
     }
 
     const [oldVersion, newVersion] = versions;
-    const changes: any = {};
+    const changes: VersionChanges = {};
 
     // Compare fields
     if (oldVersion.title !== newVersion.title) {
@@ -249,8 +244,10 @@ export async function addVersionDescription(
       return { success: false, error: 'Version not found' };
     }
 
-    const post = version.posts as any;
-    if (post.author_id !== userId) {
+    // Supabase returns arrays for joined relations
+    const rawVersion = version as { posts: Array<{ author_id: string }> };
+    const post = rawVersion.posts?.[0];
+    if (!post || post.author_id !== userId) {
       return { success: false, error: 'Unauthorized' };
     }
 

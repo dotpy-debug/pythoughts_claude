@@ -104,10 +104,18 @@ export async function getTrendingTags(limit: number = 10, days: number = 7): Pro
     }>();
 
     for (const item of recentPostTags) {
-      if (item.tags && !Array.isArray(item.tags)) {
-        const tag = item.tags as Tag;
-        const post = item.posts as any;
+      // Supabase returns arrays for joined relations
+      const rawItem = item as {
+        tag_id: string;
+        tags: Array<{ id: string; name: string; slug: string; description: string | null; follower_count: number; post_count: number; created_at: string }>;
+        posts: Array<{ created_at: string; vote_count: number; comment_count: number }>;
+      };
 
+      // Extract first element from arrays since we expect single relations
+      const tag = rawItem.tags?.[0];
+      const post = rawItem.posts?.[0];
+
+      if (tag) {
         if (!tagActivity.has(tag.id)) {
           tagActivity.set(tag.id, {
             tag,
@@ -118,7 +126,7 @@ export async function getTrendingTags(limit: number = 10, days: number = 7): Pro
 
         const activity = tagActivity.get(tag.id)!;
         activity.recent_posts_count++;
-        activity.total_engagement += (post.vote_count || 0) + (post.comment_count || 0);
+        activity.total_engagement += (post?.vote_count || 0) + (post?.comment_count || 0);
       }
     }
 
@@ -196,21 +204,32 @@ export async function getTagDetails(tagSlug: string, userId?: string): Promise<T
 
     if (postTagsData) {
       for (const item of postTagsData) {
-        const post = item.posts as any;
-        if (post && post.profiles) {
-          const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
-          if (profile) {
-            const existing = authorCounts.get(profile.id);
-            if (existing) {
-              existing.post_count++;
-            } else {
-              authorCounts.set(profile.id, {
-                id: profile.id,
-                username: profile.username,
-                avatar_url: profile.avatar_url,
-                post_count: 1,
-              });
-            }
+        // Supabase returns arrays for joined relations
+        const rawItem = item as {
+          posts: Array<{
+            author_id: string;
+            profiles: Array<{
+              id: string;
+              username: string;
+              avatar_url: string | null;
+            }>;
+          }>;
+        };
+
+        const post = rawItem.posts?.[0];
+        const profile = post?.profiles?.[0];
+
+        if (post && profile) {
+          const existing = authorCounts.get(profile.id);
+          if (existing) {
+            existing.post_count++;
+          } else {
+            authorCounts.set(profile.id, {
+              id: profile.id,
+              username: profile.username,
+              avatar_url: profile.avatar_url || '', // Handle null avatar_url with default empty string
+              post_count: 1,
+            });
           }
         }
       }
@@ -313,8 +332,9 @@ export async function getUserFollowedTags(userId: string): Promise<Tag[]> {
 
     if (!data) return [];
 
+    // Supabase returns arrays for joined relations
     return data
-      .map(item => (item.tags && !Array.isArray(item.tags) ? (item.tags as Tag) : null))
+      .map((item: { tags: Array<Tag> | null }) => item.tags?.[0] || null)
       .filter((tag): tag is Tag => tag !== null);
   } catch (error) {
     logger.error('Unexpected error in getUserFollowedTags', error as Error, { userId });

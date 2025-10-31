@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -14,13 +14,7 @@ export function BookmarkButton({ postId, variant = 'default', showLabel = false 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      checkBookmarkStatus();
-    }
-  }, [user, postId]);
-
-  const checkBookmarkStatus = async () => {
+  const checkBookmarkStatus = useCallback(async () => {
     if (!user) return;
 
     const { data, error } = await supabase
@@ -35,7 +29,13 @@ export function BookmarkButton({ postId, variant = 'default', showLabel = false 
     } else {
       setIsBookmarked(false);
     }
-  };
+  }, [user, postId]);
+
+  useEffect(() => {
+    if (user) {
+      checkBookmarkStatus();
+    }
+  }, [user, checkBookmarkStatus]);
 
   const handleToggleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();

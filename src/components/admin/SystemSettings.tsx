@@ -10,7 +10,7 @@
  * - Announcement banners
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getSystemSettings, updateSystemSetting } from '../../actions/admin';
 import type { SystemSetting } from '../../lib/supabase';
@@ -32,13 +32,7 @@ export function SystemSettings() {
   const [editedSettings, setEditedSettings] = useState<Record<string, any>>({});
   const [activeCategory, setActiveCategory] = useState('system');
 
-  useEffect(() => {
-    if (profile && isAdmin) {
-      loadSettings();
-    }
-  }, [profile, isAdmin]);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     if (!profile) return;
 
     setLoading(true);
@@ -59,7 +53,13 @@ export function SystemSettings() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profile]);
+
+  useEffect(() => {
+    if (profile && isAdmin) {
+      loadSettings();
+    }
+  }, [profile, isAdmin, loadSettings]);
 
   const handleSaveSetting = async (key: string) => {
     if (!profile) return;

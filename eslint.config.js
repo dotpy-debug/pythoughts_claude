@@ -3,6 +3,11 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
+import prettierConfig from 'eslint-config-prettier';
+
+// Import Next.js ESLint config for flat config
+// Note: eslint-config-next provides both legacy and flat config support
+import nextPlugin from '@next/eslint-plugin-next';
 
 export default tseslint.config(
   {
@@ -14,11 +19,13 @@ export default tseslint.config(
       'coverage',
       '*.config.js',
       '*.config.ts',
-      'scripts/**/*.mjs'
+      'scripts/**/*.mjs',
+      '.husky'
     ]
   },
+  // Base config for all TypeScript files
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended, prettierConfig],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -40,7 +47,20 @@ export default tseslint.config(
         caughtErrorsIgnorePattern: '^_'
       }],
       '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn', // Changed from error to warn
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+  // Next.js specific config for app directory and server components
+  {
+    files: ['src/app/**/*.{ts,tsx}', 'src/actions/**/*.{ts,tsx}'],
+    plugins: {
+      '@next/next': nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
+      // Disable react-refresh for Next.js Server Components
+      'react-refresh/only-export-components': 'off',
     },
   }
 );

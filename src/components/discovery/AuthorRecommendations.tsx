@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Users, Award, FileText } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -26,11 +26,7 @@ export function AuthorRecommendations() {
   const [loading, setLoading] = useState(true);
   const [followingSet, setFollowingSet] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    loadAuthors();
-  }, [user]);
-
-  const loadAuthors = async () => {
+  const loadAuthors = useCallback(async () => {
     setLoading(true);
     try {
       // Get authors with high engagement
@@ -125,7 +121,11 @@ export function AuthorRecommendations() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadAuthors();
+  }, [loadAuthors]);
 
   const handleFollow = async (authorId: string) => {
     if (!user) {

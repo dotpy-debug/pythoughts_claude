@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Hash, ChevronRight } from 'lucide-react';
 import { getTrendingTags } from '../../actions/tags';
@@ -15,15 +15,7 @@ export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsPro
   const [topics, setTopics] = useState<TagWithStats[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadTrendingTopics();
-
-    // Refresh every 5 minutes
-    const interval = setInterval(loadTrendingTopics, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [limit]);
-
-  const loadTrendingTopics = async () => {
+  const loadTrendingTopics = useCallback(async () => {
     try {
       const trending = await getTrendingTags(limit, 7);
       setTopics(trending);
@@ -32,7 +24,15 @@ export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsPro
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
+
+  useEffect(() => {
+    loadTrendingTopics();
+
+    // Refresh every 5 minutes
+    const interval = setInterval(loadTrendingTopics, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [loadTrendingTopics]);
 
   const handleTopicClick = (slug: string) => {
     navigate(`/tags/${slug}`);

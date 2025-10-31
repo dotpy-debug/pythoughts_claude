@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -50,11 +50,7 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
   const [newResourceTitle, setNewResourceTitle] = useState('');
   const [newResourceUrl, setNewResourceUrl] = useState('');
 
-  useEffect(() => {
-    loadStyleGuide();
-  }, [publicationId]);
-
-  const loadStyleGuide = async () => {
+  const loadStyleGuide = useCallback(async () => {
     setIsLoading(true);
     try {
       const { data, error: fetchError } = await supabase
@@ -88,7 +84,11 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [publicationId]);
+
+  useEffect(() => {
+    loadStyleGuide();
+  }, [loadStyleGuide]);
 
   const handleSave = async () => {
     setIsSaving(true);
