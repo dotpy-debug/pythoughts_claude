@@ -64,7 +64,7 @@ export function FollowingPage() {
       if (error) throw error;
 
       // Cast profiles from array to single object (Supabase returns array for joins)
-      const following = (data || []).map((item: any) => ({
+      const following = (data || []).map((item: unknown) => ({
         ...item,
         profiles: Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
       }));

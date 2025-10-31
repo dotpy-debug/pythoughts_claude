@@ -99,7 +99,7 @@ export function CrossPostDialog({
 
       // Filter publications
       const availablePubs = (memberships || [])
-        .filter((m: any) => {
+        .filter((m: { role?: string }) => {
           const pub = m.publication;
           return (
             pub.allow_cross_posting && // Publication allows cross-posting
@@ -107,7 +107,7 @@ export function CrossPostDialog({
             pub.id !== currentPublicationId // Not the current publication
           );
         })
-        .map((m: any) => ({
+        .map((m: { publication_id: string; publications?: { name?: string } }) => ({
           id: m.publication.id,
           slug: m.publication.slug,
           name: m.publication.name,

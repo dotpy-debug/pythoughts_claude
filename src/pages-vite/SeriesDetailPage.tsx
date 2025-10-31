@@ -47,7 +47,7 @@ export function SeriesDetailPage() {
       if (postsError) throw postsError;
 
       const orderedPosts = seriesPostsData
-        ?.map((sp: any) => sp.posts)
+        ?.map((sp: { posts?: unknown }) => sp.posts)
         .filter((post): post is Post => post !== null) || [];
 
       setPosts(orderedPosts);
@@ -112,7 +112,7 @@ export function SeriesDetailPage() {
           <div className="flex items-center space-x-4 mt-4 text-sm text-gray-500 font-mono">
             <span>{posts.length} posts</span>
             <span>•</span>
-            <span>by {(series.profiles as any)?.username}</span>
+            <span>by {(series.profiles as { username?: string } | null)?.username || 'Unknown'}</span>
           </div>
         </div>
 

@@ -1,9 +1,17 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { codecovVitePlugin } from '@codecov/vite-plugin';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    codecovVitePlugin({
+      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+      bundleName: 'pythoughts',
+      uploadToken: process.env.CODECOV_TOKEN,
+    }),
+  ],
   test: {
     // Test environment
     environment: 'jsdom',
@@ -18,15 +26,30 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: './coverage',
       exclude: [
         'node_modules/',
         'src/test/',
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData',
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+        '**/__tests__/**',
         'dist/',
+        'build/',
+        '.next/',
         '.eslintrc.cjs',
+        'server/',
+        'scripts/',
+        'playwright.config.ts',
+        'vite.config.ts',
+        'vitest.config.ts',
+        'next.config.js',
+        'postcss.config.js',
+        'tailwind.config.ts',
       ],
+      include: ['src/**/*.{ts,tsx}'],
       // Coverage thresholds
       thresholds: {
         lines: 70,

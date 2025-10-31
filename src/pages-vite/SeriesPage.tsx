@@ -166,8 +166,8 @@ export function SeriesPage() {
                   {series.description}
                 </p>
                 <div className="flex items-center justify-between text-xs text-gray-500 font-mono pt-2 border-t border-gray-800">
-                  <span>{(series as any).series_posts?.length || 0} posts</span>
-                  <span>by {(series.profiles as any)?.username}</span>
+                  <span>{(series as { series_posts?: unknown[] }).series_posts?.length || 0} posts</span>
+                  <span>by {(series.profiles as { username?: string } | null)?.username || 'Unknown'}</span>
                 </div>
               </div>
             </div>

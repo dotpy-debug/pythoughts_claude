@@ -10,7 +10,7 @@
  * - Performance metrics
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -132,7 +132,7 @@ export function EnhancedAnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   // Data states
-  const [timeSeriesData, setTimeSeriesData] = useState<Record<string, any>>({});
+  const [timeSeriesData, setTimeSeriesData] = useState<Record<string, unknown>>({});
   const [funnelData, setFunnelData] = useState<FunnelStep[]>([]);
   const [topPosts, setTopPosts] = useState<any[]>([]);
   const [metrics, setMetrics] = useState({
@@ -144,12 +144,7 @@ export function EnhancedAnalyticsPage() {
     readsChange: 0,
   });
 
-  useEffect(() => {
-    if (!user) return;
-    loadAnalytics();
-  }, [user, timeRange]);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -216,15 +211,20 @@ export function EnhancedAnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, timeRange]);
+
+  useEffect(() => {
+    if (!user) return;
+    loadAnalytics();
+  }, [user, loadAnalytics]);
 
   // Prepare chart data
   const viewsTrendData = {
-    labels: timeSeriesData.views?.map((p: any) => p.date) || [],
+    labels: timeSeriesData.views?.map((p: { date: string }) => p.date) || [],
     datasets: [
       {
         label: 'Views',
-        data: timeSeriesData.views?.map((p: any) => p.value) || [],
+        data: timeSeriesData.views?.map((p: { value: number }) => p.value) || [],
         borderColor: chartColors.primary,
         backgroundColor: `${chartColors.primary}33`,
         fill: true,
@@ -232,7 +232,7 @@ export function EnhancedAnalyticsPage() {
       },
       {
         label: 'Reads',
-        data: timeSeriesData.reads?.map((p: any) => p.value) || [],
+        data: timeSeriesData.reads?.map((p: { value: number }) => p.value) || [],
         borderColor: chartColors.secondary,
         backgroundColor: `${chartColors.secondary}33`,
         fill: true,

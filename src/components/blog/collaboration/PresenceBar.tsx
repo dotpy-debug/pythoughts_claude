@@ -36,8 +36,8 @@ export function PresenceBar({ provider }: PresenceBarProps) {
       const states = Array.from(awareness?.getStates().values() || []);
 
       const activeUsers: PresenceUser[] = states
-        .filter((state: any) => state.user && state.user.id)
-        .map((state: any) => ({
+        .filter((state: { user?: { id?: string } }) => state.user && state.user.id)
+        .map((state: { user: { id: string; name: string; color: string } }) => ({
           id: state.user.id,
           name: state.user.name || 'Anonymous',
           color: state.user.color || '#10b981',

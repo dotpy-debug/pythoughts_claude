@@ -156,7 +156,7 @@ export interface EmailQueueOptions {
   metadata?: {
     userId?: string;
     template?: EmailTemplate;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -242,7 +242,7 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<EmailResult> {
         break;
 
       default:
-        throw new Error(`Unknown email type: ${(job.data as any).type}`);
+        throw new Error(`Unknown email type: ${(job.data as Record<string, unknown>).type}`);
     }
 
     if (!result.success) {

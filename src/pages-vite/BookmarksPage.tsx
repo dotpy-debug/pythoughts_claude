@@ -30,7 +30,7 @@ export function BookmarksPage() {
       if (error) throw error;
 
       const posts = data
-        ?.map((bookmark: any) => bookmark.posts)
+        ?.map((bookmark: { posts?: unknown }) => bookmark.posts)
         .filter((post): post is Post => post !== null) || [];
 
       setBookmarkedPosts(posts);

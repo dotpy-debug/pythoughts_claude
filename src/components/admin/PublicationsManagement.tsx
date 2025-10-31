@@ -534,7 +534,7 @@ export function PublicationsManagement() {
                                 </div>
                                 <div>
                                   <p className="text-white font-medium">
-                                    {(member as any).profiles?.username || 'Unknown'}
+                                    {(member as { profiles?: { username?: string } }).profiles?.username || 'Unknown'}
                                   </p>
                                   <p className="text-sm text-gray-400 capitalize">{member.role}</p>
                                 </div>
@@ -581,10 +581,10 @@ export function PublicationsManagement() {
                               <div className="flex items-start justify-between mb-3">
                                 <div>
                                   <h4 className="text-white font-medium">
-                                    {(submission as any).posts?.title || 'Untitled Post'}
+                                    {(submission as { posts?: { title?: string } }).posts?.title || 'Untitled Post'}
                                   </h4>
                                   <p className="text-sm text-gray-400">
-                                    by {(submission as any).submitter?.username || 'Unknown'}
+                                    by {(submission as { submitter?: { username?: string } }).submitter?.username || 'Unknown'}
                                   </p>
                                 </div>
                                 {getStatusBadge(submission.status)}

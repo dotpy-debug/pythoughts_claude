@@ -1,3 +1,4 @@
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -5,12 +6,27 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+logs/
 
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 dist-ssr
+.next
+/.next/
+build
+out
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
 *.local
 
+# IDEs and editors
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -20,11 +36,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-# Environment files
-.env
-.env.local
-.env.production
-.env.staging
 
 # Production secrets and data
 secrets/
@@ -34,8 +45,16 @@ certs/*.pem
 certs/*.key
 certs/*.crt
 
-# Logs
-logs/
-*.log
-.next
-/.next/
+# Testing and Coverage
+coverage/
+.nyc_output/
+*.lcov
+.vitest/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Temporary files
+*.tmp
+*.temp
+.cache

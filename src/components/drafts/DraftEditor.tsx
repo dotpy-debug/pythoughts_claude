@@ -100,7 +100,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
       setShowRecoveryPrompt(true);
       hasShownRecoveryPrompt.current = true;
     }
-  }, [draftId, hasRecoverableDraft]);
+  }, [draftId, hasRecoverableDraft, hasShownRecoveryPrompt]);
 
   // Fetch categories on mount
   useEffect(() => {

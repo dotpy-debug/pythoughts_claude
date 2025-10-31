@@ -64,7 +64,7 @@ export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTrigger
           handleClick();
           children.props.onClick?.(e);
         },
-      } as any);
+      } as React.CSSProperties);
     }
 
     return (

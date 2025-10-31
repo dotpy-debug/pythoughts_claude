@@ -10,6 +10,7 @@
  * - Follow button
  */
 
+import Image from 'next/image';
 import { BlogPost } from '../../../types/blog';
 import { Clock, Calendar } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '../../ui/avatar';
@@ -26,12 +27,13 @@ export function BlogHero({ post, onFollowClick }: BlogHeroProps) {
       {/* Cover Image (optional) */}
       {post.cover_image && (
         <div className="relative w-full h-[400px] mb-8 rounded-2xl overflow-hidden bg-[#161b22]">
-          <img
+          <Image
             src={post.cover_image}
             alt={post.cover_image_alt || post.title}
-            className="w-full h-full object-cover"
-            loading="eager"
-            decoding="async"
+            fill
+            priority
+            sizes="(max-width: 1280px) 100vw, 1280px"
+            className="object-cover"
             onError={(e) => {
               // Hide image on error
               const target = e.target as HTMLImageElement;

@@ -22,7 +22,7 @@ type ModerationLog = {
   targetType: string | null;
   targetId: string | null;
   reason: string | null;
-  metadata: any;
+  metadata: Record<string, unknown>;
   createdAt: string;
   moderator: {
     username: string;
@@ -90,7 +90,7 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
       }
 
       setLogs(
-        (logsData || []).map((item: any) => ({
+        (logsData || []).map((item: unknown) => ({
           id: item.id,
           actionType: item.action_type,
           targetType: item.target_type,
@@ -128,7 +128,7 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
       }
 
       setPendingSubmissions(
-        (submissionsData || []).map((item: any) => ({
+        (submissionsData || []).map((item: unknown) => ({
           id: item.id,
           postId: item.post_id,
           status: item.status,
@@ -150,13 +150,13 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
       today.setHours(0, 0, 0, 0);
 
       const todayLogs = logsData?.filter(
-        (log: any) => new Date(log.created_at) >= today
+        (log: { created_at: string }) => new Date(log.created_at) >= today
       ) || [];
 
       setStats({
         pendingSubmissions: submissionsData?.length || 0,
-        approvedToday: todayLogs.filter((log: any) => log.action_type === 'post_approved').length,
-        rejectedToday: todayLogs.filter((log: any) => log.action_type === 'post_rejected').length,
+        approvedToday: todayLogs.filter((log: { action_type?: string }) => log.action_type === 'post_approved').length,
+        rejectedToday: todayLogs.filter((log: { action_type?: string }) => log.action_type === 'post_rejected').length,
         totalModActions: logsData?.length || 0,
       });
     } catch (err) {

@@ -10,7 +10,7 @@
  * - Expired invitation handling
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Check, X, Clock, Mail, Users } from 'lucide-react';
 import { Button } from '../components/ui/Button';
@@ -57,9 +57,9 @@ export function PublicationInvite() {
     }
 
     loadInvitation();
-  }, [token]);
+  }, [token, loadInvitation]);
 
-  const loadInvitation = async () => {
+  const loadInvitation = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -103,7 +103,7 @@ export function PublicationInvite() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   const handleAccept = async () => {
     if (!invitation || !user) {

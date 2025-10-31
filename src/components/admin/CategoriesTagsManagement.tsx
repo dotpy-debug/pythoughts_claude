@@ -485,7 +485,7 @@ export function CategoriesTagsManagement() {
                 </div>
                 <select
                   value={tagSortBy}
-                  onChange={(e) => setTagSortBy(e.target.value as any)}
+                  onChange={(e) => setTagSortBy(e.target.value as "name" | "usage" | "recent")}
                   className="px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                 >
                   <option value="name">Sort by Name</option>

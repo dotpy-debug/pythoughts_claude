@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Search, X, Loader2, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import { pexels, PexelsPhoto } from '../../lib/pexels';
 import { ShadcnButton } from '../ui/ShadcnButton';
@@ -52,7 +52,7 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
     }
   };
 
-  const loadCuratedPhotos = async (pageNum: number = 1) => {
+  const loadCuratedPhotos = useCallback(async (pageNum: number = 1) => {
     setLoading(true);
     setError('');
 
@@ -71,7 +71,7 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const cachePhotoToDatabase = async (photo: PexelsPhoto) => {
     try {
@@ -130,7 +130,7 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
     if (isOpen && photos.length === 0 && pexels.isConfigured()) {
       loadCuratedPhotos();
     }
-  }, [isOpen]);
+  }, [isOpen, photos.length, loadCuratedPhotos]);
 
   if (!isOpen) return null;
 

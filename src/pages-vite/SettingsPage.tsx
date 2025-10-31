@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Loader2, User, Bell, Palette, Shield, UserX, Search, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -51,19 +51,7 @@ export function SettingsPage() {
     }
   }, [profile]);
 
-  useEffect(() => {
-    if (activeTab === 'privacy') {
-      loadBlockedUsers();
-    }
-  }, [activeTab, user]);
-
-  useEffect(() => {
-    if (activeTab === 'notifications') {
-      loadNotificationPreferences();
-    }
-  }, [activeTab, user]);
-
-  const loadBlockedUsers = async () => {
+  const loadBlockedUsers = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -98,7 +86,13 @@ export function SettingsPage() {
     } finally {
       setLoadingBlocked(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (activeTab === 'privacy') {
+      loadBlockedUsers();
+    }
+  }, [activeTab, user, loadBlockedUsers]);
 
   const handleSearchUsers = async () => {
     if (!searchQuery.trim()) {
@@ -193,7 +187,7 @@ export function SettingsPage() {
     }
   };
 
-  const loadNotificationPreferences = async () => {
+  const loadNotificationPreferences = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -218,7 +212,13 @@ export function SettingsPage() {
     } finally {
       setLoadingNotifications(false);
     }
-  };
+  }, [user, notificationPrefs]);
+
+  useEffect(() => {
+    if (activeTab === 'notifications') {
+      loadNotificationPreferences();
+    }
+  }, [activeTab, user, loadNotificationPreferences]);
 
   const saveNotificationPreferences = async () => {
     if (!user) return;

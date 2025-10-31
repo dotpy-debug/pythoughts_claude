@@ -67,13 +67,15 @@ jobs:
 
   # Job 2: Unit Tests with Coverage
   unit-tests:
-    name: Unit Tests
+    name: Unit Tests & Coverage
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for Codecov to compare commits
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -84,14 +86,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefer-offline --no-audit --legacy-peer-deps
 
-      # Run unit tests
-      - name: Run unit tests
-        run: npm run test:unit
-        continue-on-error: false
-
-      # Generate coverage report
-      - name: Generate coverage report
+      # Generate coverage report (combines test run + coverage)
+      - name: Run tests with coverage
         run: npm run test:coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: false
 
       # Fail if coverage is below threshold
       - name: Check coverage thresholds
@@ -104,21 +104,24 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           flags: unittests
-          name: unit-tests-coverage
+          name: codecov-umbrella
           fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        continue-on-error: true
+          verbose: true
+          disable_search: false
+          plugins: noop
+        continue-on-error: false
 
-      # Upload coverage artifact
+      # Upload coverage artifact for manual inspection
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: coverage-report
           path: coverage/
-          retention-days: 7
+          retention-days: 30
 
   # Job 3: Build Verification (Both Vite and Next.js)
   build-verification:

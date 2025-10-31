@@ -110,7 +110,7 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
       } else {
         // Transform posts data
         setPosts(
-          (postsData || []).map((item: any) => ({
+          (postsData || []).map((item: unknown) => ({
             id: item.post.id,
             title: item.post.title,
             excerpt: item.post.excerpt,
@@ -151,7 +151,7 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
         logger.error('Failed to load members', membersError);
       } else {
         setMembers(
-          (membersData || []).map((item: any) => ({
+          (membersData || []).map((item: unknown) => ({
             id: item.id,
             role: item.role,
             postCount: item.post_count,

@@ -223,7 +223,7 @@ export function usePerformanceMonitor(
         lastRenderTime: renderTime,
       };
     });
-  });
+  }, [trackRenders, slowRenderThreshold, excessiveRendersThreshold, addWarning]);
 
   // Set render start time before render
   renderStartTime.current = performance.now();

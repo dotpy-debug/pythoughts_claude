@@ -114,7 +114,7 @@ async function generateRSS() {
     const now = new Date().toUTCString();
 
     const items = (posts || [])
-      .map((post: any) => {
+      .map((post: Record<string, unknown>) => {
         const pubDate = new Date(post.published_at || post.created_at).toUTCString();
         const link = `${baseUrl}/post/${post.id}`;
         const author = post.profiles?.username || 'Anonymous';

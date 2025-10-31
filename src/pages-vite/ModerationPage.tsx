@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Terminal, AlertTriangle, CheckCircle, XCircle, Eye } from 'lucide-react';
@@ -46,11 +46,7 @@ export function ModerationPage() {
   const [moderatorNotes, setModeratorNotes] = useState('');
   const [updating, setUpdating] = useState(false);
 
-  useEffect(() => {
-    loadReports();
-  }, [statusFilter]);
-
-  const loadReports = async () => {
+  const loadReports = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -79,7 +75,11 @@ export function ModerationPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter]);
+
+  useEffect(() => {
+    loadReports();
+  }, [loadReports]);
 
   const updateReportStatus = async (reportId: string, newStatus: Report['status']) => {
     if (!user) return;
@@ -87,7 +87,7 @@ export function ModerationPage() {
     try {
       setUpdating(true);
 
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         status: newStatus,
         moderator_id: user.id,
         moderator_notes: moderatorNotes.trim() || null,

@@ -154,40 +154,40 @@ export async function getFeaturedBlogs(
     }
 
     // Transform data to BlogPost format
-    const blogs: BlogPost[] = (data || []).map((post: any) => ({
-      id: post.id,
-      title: post.title,
-      slug: post.slug,
-      summary: post.subtitle,
-      content_json: post.content_json,
-      content_html: post.content_html,
-      toc_data: post.toc_data || [],
-      author_id: post.author_id,
+    const blogs: BlogPost[] = (data || []).map((post) => ({
+      id: post.id as string,
+      title: post.title as string,
+      slug: post.slug as string,
+      summary: post.subtitle as string | undefined,
+      content_json: post.content_json as string | undefined,
+      content_html: post.content_html as string | undefined,
+      toc_data: (post.toc_data || []) as unknown[],
+      author_id: post.author_id as string,
       author: post.profiles
         ? {
-            id: post.profiles.id,
-            username: post.profiles.username,
-            avatar_url: post.profiles.avatar_url,
-            bio: post.profiles.bio,
-            follower_count: post.profiles.follower_count,
+            id: (post.profiles as { id: string }).id,
+            username: (post.profiles as { username: string }).username,
+            avatar_url: (post.profiles as { avatar_url?: string }).avatar_url,
+            bio: (post.profiles as { bio?: string }).bio,
+            follower_count: (post.profiles as { follower_count?: number }).follower_count,
           }
         : undefined,
-      cover_image: post.cover_image,
-      cover_image_alt: post.cover_image_alt,
-      status: post.status,
-      tags: post.tags || [],
-      category: post.category,
-      reading_time_minutes: post.reading_time_minutes || 0,
-      word_count: post.word_count || 0,
-      meta_title: post.meta_title,
-      meta_description: post.meta_description,
-      og_image: post.og_image,
-      canonical_url: post.canonical_url,
-      series_id: post.series_id,
-      series_order: post.series_order,
-      published_at: post.published_at,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
+      cover_image: post.cover_image as string | undefined,
+      cover_image_alt: post.cover_image_alt as string | undefined,
+      status: post.status as string,
+      tags: (post.tags || []) as string[],
+      category: post.category as string | undefined,
+      reading_time_minutes: (post.reading_time_minutes || 0) as number,
+      word_count: (post.word_count || 0) as number,
+      meta_title: post.meta_title as string | undefined,
+      meta_description: post.meta_description as string | undefined,
+      og_image: post.og_image as string | undefined,
+      canonical_url: post.canonical_url as string | undefined,
+      series_id: post.series_id as string | undefined,
+      series_order: post.series_order as number | undefined,
+      published_at: post.published_at as string,
+      created_at: post.created_at as string,
+      updated_at: post.updated_at as string,
     }));
 
     // Cache for 5 minutes
@@ -312,7 +312,7 @@ export async function getBlogOfTheDay(): Promise<BlogPost | null> {
 
     // Calculate daily score for each candidate
     interface ScoredBlog {
-      post: any;
+      post: Record<string, unknown>;
       score: number;
     }
 
@@ -340,39 +340,39 @@ export async function getBlogOfTheDay(): Promise<BlogPost | null> {
 
     // Transform to BlogPost
     const blogOfTheDay: BlogPost = {
-      id: winner.id,
-      title: winner.title,
-      slug: winner.slug,
-      summary: winner.subtitle,
-      content_json: winner.content_json,
-      content_html: winner.content_html,
-      toc_data: winner.toc_data || [],
-      author_id: winner.author_id,
+      id: winner.id as string,
+      title: winner.title as string,
+      slug: winner.slug as string,
+      summary: winner.subtitle as string | undefined,
+      content_json: winner.content_json as string | undefined,
+      content_html: winner.content_html as string | undefined,
+      toc_data: (winner.toc_data || []) as unknown[],
+      author_id: winner.author_id as string,
       author: winner.profiles
         ? {
-            id: winner.profiles.id,
-            username: winner.profiles.username,
-            avatar_url: winner.profiles.avatar_url,
-            bio: winner.profiles.bio,
-            follower_count: winner.profiles.follower_count,
+            id: (winner.profiles as { id: string }).id,
+            username: (winner.profiles as { username: string }).username,
+            avatar_url: (winner.profiles as { avatar_url?: string }).avatar_url,
+            bio: (winner.profiles as { bio?: string }).bio,
+            follower_count: (winner.profiles as { follower_count?: number }).follower_count,
           }
         : undefined,
-      cover_image: winner.cover_image,
-      cover_image_alt: winner.cover_image_alt,
-      status: winner.status,
-      tags: winner.tags || [],
-      category: winner.category,
-      reading_time_minutes: winner.reading_time_minutes || 0,
-      word_count: winner.word_count || 0,
-      meta_title: winner.meta_title,
-      meta_description: winner.meta_description,
-      og_image: winner.og_image,
-      canonical_url: winner.canonical_url,
-      series_id: winner.series_id,
-      series_order: winner.series_order,
-      published_at: winner.published_at,
-      created_at: winner.created_at,
-      updated_at: winner.updated_at,
+      cover_image: winner.cover_image as string | undefined,
+      cover_image_alt: winner.cover_image_alt as string | undefined,
+      status: winner.status as string,
+      tags: (winner.tags || []) as string[],
+      category: winner.category as string | undefined,
+      reading_time_minutes: (winner.reading_time_minutes || 0) as number,
+      word_count: (winner.word_count || 0) as number,
+      meta_title: winner.meta_title as string | undefined,
+      meta_description: winner.meta_description as string | undefined,
+      og_image: winner.og_image as string | undefined,
+      canonical_url: winner.canonical_url as string | undefined,
+      series_id: winner.series_id as string | undefined,
+      series_order: winner.series_order as number | undefined,
+      published_at: winner.published_at as string,
+      created_at: winner.created_at as string,
+      updated_at: winner.updated_at as string,
     };
 
     // Cache until midnight UTC
@@ -457,39 +457,39 @@ export async function getLatestBlogs(limit: number = 6): Promise<BlogPost[]> {
       throw error;
     }
 
-    const blogs: BlogPost[] = (data || []).map((post: any) => ({
-      id: post.id,
-      title: post.title,
-      slug: post.slug,
-      summary: post.subtitle,
-      content_json: post.content_json,
-      content_html: post.content_html,
-      toc_data: post.toc_data || [],
-      author_id: post.author_id,
+    const blogs: BlogPost[] = (data || []).map((post) => ({
+      id: post.id as string,
+      title: post.title as string,
+      slug: post.slug as string,
+      summary: post.subtitle as string | undefined,
+      content_json: post.content_json as string | undefined,
+      content_html: post.content_html as string | undefined,
+      toc_data: (post.toc_data || []) as unknown[],
+      author_id: post.author_id as string,
       author: post.profiles
         ? {
-            id: post.profiles.id,
-            username: post.profiles.username,
-            avatar_url: post.profiles.avatar_url,
-            bio: post.profiles.bio,
+            id: (post.profiles as { id: string }).id,
+            username: (post.profiles as { username: string }).username,
+            avatar_url: (post.profiles as { avatar_url?: string }).avatar_url,
+            bio: (post.profiles as { bio?: string }).bio,
           }
         : undefined,
-      cover_image: post.cover_image,
-      cover_image_alt: post.cover_image_alt,
-      status: post.status,
-      tags: post.tags || [],
-      category: post.category,
-      reading_time_minutes: post.reading_time_minutes || 0,
-      word_count: post.word_count || 0,
-      meta_title: post.meta_title,
-      meta_description: post.meta_description,
-      og_image: post.og_image,
-      canonical_url: post.canonical_url,
-      series_id: post.series_id,
-      series_order: post.series_order,
-      published_at: post.published_at,
-      created_at: post.created_at,
-      updated_at: post.updated_at,
+      cover_image: post.cover_image as string | undefined,
+      cover_image_alt: post.cover_image_alt as string | undefined,
+      status: post.status as string,
+      tags: (post.tags || []) as string[],
+      category: post.category as string | undefined,
+      reading_time_minutes: (post.reading_time_minutes || 0) as number,
+      word_count: (post.word_count || 0) as number,
+      meta_title: post.meta_title as string | undefined,
+      meta_description: post.meta_description as string | undefined,
+      og_image: post.og_image as string | undefined,
+      canonical_url: post.canonical_url as string | undefined,
+      series_id: post.series_id as string | undefined,
+      series_order: post.series_order as number | undefined,
+      published_at: post.published_at as string,
+      created_at: post.created_at as string,
+      updated_at: post.updated_at as string,
     }));
 
     // Cache for 5 minutes

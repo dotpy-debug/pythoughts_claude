@@ -27,7 +27,7 @@ export interface PostMetadata {
   date?: string;
   author?: string;
   image?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -146,7 +146,7 @@ function serializeChildren(content?: JSONContent[]): string {
 /**
  * Apply text marks (bold, italic, code, etc.)
  */
-function applyMarks(text: string, marks: any[]): string {
+function applyMarks(text: string, marks: unknown[]): string {
   if (!marks || marks.length === 0) return text;
 
   let result = text;

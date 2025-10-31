@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useMemo, useState } from 'react';
  *
  * Delays function execution until after wait time has elapsed since last call
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -40,7 +40,7 @@ export function debounce<T extends (...args: any[]) => any>(
  *
  * Limits function execution to once per wait time
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -73,7 +73,7 @@ export function throttle<T extends (...args: any[]) => any>(
  *
  * Throttles function calls to requestAnimationFrame
  */
-export function rafThrottle<T extends (...args: any[]) => any>(
+export function rafThrottle<T extends (...args: unknown[]) => any>(
   func: T
 ): (...args: Parameters<T>) => void {
   let rafId: number | null = null;
@@ -111,7 +111,7 @@ export function rafThrottle<T extends (...args: any[]) => any>(
  * }
  * ```
  */
-export function useDebounce<T extends (...args: any[]) => any>(
+export function useDebounce<T extends (...args: unknown[]) => any>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -153,7 +153,7 @@ export function useDebounce<T extends (...args: any[]) => any>(
  * }
  * ```
  */
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends (...args: unknown[]) => any>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -206,7 +206,7 @@ export function useThrottle<T extends (...args: any[]) => any>(
  * }
  * ```
  */
-export function useRAFThrottle<T extends (...args: any[]) => any>(
+export function useRAFThrottle<T extends (...args: unknown[]) => any>(
   callback: T
 ): (...args: Parameters<T>) => void {
   const rafIdRef = useRef<number | null>(null);
@@ -239,7 +239,7 @@ export function useRAFThrottle<T extends (...args: any[]) => any>(
  *
  * Caches function results based on arguments
  */
-export function memoize<T extends (...args: any[]) => any>(
+export function memoize<T extends (...args: unknown[]) => any>(
   fn: T,
   options: {
     maxSize?: number;
@@ -359,7 +359,7 @@ export function useBatchUpdate<T>(
     (updater: (prev: T) => T) => {
       batcherRef.current?.add(updater);
     },
-    [setter, delay]
+    []
   );
 }
 
@@ -486,6 +486,7 @@ export function useIdleCallback(
       const id = setTimeout(callback, 1);
       return () => clearTimeout(id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
 

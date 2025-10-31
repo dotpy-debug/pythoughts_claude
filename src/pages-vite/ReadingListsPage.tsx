@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Plus, Lock, Globe, Trash2, Edit, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,13 +17,7 @@ export function ReadingListsPage() {
   const [isPublic, setIsPublic] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      loadReadingLists();
-    }
-  }, [user]);
-
-  const loadReadingLists = async () => {
+  const loadReadingLists = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -44,7 +38,13 @@ export function ReadingListsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadReadingLists();
+    }
+  }, [user, loadReadingLists]);
 
   const handleCreateList = async (e: React.FormEvent) => {
     e.preventDefault();

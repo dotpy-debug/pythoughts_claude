@@ -101,7 +101,7 @@ export interface VimeoOptions {
   /**
    * Custom HTML attributes
    */
-  HTMLAttributes: Record<string, any>;
+  HTMLAttributes: Record<string, unknown>;
 }
 
 declare module '@tiptap/core' {

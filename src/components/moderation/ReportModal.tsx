@@ -48,7 +48,7 @@ export function ReportModal({
     try {
       const selectedCategory = reportCategories.find(c => c.value === category);
 
-      const reportData: any = {
+      const reportData: Record<string, unknown> = {
         reporter_id: user.id,
         reported_user_id: reportedUserId || null,
         reason: selectedCategory?.label || category,

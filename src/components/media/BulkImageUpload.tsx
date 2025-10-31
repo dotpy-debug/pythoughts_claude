@@ -132,7 +132,7 @@ export function BulkImageUpload({
         uploadFiles(newFiles);
       }
     },
-    [maxFiles, autoUpload]
+    [maxFiles, autoUpload, uploadFiles]
   );
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
@@ -144,7 +144,7 @@ export function BulkImageUpload({
   });
 
   // Upload files with concurrency control
-  const uploadFiles = async (filesToUpload: UploadFile[] = files) => {
+  const uploadFiles = useCallback(async (filesToUpload: UploadFile[] = files) => {
     setIsUploading(true);
 
     const pendingFiles = filesToUpload.filter((f) => f.status === 'pending');
@@ -216,7 +216,7 @@ export function BulkImageUpload({
 
     setIsUploading(false);
     onUploadComplete?.(results);
-  };
+  }, [files, maxConcurrent, userId, onFileUploaded, onUploadComplete]);
 
   // Remove file from list
   const removeFile = (id: string) => {

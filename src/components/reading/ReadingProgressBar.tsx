@@ -14,6 +14,35 @@ export function ReadingProgressBar({ postId, contentRef }: ReadingProgressBarPro
   const startTimeRef = useRef<number>(Date.now());
   const lastSaveRef = useRef<number>(Date.now());
 
+  const saveProgress = useCallback(async (
+    percentage: number,
+    position: number,
+    timeSpent: number
+  ) => {
+    if (!user) return;
+
+    try {
+      await supabase
+        .from('reading_progress')
+        .upsert(
+          {
+            user_id: user.id,
+            post_id: postId,
+            progress_percentage: Math.round(percentage),
+            last_position: position,
+            completed: percentage >= 90,
+            reading_time_seconds: timeSpent,
+            updated_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'user_id,post_id',
+          }
+        );
+    } catch (error) {
+      console.error('Error saving reading progress:', error);
+    }
+  }, [user, postId]);
+
   const updateProgress = useCallback(() => {
     if (!contentRef.current) return;
 
@@ -47,36 +76,8 @@ export function ReadingProgressBar({ postId, contentRef }: ReadingProgressBarPro
       lastSaveRef.current = currentTime;
       saveProgress(percentage, scrollPosition, timeSpent);
     }
-  }, [contentRef, user, postId]);
+  }, [contentRef, user, saveProgress]);
 
-  const saveProgress = async (
-    percentage: number,
-    position: number,
-    timeSpent: number
-  ) => {
-    if (!user) return;
-
-    try {
-      await supabase
-        .from('reading_progress')
-        .upsert(
-          {
-            user_id: user.id,
-            post_id: postId,
-            progress_percentage: Math.round(percentage),
-            last_position: position,
-            completed: percentage >= 90,
-            reading_time_seconds: timeSpent,
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: 'user_id,post_id',
-          }
-        );
-    } catch (error) {
-      console.error('Error saving reading progress:', error);
-    }
-  };
 
   const loadSavedProgress = useCallback(async () => {
     if (!user) return;
@@ -123,7 +124,7 @@ export function ReadingProgressBar({ postId, contentRef }: ReadingProgressBarPro
         saveProgress(progress, window.scrollY, readingTime);
       }
     };
-  }, [updateProgress, user, progress, readingTime]);
+  }, [updateProgress, user, progress, readingTime, saveProgress]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">

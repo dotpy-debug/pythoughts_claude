@@ -89,7 +89,7 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
       }
 
       setShares(
-        (data || []).map((item: any) => ({
+        (data || []).map((item: unknown) => ({
           id: item.id,
           memberId: item.member_id,
           sharePercentage: item.share_percentage,
@@ -133,7 +133,7 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
       }
 
       setMembers(
-        (data || []).map((item: any) => ({
+        (data || []).map((item: unknown) => ({
           id: item.id,
           role: item.role,
           username: item.user.username,

@@ -50,9 +50,9 @@ export function DatabaseBrowser() {
   const [loading, setLoading] = useState(true);
   const [searchColumn, setSearchColumn] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [editingRecord, setEditingRecord] = useState<any>(null);
-  const [editedFields, setEditedFields] = useState<Record<string, any>>({});
-  const [stats, setStats] = useState<any>(null);
+  const [editingRecord, setEditingRecord] = useState<unknown>(null);
+  const [editedFields, setEditedFields] = useState<Record<string, unknown>>({});
+  const [stats, setStats] = useState<unknown>(null);
 
   const loadTables = useCallback(async () => {
     if (!profile) return;
@@ -143,7 +143,7 @@ export function DatabaseBrowser() {
     }
   };
 
-  const handleEditRecord = (record: any) => {
+  const handleEditRecord = (record: Record<string, unknown>) => {
     setEditingRecord(record);
     setEditedFields({ ...record });
   };
@@ -196,7 +196,7 @@ export function DatabaseBrowser() {
     a.click();
   };
 
-  const convertToCSV = (data: any[]) => {
+  const convertToCSV = (data: unknown[]) => {
     if (data.length === 0) return '';
 
     const headers = Object.keys(data[0]);

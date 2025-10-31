@@ -1,0 +1,116 @@
+# Codecov Configuration for Pythoughts
+# Documentation: https://docs.codecov.com/docs/codecov-yaml
+
+# Coverage Status Checks
+coverage:
+  status:
+    # Overall project coverage requirements
+    project:
+      default:
+        target: 70%          # Minimum coverage required for the entire project
+        threshold: 2%        # Allow 2% drop in coverage before failing
+        base: auto           # Compare against the base branch (main)
+        informational: false # Fail the build if threshold is not met
+
+    # Coverage requirements for changes in a PR
+    patch:
+      default:
+        target: 70%          # New code must have at least 70% coverage
+        threshold: 5%        # Allow 5% below target for new code
+        informational: false # Fail the build if new code doesn't meet threshold
+
+# Pull Request Comment Configuration
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default        # Comment on every PR
+  require_changes: false   # Comment even if no coverage changes
+  require_base: false      # Don't require base coverage to comment
+  require_head: true       # Require head coverage to comment
+  show_carryforward_flags: true
+
+# Files and Directories to Ignore
+ignore:
+  - "src/test/**"
+  - "src/**/*.test.ts"
+  - "src/**/*.test.tsx"
+  - "src/**/*.spec.ts"
+  - "src/**/*.spec.tsx"
+  - "src/**/__tests__/**"
+  - "**/*.config.ts"
+  - "**/*.config.js"
+  - "**/*.d.ts"
+  - ".next/**"
+  - "node_modules/**"
+  - "dist/**"
+  - "build/**"
+  - "scripts/**"
+  - "server/**"
+  - "tests/e2e/**"
+  - "playwright.config.ts"
+  - "vitest.config.ts"
+  - "vite.config.ts"
+  - "next.config.js"
+  - "postcss.config.js"
+  - "tailwind.config.ts"
+  - ".eslintrc.cjs"
+
+# Flag Management (for different test types)
+flag_management:
+  default_rules:
+    carryforward: true     # Carry forward flags if missing in new upload
+    carryforward_mode: "labels"
+
+flags:
+  unittests:
+    paths:
+      - src/
+    carryforward: true
+
+  integration:
+    paths:
+      - src/
+    carryforward: true
+
+# Coverage Reporting
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+# GitHub Integration
+github_checks:
+  annotations: true        # Add inline annotations to files
+
+# Notification Settings (optional - can be configured in Codecov UI)
+# Disabled by default to reduce notification noise
+slack:
+  enabled: false
+
+# Coverage Fixes
+fixes:
+  - "D:/New_Projects/pythoughts_claude-main/::" # Windows path normalization
+
+# Component-Based Coverage (Advanced - Optional)
+# Uncomment to track coverage by feature area
+# component_management:
+#   default_rules:
+#     statuses:
+#       - type: project
+#         target: 70%
+#   individual_components:
+#     - component_id: frontend_components
+#       name: Frontend Components
+#       paths:
+#         - src/components/**
+#     - component_id: backend_services
+#       name: Backend Services
+#       paths:
+#         - src/services/**
+#     - component_id: auth_system
+#       name: Authentication System
+#       paths:
+#         - src/lib/auth.ts
+#         - src/actions/**

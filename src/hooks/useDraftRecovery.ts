@@ -44,6 +44,18 @@ export function useDraftRecovery(
   }, [postType, getStorageKey]);
 
   /**
+   * Clear draft from localStorage
+   */
+  const clearDraftBackup = useCallback(() => {
+    try {
+      localStorage.removeItem(getStorageKey());
+      logger.info('Draft backup cleared', { key: getStorageKey() });
+    } catch (error) {
+      logger.error('Error clearing draft backup', { errorDetails: error });
+    }
+  }, [getStorageKey]);
+
+  /**
    * Load draft from localStorage
    */
   const loadDraftBackup = useCallback((): DraftData | null => {
@@ -66,19 +78,7 @@ export function useDraftRecovery(
       logger.error('Error loading draft backup', { errorDetails: error });
       return null;
     }
-  }, [getStorageKey]);
-
-  /**
-   * Clear draft from localStorage
-   */
-  const clearDraftBackup = useCallback(() => {
-    try {
-      localStorage.removeItem(getStorageKey());
-      logger.info('Draft backup cleared', { key: getStorageKey() });
-    } catch (error) {
-      logger.error('Error clearing draft backup', { errorDetails: error });
-    }
-  }, [getStorageKey]);
+  }, [getStorageKey, clearDraftBackup]);
 
   /**
    * Check if there's a recoverable draft

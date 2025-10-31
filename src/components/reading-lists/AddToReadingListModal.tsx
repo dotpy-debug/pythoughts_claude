@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Terminal, Plus, Check, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase, ReadingList } from '../../lib/supabase';
@@ -21,13 +21,7 @@ export function AddToReadingListModal({ isOpen, onClose, postId }: AddToReadingL
   const [newListDescription, setNewListDescription] = useState('');
   const [addedLists, setAddedLists] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (isOpen && user) {
-      loadReadingLists();
-    }
-  }, [isOpen, user]);
-
-  const loadReadingLists = async () => {
+  const loadReadingLists = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
@@ -58,7 +52,13 @@ export function AddToReadingListModal({ isOpen, onClose, postId }: AddToReadingL
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, postId]);
+
+  useEffect(() => {
+    if (isOpen && user) {
+      loadReadingLists();
+    }
+  }, [isOpen, user, loadReadingLists]);
 
   const handleCreateList = async (e: React.FormEvent) => {
     e.preventDefault();

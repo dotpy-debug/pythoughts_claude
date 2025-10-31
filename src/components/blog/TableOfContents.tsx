@@ -104,7 +104,7 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [focusedIndex, flatItems, collapsedSections]);
+  }, [focusedIndex, flatItems, collapsedSections, handleItemClick]);
 
   // Auto-scroll focused item into view within TOC container (keyboard navigation)
   useEffect(() => {
@@ -127,14 +127,14 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
     }
   }, [activeId]);
 
-  const handleItemClick = (id: string) => {
+  const handleItemClick = useCallback((id: string) => {
     scrollToHeading(id);
     setActiveId(id);
     setIsMobileOpen(false);
     if (onItemClick) {
       onItemClick(id);
     }
-  };
+  }, [onItemClick]);
 
   const toggleSection = (id: string) => {
     const newCollapsed = new Set(collapsedSections);

@@ -88,7 +88,7 @@ export function SearchResultsPage() {
 
         if (postsData) {
           searchResults.push(
-            ...postsData.map((post: any) => ({
+            ...postsData.map((post: Record<string, unknown>) => ({
               id: post.id,
               type: 'post' as const,
               title: post.title,
@@ -146,7 +146,7 @@ export function SearchResultsPage() {
 
         if (pubsData) {
           searchResults.push(
-            ...pubsData.map((pub: any) => ({
+            ...pubsData.map((pub: Record<string, unknown>) => ({
               id: pub.id,
               type: 'publication' as const,
               title: pub.name,
@@ -182,7 +182,7 @@ export function SearchResultsPage() {
 
         if (seriesData) {
           searchResults.push(
-            ...seriesData.map((series: any) => ({
+            ...seriesData.map((series: Record<string, unknown>) => ({
               id: series.id,
               type: 'series' as const,
               title: series.name,

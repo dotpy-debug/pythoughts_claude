@@ -29,7 +29,7 @@ export function SystemSettings() {
   const [settings, setSettings] = useState<SystemSetting[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editedSettings, setEditedSettings] = useState<Record<string, any>>({});
+  const [editedSettings, setEditedSettings] = useState<Record<string, unknown>>({});
   const [activeCategory, setActiveCategory] = useState('system');
 
   const loadSettings = useCallback(async () => {
@@ -42,7 +42,7 @@ export function SystemSettings() {
         setSettings(result.settings);
 
         // Initialize edited settings
-        const initial: Record<string, any> = {};
+        const initial: Record<string, unknown> = {};
         result.settings.forEach((setting) => {
           initial[setting.key] = setting.value;
         });
@@ -82,7 +82,7 @@ export function SystemSettings() {
     }
   };
 
-  const updateSettingValue = (key: string, field: string, value: any) => {
+  const updateSettingValue = (key: string, field: string, value: unknown) => {
     setEditedSettings((prev) => ({
       ...prev,
       [key]: {

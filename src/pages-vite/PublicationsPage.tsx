@@ -50,7 +50,7 @@ export function PublicationsPage() {
         if (myError) throw myError;
 
         const userPubs = myPubs
-          ?.map((member: any) => member.publications)
+          ?.map((member: { publications?: unknown }) => member.publications)
           .filter((pub): pub is Publication => pub !== null) || [];
 
         setMyPublications(userPubs);
@@ -192,7 +192,7 @@ export function PublicationsPage() {
                 <div className="flex items-center justify-between text-xs text-gray-500 font-mono pt-2 border-t border-gray-800">
                   <div className="flex items-center space-x-1">
                     <Users size={12} />
-                    <span>{(publication as any).publication_members?.length || 0} members</span>
+                    <span>{(publication as { publication_members?: unknown[] }).publication_members?.length || 0} members</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <FileText size={12} />

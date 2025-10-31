@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Calendar, Clock, Eye, Tag } from 'lucide-react';
 
 interface BlogPost {
@@ -99,11 +100,14 @@ export function BlogsListView({ posts }: BlogsListViewProps) {
               >
                 {/* Cover Image */}
                 {post.cover_image && (
-                  <div className="aspect-video bg-terminal-green/5 overflow-hidden">
-                    <img
+                  <div className="aspect-video bg-terminal-green/5 overflow-hidden relative">
+                    <Image
                       src={post.cover_image}
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-110 transition-transform duration-300"
+                      loading="lazy"
                     />
                   </div>
                 )}

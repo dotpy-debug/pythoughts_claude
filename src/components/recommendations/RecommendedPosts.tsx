@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Sparkles } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -32,11 +32,7 @@ export function RecommendedPosts({
   const [recommendations, setRecommendations] = useState<RecommendedPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadRecommendations();
-  }, [user, currentPostId, currentPostCategory]);
-
-  const loadRecommendations = async () => {
+  const loadRecommendations = useCallback(async () => {
     setLoading(true);
     try {
       let query = supabase
@@ -100,7 +96,7 @@ export function RecommendedPosts({
 
           for (const item of taggedPosts) {
             if (item.posts && !Array.isArray(item.posts)) {
-              const post = item.posts as any;
+              const post = item.posts as { id: string; title: string; slug: string; excerpt?: string; author_id: string };
               if (post && post.id && post.id !== currentPostId) {
                 taggedPostsData.push(post as RecommendedPost);
               }
@@ -126,7 +122,11 @@ export function RecommendedPosts({
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPostId, currentPostCategory, currentPostTags, limit]);
+
+  useEffect(() => {
+    loadRecommendations();
+  }, [loadRecommendations]);
 
   if (loading) {
     return (

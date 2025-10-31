@@ -61,7 +61,7 @@ export function UserManagement() {
         page,
         limit: 50,
         search: searchTerm || undefined,
-        role: (roleFilter || undefined) as any,
+        role: (roleFilter || undefined) as "admin" | "moderator" | "user" | undefined,
         suspended: suspendedFilter,
       });
 
@@ -86,7 +86,7 @@ export function UserManagement() {
     if (!profile) return;
 
     setSelectedUser(user);
-    setNotes((user as any).admin_notes || '');
+    setNotes((user as { admin_notes?: string }).admin_notes || '');
     setEditingNotes(false);
 
     // Load user's suspension history
@@ -112,7 +112,7 @@ export function UserManagement() {
     const result = await updateUserRole({
       currentUserId: profile.id,
       targetUserId: selectedUser.id,
-      newRole: newRole as any,
+      newRole: newRole as "admin" | "moderator" | "user",
     });
 
     if (result.success) {
@@ -343,10 +343,10 @@ export function UserManagement() {
                           >
                             {user.role?.replace('_', ' ').toUpperCase()}
                           </span>
-                          {(user as any).is_suspended && (
+                          {(user as { is_suspended?: boolean }).is_suspended && (
                             <Ban className="w-5 h-5 text-red-400" />
                           )}
-                          {(user as any).is_banned && (
+                          {(user as { is_banned?: boolean }).is_banned && (
                             <XCircle className="w-5 h-5 text-red-500" />
                           )}
                         </div>
@@ -565,7 +565,7 @@ export function UserManagement() {
                 <label className="text-sm text-gray-400 mb-1 block">Suspension Type</label>
                 <select
                   value={suspendType}
-                  onChange={(e) => setSuspendType(e.target.value as any)}
+                  onChange={(e) => setSuspendType(e.target.value as "temporary" | "permanent")}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                 >
                   <option value="warning">Warning</option>

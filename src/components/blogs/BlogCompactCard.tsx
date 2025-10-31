@@ -37,9 +37,9 @@ export const BlogCompactCard = memo(function BlogCompactCard({
   };
 
   // Get engagement data
-  const viewCount = (blog as any).view_count || 0;
-  const clapCount = (blog as any).clap_count || 0;
-  const commentCount = (blog as any).comment_count || 0;
+  const viewCount = (blog as { view_count?: number }).view_count || 0;
+  const clapCount = (blog as { clap_count?: number }).clap_count || 0;
+  const commentCount = (blog as { comment_count?: number }).comment_count || 0;
 
   // Format publish date
   const publishDate = new Date(blog.published_at || blog.created_at);

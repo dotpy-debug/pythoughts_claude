@@ -10,7 +10,7 @@
  * - Terminal-themed styling
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Plus, Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { supabase } from '../../lib/supabase';
@@ -72,9 +72,9 @@ export function CommentReactions({
     if (!user) return;
 
     loadUserReactions();
-  }, [user, commentId]);
+  }, [user, commentId, loadUserReactions]);
 
-  const loadUserReactions = async () => {
+  const loadUserReactions = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -93,7 +93,7 @@ export function CommentReactions({
     } catch (error) {
       console.error('Error loading user reactions:', error);
     }
-  };
+  }, [user, commentId]);
 
   const toggleReaction = async (reactionType: ReactionType) => {
     if (!user) {

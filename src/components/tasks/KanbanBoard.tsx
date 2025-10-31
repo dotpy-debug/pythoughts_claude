@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -48,11 +48,7 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
     })
   );
 
-  useEffect(() => {
-    loadTasks();
-  }, [filters]);
-
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getTasksByStatus(filters);
@@ -62,7 +58,11 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    loadTasks();
+  }, [loadTasks]);
 
   const findContainer = (id: string): string | null => {
     if (id in tasks) {

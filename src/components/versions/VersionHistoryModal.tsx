@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, History, RotateCcw, Clock, User, FileText, CheckCircle } from 'lucide-react';
 import { PostVersion } from '../../lib/supabase';
 import { getPostVersions, restorePostVersion } from '../../actions/versions';
@@ -31,13 +31,7 @@ export function VersionHistoryModal({
 
   const isAuthor = user?.id === postAuthorId;
 
-  useEffect(() => {
-    if (isOpen) {
-      loadVersions();
-    }
-  }, [isOpen, postId]);
-
-  const loadVersions = async () => {
+  const loadVersions = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -53,7 +47,13 @@ export function VersionHistoryModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [postId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadVersions();
+    }
+  }, [isOpen, loadVersions]);
 
   const handleRestore = async (versionNumber: number) => {
     if (!user || !isAuthor) {

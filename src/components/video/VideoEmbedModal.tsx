@@ -117,7 +117,7 @@ export function VideoEmbedModal({
     setUrl(e.target.value);
   };
 
-  const handleOptionChange = (key: keyof VideoPlayerOptions, value: any) => {
+  const handleOptionChange = (key: keyof VideoPlayerOptions, value: unknown) => {
     setOptions((prev) => ({ ...prev, [key]: value }));
   };
 

@@ -30,7 +30,7 @@ interface BlogPost {
   title: string;
   subtitle: string | null;
   content_html: string;
-  toc_data: any;
+  toc_data: Record<string, unknown>;
   created_at: string;
   updated_at: string;
   published_at: string;
@@ -76,7 +76,7 @@ async function fetchBlogPosts(): Promise<BlogPost[]> {
 
   console.log(`✅ Fetched ${data?.length || 0} blog posts`);
   // Map image_url -> cover_image for downstream HTML generation
-  return (data || []).map((row: any) => ({
+  return (data || []).map((row: Record<string, unknown>) => ({
     id: row.id,
     slug: row.slug,
     title: row.title,

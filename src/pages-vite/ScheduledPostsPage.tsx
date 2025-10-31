@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Clock, Calendar, Edit2, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserScheduledPosts, cancelScheduledPost } from '../utils/scheduledPosts';
@@ -24,20 +24,20 @@ export function ScheduledPostsPage() {
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      loadScheduledPosts();
-    }
-  }, [user]);
-
-  const loadScheduledPosts = async () => {
+  const loadScheduledPosts = useCallback(async () => {
     if (!user) return;
 
     setLoading(true);
     const posts = await getUserScheduledPosts(user.id);
     setScheduledPosts(posts);
     setLoading(false);
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadScheduledPosts();
+    }
+  }, [user, loadScheduledPosts]);
 
   const handleCancelSchedule = async (draftId: string) => {
     if (!user) return;

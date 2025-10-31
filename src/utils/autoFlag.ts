@@ -28,7 +28,7 @@ export async function autoFlagContent(
 
   try {
     // Create a system-generated report
-    const reportData: any = {
+    const reportData: Record<string, unknown> = {
       reporter_id: authorId, // System reports use the author as reporter for tracking
       reported_user_id: authorId,
       reason: `Automated flagging: ${safetyCheck.severity} severity content detected`,

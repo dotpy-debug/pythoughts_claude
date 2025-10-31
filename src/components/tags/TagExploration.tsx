@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tag as TagIcon, TrendingUp, Users, FileText, Search, Star } from 'lucide-react';
 import { getPopularTags, getTrendingTags, followTag, unfollowTag, searchTags } from '../../actions/tags';
@@ -17,19 +17,7 @@ export function TagExploration() {
   const [activeTab, setActiveTab] = useState<'popular' | 'trending'>('popular');
   const [followingTags, setFollowingTags] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    loadTags();
-  }, [user]);
-
-  useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      handleSearch();
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchQuery]);
-
-  const loadTags = async () => {
+  const loadTags = useCallback(async () => {
     setLoading(true);
     try {
       const [popular, trending] = await Promise.all([
@@ -52,16 +40,28 @@ export function TagExploration() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     try {
       const results = await searchTags(searchQuery.trim());
       setSearchResults(results);
     } catch (error) {
       logger.error('Error searching tags', { errorDetails: error });
     }
-  };
+  }, [searchQuery]);
+
+  useEffect(() => {
+    loadTags();
+  }, [loadTags]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      handleSearch();
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery, handleSearch]);
 
   const handleFollowToggle = async (tagId: string) => {
     if (!user) {

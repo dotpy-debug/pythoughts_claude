@@ -9,7 +9,7 @@
  * - Test email delivery
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Mail, Bell, Clock, Check, X, Send } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { supabase } from '../../lib/supabase';
@@ -55,14 +55,7 @@ export function EmailPreferencesPage() {
   const [testingSent, setTestingSent] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Load preferences
-  useEffect(() => {
-    if (!user) return;
-
-    loadPreferences();
-  }, [user]);
-
-  const loadPreferences = async () => {
+  const loadPreferences = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -95,7 +88,14 @@ export function EmailPreferencesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, showMessage]);
+
+  // Load preferences
+  useEffect(() => {
+    if (!user) return;
+
+    loadPreferences();
+  }, [user, loadPreferences]);
 
   const savePreferences = async () => {
     if (!user) return;
@@ -160,10 +160,10 @@ export function EmailPreferencesPage() {
     }
   };
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
+  const showMessage = useCallback((type: 'success' | 'error', text: string) => {
     setMessage({ type, text });
     setTimeout(() => setMessage(null), 5000);
-  };
+  }, []);
 
   const togglePreference = (key: keyof EmailPreferences) => {
     setPreferences((prev) => ({

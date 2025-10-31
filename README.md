@@ -1,5 +1,11 @@
 # Pythoughts
 
+[![codecov](https://codecov.io/gh/YOUR_USERNAME/pythoughts_claude/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/pythoughts_claude)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![Test Coverage](https://img.shields.io/badge/coverage-70%25-brightgreen)](./COVERAGE_GUIDE.md)
+[![CI/CD](https://github.com/YOUR_USERNAME/pythoughts_claude/actions/workflows/code-quality.yml/badge.svg)](https://github.com/YOUR_USERNAME/pythoughts_claude/actions)
+
 Enterprise-grade JAMstack blog platform built with Next.js 16, Vite, React 19, and Supabase.
 
 ## Features
@@ -36,7 +42,9 @@ npm run build:prod       # Production build with SEO files
 
 - **[CLAUDE.md](./CLAUDE.md)** - Project overview, architecture, and development guide
 - **[CODE_QUALITY.md](./CODE_QUALITY.md)** - Code quality, pre-commit hooks, and CI/CD
+- **[COVERAGE_GUIDE.md](./COVERAGE_GUIDE.md)** - Test coverage guide and best practices
 - **[INTEGRATION_PLAN.md](./INTEGRATION_PLAN.md)** - Feature roadmap and implementation plan
+- **[.github/CODECOV_SETUP.md](./.github/CODECOV_SETUP.md)** - Codecov setup instructions
 
 ## Code Quality
 
@@ -87,6 +95,7 @@ npm run format:check     # Check formatting
 npm run test             # Unit tests (watch mode)
 npm run test:unit        # Run unit tests once
 npm run test:coverage    # Generate coverage report
+npm run coverage:view    # Open coverage report in browser
 npm run test:e2e         # Run E2E tests
 npm run test:e2e:ui      # E2E tests with UI
 ```

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Upload, Video, Trash2, Loader2, Copy, Check } from 'lucide-react';
 import { mediaUpload, UploadedMedia } from '../../lib/media-upload';
 import { useAuth } from '../../contexts/AuthContext';
@@ -18,11 +18,7 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
   const [error, setError] = useState('');
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadMedia();
-  }, []);
-
-  const loadMedia = async () => {
+  const loadMedia = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -37,7 +33,11 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadMedia();
+  }, [loadMedia]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;

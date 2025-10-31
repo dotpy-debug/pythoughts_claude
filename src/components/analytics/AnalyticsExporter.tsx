@@ -167,7 +167,7 @@ export function AnalyticsExporter({
                   onClick={() =>
                     setOptions((prev) => ({
                       ...prev,
-                      format: fmt.value as any,
+                      format: fmt.value as "json" | "csv" | "xlsx" | "pdf",
                     }))
                   }
                   className={cn(

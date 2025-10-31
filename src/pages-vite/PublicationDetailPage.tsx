@@ -203,10 +203,10 @@ export function PublicationDetailPage() {
                 className="bg-gray-900 border border-gray-700 rounded-lg p-4 hover:border-terminal-green transition-colors cursor-pointer"
               >
                 <div className="flex items-center space-x-3">
-                  {(member.profiles as any)?.avatar_url ? (
+                  {(member.profiles as { avatar_url?: string } | null)?.avatar_url ? (
                     <img
-                      src={(member.profiles as any).avatar_url}
-                      alt={(member.profiles as any)?.username}
+                      src={(member.profiles as { avatar_url?: string } | null)?.avatar_url || ''}
+                      alt={(member.profiles as { username?: string } | null)?.username || 'User'}
                       className="w-10 h-10 rounded-full border border-terminal-green object-cover"
                     />
                   ) : (
@@ -216,7 +216,7 @@ export function PublicationDetailPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-100 truncate">
-                      {(member.profiles as any)?.username}
+                      {(member.profiles as { username?: string } | null)?.username || 'Unknown User'}
                     </p>
                     <p className="text-xs text-gray-500 font-mono">{member.role}</p>
                   </div>
