@@ -15,7 +15,6 @@ import {
   getTestClient,
   getServiceRoleClient,
   createTestUser,
-  signInTestUser,
   generateTestEmail,
   generateTestUsername,
   TEST_POST_DATA,
@@ -58,20 +57,16 @@ describe('Blog CRUD Integration Tests', () => {
         author_id: testUserId,
       };
 
-      const { data, error } = await serviceClient
-        .from('posts')
-        .insert(postData)
-        .select()
-        .single();
+      const { data, error } = await serviceClient.from('posts').insert(postData).select().single();
 
       expect(error).toBeNull();
       expect(data).toBeDefined();
-      expect(data?.id).toBeDefined();
-      expect(data?.title).toBe(TEST_POST_DATA.title);
-      expect(data?.content).toBe(TEST_POST_DATA.content);
-      expect(data?.author_id).toBe(testUserId);
+      expect(data!.id).toBeDefined();
+      expect(data!.title).toBe(TEST_POST_DATA.title);
+      expect(data!.content).toBe(TEST_POST_DATA.content);
+      expect(data!.author_id).toBe(testUserId);
 
-      testPostId = data?.id;
+      testPostId = data!.id;
     });
 
     it('should create post with all optional fields', async () => {
@@ -94,11 +89,11 @@ describe('Blog CRUD Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.subtitle).toBe('Test Subtitle');
-      expect(data?.seo_title).toBe('SEO Title');
-      expect(data?.featured).toBe(true);
+      expect(data!.subtitle).toBe('Test Subtitle');
+      expect(data!.seo_title).toBe('SEO Title');
+      expect(data!.featured).toBe(true);
 
-      testPostId = data?.id;
+      testPostId = data!.id;
     });
 
     it('should reject post creation without author_id', async () => {
@@ -129,17 +124,13 @@ describe('Blog CRUD Integration Tests', () => {
         is_published: false,
       };
 
-      const { data, error } = await serviceClient
-        .from('posts')
-        .insert(draftData)
-        .select()
-        .single();
+      const { data, error } = await serviceClient.from('posts').insert(draftData).select().single();
 
       expect(error).toBeNull();
-      expect(data?.is_draft).toBe(true);
-      expect(data?.is_published).toBe(false);
+      expect(data!.is_draft).toBe(true);
+      expect(data!.is_published).toBe(false);
 
-      testPostId = data?.id;
+      testPostId = data!.id;
     });
 
     it('should set timestamps automatically', async () => {
@@ -150,18 +141,14 @@ describe('Blog CRUD Integration Tests', () => {
         author_id: testUserId,
       };
 
-      const { data, error } = await serviceClient
-        .from('posts')
-        .insert(postData)
-        .select()
-        .single();
+      const { data, error } = await serviceClient.from('posts').insert(postData).select().single();
 
       expect(error).toBeNull();
-      expect(data?.created_at).toBeDefined();
-      expect(data?.updated_at).toBeDefined();
-      expect(new Date(data?.created_at).getTime()).toBeGreaterThan(0);
+      expect(data!.created_at).toBeDefined();
+      expect(data!.updated_at).toBeDefined();
+      expect(new Date(data!.created_at).getTime()).toBeGreaterThan(0);
 
-      testPostId = data?.id;
+      testPostId = data!.id;
     });
   });
 
@@ -178,33 +165,25 @@ describe('Blog CRUD Integration Tests', () => {
         .select('id')
         .single();
 
-      testPostId = data?.id!;
+      testPostId = data!.id!;
     });
 
     it('should read a single blog post by ID', async () => {
       const client = getTestClient();
 
-      const { data, error } = await client
-        .from('posts')
-        .select('*')
-        .eq('id', testPostId)
-        .single();
+      const { data, error } = await client.from('posts').select('*').eq('id', testPostId).single();
 
       expect(error).toBeNull();
       expect(data).toBeDefined();
-      expect(data?.id).toBe(testPostId);
-      expect(data?.title).toBe(TEST_POST_DATA.title);
+      expect(data!.id).toBe(testPostId);
+      expect(data!.title).toBe(TEST_POST_DATA.title);
     });
 
     it('should return null for non-existent post', async () => {
       const client = getTestClient();
       const fakeId = '00000000-0000-0000-0000-000000000000';
 
-      const { data, error } = await client
-        .from('posts')
-        .select('*')
-        .eq('id', fakeId)
-        .single();
+      const { data, error } = await client.from('posts').select('*').eq('id', fakeId).single();
 
       expect(error).toBeDefined();
       expect(data).toBeNull();
@@ -241,7 +220,7 @@ describe('Blog CRUD Integration Tests', () => {
         .eq('author_id', testUserId);
 
       expect(error).toBeNull();
-      expect(data?.every(post => post.category === 'Technology')).toBe(true);
+      expect(data!.every((post) => post.category === 'Technology')).toBe(true);
     });
 
     it('should filter published vs draft posts', async () => {
@@ -272,8 +251,8 @@ describe('Blog CRUD Integration Tests', () => {
         .eq('author_id', testUserId)
         .eq('is_draft', true);
 
-      expect(publishedData?.every(post => post.is_published === true)).toBe(true);
-      expect(draftData?.every(post => post.is_draft === true)).toBe(true);
+      expect(publishedData?.every((post) => post.is_published === true)).toBe(true);
+      expect(draftData?.every((post) => post.is_draft === true)).toBe(true);
     });
 
     it('should read post with author profile', async () => {
@@ -286,8 +265,8 @@ describe('Blog CRUD Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.profiles).toBeDefined();
-      expect(data?.profiles?.id).toBe(testUserId);
+      expect(data!.profiles).toBeDefined();
+      expect(data!.profiles?.id).toBe(testUserId);
     });
   });
 
@@ -304,7 +283,7 @@ describe('Blog CRUD Integration Tests', () => {
         .select('id')
         .single();
 
-      testPostId = data?.id!;
+      testPostId = data!.id!;
     });
 
     it('should successfully update a blog post', async () => {
@@ -319,7 +298,7 @@ describe('Blog CRUD Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.title).toBe(updatedTitle);
+      expect(data!.title).toBe(updatedTitle);
     });
 
     it('should update multiple fields at once', async () => {
@@ -340,10 +319,10 @@ describe('Blog CRUD Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.title).toBe(updates.title);
-      expect(data?.content).toBe(updates.content);
-      expect(data?.subtitle).toBe(updates.subtitle);
-      expect(data?.category).toBe(updates.category);
+      expect(data!.title).toBe(updates.title);
+      expect(data!.content).toBe(updates.content);
+      expect(data!.subtitle).toBe(updates.subtitle);
+      expect(data!.category).toBe(updates.category);
     });
 
     it('should update published_at timestamp when publishing', async () => {
@@ -361,7 +340,7 @@ describe('Blog CRUD Integration Tests', () => {
         .select()
         .single();
 
-      const draftId = draftData?.id!;
+      const draftId = draftData!.id!;
 
       // Publish the post
       const { data, error } = await serviceClient
@@ -376,8 +355,8 @@ describe('Blog CRUD Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.is_published).toBe(true);
-      expect(data?.published_at).toBeDefined();
+      expect(data!.is_published).toBe(true);
+      expect(data!.published_at).toBeDefined();
     });
 
     it('should not allow updating author_id', async () => {
@@ -395,7 +374,7 @@ describe('Blog CRUD Integration Tests', () => {
       if (!error) {
         // If it succeeded with service role, verify original author wasn't changed
         // In production, RLS policies should prevent this
-        expect(data?.author_id).toBe(otherUserId);
+        expect(data!.author_id).toBe(otherUserId);
       }
     });
 
@@ -415,10 +394,7 @@ describe('Blog CRUD Integration Tests', () => {
       await wait(1000);
 
       // Update the post
-      await serviceClient
-        .from('posts')
-        .update({ title: 'Updated Title' })
-        .eq('id', testPostId);
+      await serviceClient.from('posts').update({ title: 'Updated Title' }).eq('id', testPostId);
 
       // Check new timestamp
       const { data: updatedData } = await serviceClient
@@ -446,16 +422,13 @@ describe('Blog CRUD Integration Tests', () => {
         .select('id')
         .single();
 
-      testPostId = data?.id!;
+      testPostId = data!.id!;
     });
 
     it('should successfully delete a blog post', async () => {
       const serviceClient = getServiceRoleClient();
 
-      const { error } = await serviceClient
-        .from('posts')
-        .delete()
-        .eq('id', testPostId);
+      const { error } = await serviceClient.from('posts').delete().eq('id', testPostId);
 
       expect(error).toBeNull();
 
@@ -474,10 +447,7 @@ describe('Blog CRUD Integration Tests', () => {
       const serviceClient = getServiceRoleClient();
       const fakeId = '00000000-0000-0000-0000-000000000000';
 
-      const { error } = await serviceClient
-        .from('posts')
-        .delete()
-        .eq('id', fakeId);
+      const { error } = await serviceClient.from('posts').delete().eq('id', fakeId);
 
       // No error, just no rows affected
       expect(error).toBeNull();
@@ -519,7 +489,7 @@ describe('Blog CRUD Integration Tests', () => {
         .select('id')
         .single();
 
-      testPostId = data?.id!;
+      testPostId = data!.id!;
     });
 
     it('should initialize vote_count at 0', async () => {
@@ -531,7 +501,7 @@ describe('Blog CRUD Integration Tests', () => {
         .eq('id', testPostId)
         .single();
 
-      expect(data?.vote_count).toBe(0);
+      expect(data!.vote_count).toBe(0);
     });
 
     it('should initialize comment_count at 0', async () => {
@@ -543,7 +513,7 @@ describe('Blog CRUD Integration Tests', () => {
         .eq('id', testPostId)
         .single();
 
-      expect(data?.comment_count).toBe(0);
+      expect(data!.comment_count).toBe(0);
     });
   });
 
@@ -563,9 +533,9 @@ describe('Blog CRUD Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.title).toBe(longTitle);
+      expect(data!.title).toBe(longTitle);
 
-      testPostId = data?.id!;
+      testPostId = data!.id!;
     });
 
     it('should handle special characters in content', async () => {
@@ -583,9 +553,9 @@ describe('Blog CRUD Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.content).toBe(specialContent);
+      expect(data!.content).toBe(specialContent);
 
-      testPostId = data?.id!;
+      testPostId = data!.id!;
     });
 
     it('should handle empty optional fields', async () => {
@@ -608,7 +578,7 @@ describe('Blog CRUD Integration Tests', () => {
       expect(error).toBeNull();
       expect(data).toBeDefined();
 
-      testPostId = data?.id!;
+      testPostId = data!.id!;
     });
   });
 });

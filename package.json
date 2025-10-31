@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:next": "next dev",
+    "dev:next": "next dev --turbo=false",
     "dev:collab": "tsx server/index.ts",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:collab\"",
     "build": "vite build",

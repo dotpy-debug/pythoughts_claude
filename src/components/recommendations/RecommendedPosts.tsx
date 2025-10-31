@@ -25,9 +25,9 @@ export function RecommendedPosts({
   currentPostId,
   currentPostCategory,
   currentPostTags = [],
-  limit = 5
+  limit = 5,
 }: RecommendedPostsProps) {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const navigate = useNavigate();
   const [recommendations, setRecommendations] = useState<RecommendedPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,8 @@ export function RecommendedPosts({
     try {
       let query = supabase
         .from('posts')
-        .select(`
+        .select(
+          `
           id,
           title,
           subtitle,
@@ -49,7 +50,8 @@ export function RecommendedPosts({
             username,
             avatar_url
           )
-        `)
+        `
+        )
         .eq('is_published', true)
         .order('vote_count', { ascending: false })
         .limit(limit);
@@ -72,7 +74,8 @@ export function RecommendedPosts({
       if (currentPostTags.length > 0) {
         const { data: taggedPosts } = await supabase
           .from('post_tags')
-          .select(`
+          .select(
+            `
             post_id,
             posts (
               id,
@@ -87,7 +90,8 @@ export function RecommendedPosts({
                 avatar_url
               )
             )
-          `)
+          `
+          )
           .in('tag_id', currentPostTags)
           .limit(limit);
 
@@ -96,7 +100,13 @@ export function RecommendedPosts({
 
           for (const item of taggedPosts) {
             if (item.posts && !Array.isArray(item.posts)) {
-              const post = item.posts as { id: string; title: string; slug: string; excerpt?: string; author_id: string };
+              const post = item.posts as {
+                id: string;
+                title: string;
+                slug: string;
+                excerpt?: string;
+                author_id: string;
+              };
               if (post && post.id && post.id !== currentPostId) {
                 taggedPostsData.push(post as RecommendedPost);
               }
@@ -106,7 +116,7 @@ export function RecommendedPosts({
           // Merge and deduplicate recommendations
           const allRecommendations = [...(data || []), ...taggedPostsData] as RecommendedPost[];
           const uniqueRecommendations = Array.from(
-            new Map(allRecommendations.map(post => [post.id, post])).values()
+            new Map(allRecommendations.map((post) => [post.id, post])).values()
           );
 
           setRecommendations(uniqueRecommendations.slice(0, limit));
@@ -176,9 +186,7 @@ export function RecommendedPosts({
                   </p>
                 )}
                 <div className="flex items-center space-x-3 mt-2 text-xs text-gray-600 font-mono">
-                  {post.category && (
-                    <span className="text-terminal-purple">{post.category}</span>
-                  )}
+                  {post.category && <span className="text-terminal-purple">{post.category}</span>}
                   <span>{post.vote_count} votes</span>
                   <span>{post.comment_count} comments</span>
                 </div>

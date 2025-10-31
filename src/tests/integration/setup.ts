@@ -5,7 +5,7 @@
  * Includes Supabase client setup with service role for administrative test operations.
  */
 
-import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+import { beforeAll, afterAll, afterEach } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 // Test user credentials for authentication tests
@@ -188,11 +188,7 @@ export async function createTestPost(
     author_id: authorId,
   };
 
-  const { data, error } = await client
-    .from('posts')
-    .insert(postData)
-    .select('id')
-    .single();
+  const { data, error } = await client.from('posts').insert(postData).select('id').single();
 
   if (error || !data) {
     throw new Error(`Failed to create test post: ${error?.message}`);
@@ -219,11 +215,7 @@ export async function createTestComment(
     author_id: authorId,
   };
 
-  const { data, error } = await client
-    .from('comments')
-    .insert(commentData)
-    .select('id')
-    .single();
+  const { data, error } = await client.from('comments').insert(commentData).select('id').single();
 
   if (error || !data) {
     throw new Error(`Failed to create test comment: ${error?.message}`);
@@ -244,28 +236,19 @@ export async function cleanupTestData(): Promise<void> {
 
     // Delete comments
     if (createdResources.commentIds.length > 0) {
-      await client
-        .from('comments')
-        .delete()
-        .in('id', createdResources.commentIds);
+      await client.from('comments').delete().in('id', createdResources.commentIds);
       createdResources.commentIds = [];
     }
 
     // Delete posts
     if (createdResources.postIds.length > 0) {
-      await client
-        .from('posts')
-        .delete()
-        .in('id', createdResources.postIds);
+      await client.from('posts').delete().in('id', createdResources.postIds);
       createdResources.postIds = [];
     }
 
     // Delete profiles
     if (createdResources.profileIds.length > 0) {
-      await client
-        .from('profiles')
-        .delete()
-        .in('id', createdResources.profileIds);
+      await client.from('profiles').delete().in('id', createdResources.profileIds);
       createdResources.profileIds = [];
     }
 
@@ -286,7 +269,7 @@ export async function cleanupTestData(): Promise<void> {
  * Wait for async operations (useful for database triggers)
  */
 export async function wait(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**

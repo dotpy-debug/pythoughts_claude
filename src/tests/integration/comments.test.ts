@@ -60,21 +60,17 @@ describe('Comments System Integration Tests', () => {
         author_id: testUserId,
       };
 
-      const { data, error } = await client
-        .from('comments')
-        .insert(commentData)
-        .select()
-        .single();
+      const { data, error } = await client.from('comments').insert(commentData).select().single();
 
       expect(error).toBeNull();
       expect(data).toBeDefined();
-      expect(data?.id).toBeDefined();
-      expect(data?.content).toBe(TEST_COMMENT_DATA.content);
-      expect(data?.post_id).toBe(testPostId);
-      expect(data?.author_id).toBe(testUserId);
-      expect(data?.depth).toBe(0);
+      expect(data!.id).toBeDefined();
+      expect(data!.content).toBe(TEST_COMMENT_DATA.content);
+      expect(data!.post_id).toBe(testPostId);
+      expect(data!.author_id).toBe(testUserId);
+      expect(data!.depth).toBe(0);
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should create comment with default values', async () => {
@@ -92,12 +88,12 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.vote_count).toBe(0);
-      expect(data?.is_deleted).toBe(false);
-      expect(data?.is_pinned).toBe(false);
-      expect(data?.parent_comment_id).toBeNull();
+      expect(data!.vote_count).toBe(0);
+      expect(data!.is_deleted).toBe(false);
+      expect(data!.is_pinned).toBe(false);
+      expect(data!.parent_comment_id).toBeNull();
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should reject comment without content', async () => {
@@ -131,10 +127,10 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.created_at).toBeDefined();
-      expect(data?.updated_at).toBeDefined();
+      expect(data!.created_at).toBeDefined();
+      expect(data!.updated_at).toBeDefined();
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
   });
 
@@ -152,7 +148,7 @@ describe('Comments System Integration Tests', () => {
         .select('id')
         .single();
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should create a reply to a comment', async () => {
@@ -166,15 +162,11 @@ describe('Comments System Integration Tests', () => {
         depth: 1,
       };
 
-      const { data, error } = await client
-        .from('comments')
-        .insert(replyData)
-        .select()
-        .single();
+      const { data, error } = await client.from('comments').insert(replyData).select().single();
 
       expect(error).toBeNull();
-      expect(data?.parent_comment_id).toBe(testCommentId);
-      expect(data?.depth).toBe(1);
+      expect(data!.parent_comment_id).toBe(testCommentId);
+      expect(data!.depth).toBe(1);
     });
 
     it('should support nested replies (depth 2)', async () => {
@@ -245,7 +237,7 @@ describe('Comments System Integration Tests', () => {
         .eq('parent_comment_id', testCommentId);
 
       expect(error).toBeNull();
-      expect(data?.length).toBe(3);
+      expect(data!.length).toBe(3);
     });
   });
 
@@ -262,7 +254,7 @@ describe('Comments System Integration Tests', () => {
         .select('id')
         .single();
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should update comment content', async () => {
@@ -277,7 +269,7 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.content).toBe(newContent);
+      expect(data!.content).toBe(newContent);
     });
 
     it('should update updated_at timestamp on edit', async () => {
@@ -291,10 +283,7 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       // Update comment
-      await client
-        .from('comments')
-        .update({ content: 'New content' })
-        .eq('id', testCommentId);
+      await client.from('comments').update({ content: 'New content' }).eq('id', testCommentId);
 
       // Check new timestamp
       const { data: updated } = await client
@@ -319,7 +308,7 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       // With service role it will succeed, but in real app RLS prevents this
-      expect(data?.author_id).toBe(otherUserId);
+      expect(data!.author_id).toBe(otherUserId);
     });
   });
 
@@ -336,7 +325,7 @@ describe('Comments System Integration Tests', () => {
         .select('id')
         .single();
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should soft delete a comment (mark as deleted)', async () => {
@@ -350,25 +339,18 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.is_deleted).toBe(true);
+      expect(data!.is_deleted).toBe(true);
     });
 
     it('should hard delete a comment', async () => {
       const client = getServiceRoleClient();
 
-      const { error } = await client
-        .from('comments')
-        .delete()
-        .eq('id', testCommentId);
+      const { error } = await client.from('comments').delete().eq('id', testCommentId);
 
       expect(error).toBeNull();
 
       // Verify deletion
-      const { data } = await client
-        .from('comments')
-        .select('*')
-        .eq('id', testCommentId)
-        .single();
+      const { data } = await client.from('comments').select('*').eq('id', testCommentId).single();
 
       expect(data).toBeNull();
     });
@@ -421,7 +403,7 @@ describe('Comments System Integration Tests', () => {
         .select('id')
         .single();
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should pin a comment', async () => {
@@ -435,17 +417,14 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.is_pinned).toBe(true);
+      expect(data!.is_pinned).toBe(true);
     });
 
     it('should unpin a comment', async () => {
       const client = getServiceRoleClient();
 
       // Pin first
-      await client
-        .from('comments')
-        .update({ is_pinned: true })
-        .eq('id', testCommentId);
+      await client.from('comments').update({ is_pinned: true }).eq('id', testCommentId);
 
       // Then unpin
       const { data, error } = await client
@@ -456,7 +435,7 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.is_pinned).toBe(false);
+      expect(data!.is_pinned).toBe(false);
     });
   });
 
@@ -497,7 +476,7 @@ describe('Comments System Integration Tests', () => {
         .order('created_at', { ascending: true });
 
       expect(error).toBeNull();
-      expect(data?.length).toBeGreaterThanOrEqual(3);
+      expect(data!.length).toBeGreaterThanOrEqual(3);
     });
 
     it('should retrieve comments with author profiles', async () => {
@@ -511,8 +490,8 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.profiles).toBeDefined();
-      expect(data?.profiles?.id).toBe(data?.author_id);
+      expect(data!.profiles).toBeDefined();
+      expect(data!.profiles?.id).toBe(data!.author_id);
     });
 
     it('should filter out deleted comments', async () => {
@@ -526,10 +505,7 @@ describe('Comments System Integration Tests', () => {
         .limit(1);
 
       if (allComments && allComments.length > 0) {
-        await client
-          .from('comments')
-          .update({ is_deleted: true })
-          .eq('id', allComments[0].id);
+        await client.from('comments').update({ is_deleted: true }).eq('id', allComments[0].id);
       }
 
       // Get non-deleted comments
@@ -540,7 +516,7 @@ describe('Comments System Integration Tests', () => {
         .eq('is_deleted', false);
 
       expect(error).toBeNull();
-      expect(data?.every(comment => !comment.is_deleted)).toBe(true);
+      expect(data!.every((comment) => !comment.is_deleted)).toBe(true);
     });
   });
 
@@ -561,9 +537,9 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.content.length).toBe(10000);
+      expect(data!.content.length).toBe(10000);
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should handle special characters in comments', async () => {
@@ -582,9 +558,9 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.content).toBe(specialContent);
+      expect(data!.content).toBe(specialContent);
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
 
     it('should handle maximum depth comments', async () => {
@@ -602,9 +578,9 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data?.depth).toBe(10);
+      expect(data!.depth).toBe(10);
 
-      testCommentId = data?.id!;
+      testCommentId = data!.id!;
     });
   });
 });

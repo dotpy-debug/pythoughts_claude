@@ -14,7 +14,6 @@ import {
   getTestClient,
   getServiceRoleClient,
   generateTestEmail,
-  generateTestUsername,
   cleanupTestData,
   wait,
 } from './setup';
@@ -22,7 +21,6 @@ import {
 describe('Authentication API Integration Tests', () => {
   const testEmail = generateTestEmail('auth');
   const testPassword = 'SecurePassword123!';
-  const testUsername = generateTestUsername('auth');
   let userId: string | null = null;
 
   afterEach(async () => {
@@ -300,12 +298,9 @@ describe('Authentication API Integration Tests', () => {
     it('should not reveal if email exists (security)', async () => {
       const client = getTestClient();
 
-      const { error } = await client.auth.resetPasswordForEmail(
-        'nonexistent@pythoughts-test.com',
-        {
-          redirectTo: 'http://localhost:5173/reset-password',
-        }
-      );
+      const { error } = await client.auth.resetPasswordForEmail('nonexistent@pythoughts-test.com', {
+        redirectTo: 'http://localhost:5173/reset-password',
+      });
 
       // Should succeed regardless (security best practice)
       expect(error).toBeNull();

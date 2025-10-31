@@ -8,7 +8,7 @@
  */
 
 import { z } from 'zod';
-import { urlSchema, usernameSchema, uuidSchema, optionalUrlSchema } from '@/lib/validation';
+import { usernameSchema, uuidSchema, optionalUrlSchema } from '@/lib/validation';
 
 /**
  * Update profile validation schema
@@ -24,11 +24,7 @@ export const updateProfileSchema = z.object({
     .trim()
     .optional(),
   avatar_url: optionalUrlSchema,
-  bio: z
-    .string()
-    .max(500, 'Bio must be at most 500 characters')
-    .optional()
-    .or(z.literal('')),
+  bio: z.string().max(500, 'Bio must be at most 500 characters').optional().or(z.literal('')),
   location: z
     .string()
     .max(100, 'Location must be at most 100 characters')
@@ -53,13 +49,12 @@ export const updateProfileSchema = z.object({
 /**
  * Get profile validation schema
  */
-export const getProfileSchema = z.object({
-  userId: uuidSchema.optional(),
-  username: usernameSchema.optional(),
-}).refine(
-  (data) => data.userId || data.username,
-  'Either userId or username must be provided'
-);
+export const getProfileSchema = z
+  .object({
+    userId: uuidSchema.optional(),
+    username: usernameSchema.optional(),
+  })
+  .refine((data) => data.userId || data.username, 'Either userId or username must be provided');
 
 /**
  * Update profile settings validation schema
@@ -77,13 +72,12 @@ export const updateProfileSettingsSchema = z.object({
 /**
  * Block user validation schema
  */
-export const blockUserSchema = z.object({
-  userId: uuidSchema,
-  blockedUserId: uuidSchema,
-}).refine(
-  (data) => data.userId !== data.blockedUserId,
-  'Cannot block yourself'
-);
+export const blockUserSchema = z
+  .object({
+    userId: uuidSchema,
+    blockedUserId: uuidSchema,
+  })
+  .refine((data) => data.userId !== data.blockedUserId, 'Cannot block yourself');
 
 /**
  * Unblock user validation schema
@@ -96,13 +90,12 @@ export const unblockUserSchema = z.object({
 /**
  * Follow user validation schema
  */
-export const followUserSchema = z.object({
-  userId: uuidSchema,
-  followedUserId: uuidSchema,
-}).refine(
-  (data) => data.userId !== data.followedUserId,
-  'Cannot follow yourself'
-);
+export const followUserSchema = z
+  .object({
+    userId: uuidSchema,
+    followedUserId: uuidSchema,
+  })
+  .refine((data) => data.userId !== data.followedUserId, 'Cannot follow yourself');
 
 /**
  * Unfollow user validation schema
