@@ -50,6 +50,16 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
     };
   }, [flatItems]);
 
+  // Handle item click callback
+  const handleItemClick = useCallback((id: string) => {
+    scrollToHeading(id);
+    setActiveId(id);
+    setIsMobileOpen(false);
+    if (onItemClick) {
+      onItemClick(id);
+    }
+  }, [onItemClick]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -126,15 +136,6 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
       }
     }
   }, [activeId]);
-
-  const handleItemClick = useCallback((id: string) => {
-    scrollToHeading(id);
-    setActiveId(id);
-    setIsMobileOpen(false);
-    if (onItemClick) {
-      onItemClick(id);
-    }
-  }, [onItemClick]);
 
   const toggleSection = (id: string) => {
     const newCollapsed = new Set(collapsedSections);

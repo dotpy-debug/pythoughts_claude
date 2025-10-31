@@ -115,34 +115,6 @@ export function BulkImageUpload({
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Handle dropped/selected files
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const newFiles: UploadFile[] = acceptedFiles.map((file) => ({
-        file,
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        preview: URL.createObjectURL(file),
-        status: 'pending',
-        progress: 0,
-      }));
-
-      setFiles((prev) => [...prev, ...newFiles].slice(0, maxFiles));
-
-      if (autoUpload) {
-        uploadFiles(newFiles);
-      }
-    },
-    [maxFiles, autoUpload, uploadFiles]
-  );
-
-  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
-    onDrop,
-    accept: acceptedTypes.reduce((acc, type) => ({ ...acc, [type]: [] }), {}),
-    maxFiles,
-    maxSize: maxSizeMB * 1024 * 1024,
-    multiple: true,
-  });
-
   // Upload files with concurrency control
   const uploadFiles = useCallback(async (filesToUpload: UploadFile[] = files) => {
     setIsUploading(true);
@@ -217,6 +189,34 @@ export function BulkImageUpload({
     setIsUploading(false);
     onUploadComplete?.(results);
   }, [files, maxConcurrent, userId, onFileUploaded, onUploadComplete]);
+
+  // Handle dropped/selected files
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const newFiles: UploadFile[] = acceptedFiles.map((file) => ({
+        file,
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        preview: URL.createObjectURL(file),
+        status: 'pending',
+        progress: 0,
+      }));
+
+      setFiles((prev) => [...prev, ...newFiles].slice(0, maxFiles));
+
+      if (autoUpload) {
+        uploadFiles(newFiles);
+      }
+    },
+    [maxFiles, autoUpload, uploadFiles]
+  );
+
+  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
+    onDrop,
+    accept: acceptedTypes.reduce((acc, type) => ({ ...acc, [type]: [] }), {}),
+    maxFiles,
+    maxSize: maxSizeMB * 1024 * 1024,
+    multiple: true,
+  });
 
   // Remove file from list
   const removeFile = (id: string) => {

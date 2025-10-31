@@ -49,16 +49,6 @@ export function PublicationInvite() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!token) {
-      setError('Invalid invitation link');
-      setLoading(false);
-      return;
-    }
-
-    loadInvitation();
-  }, [token, loadInvitation]);
-
   const loadInvitation = useCallback(async () => {
     try {
       setLoading(true);
@@ -104,6 +94,16 @@ export function PublicationInvite() {
       setLoading(false);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!token) {
+      setError('Invalid invitation link');
+      setLoading(false);
+      return;
+    }
+
+    loadInvitation();
+  }, [token, loadInvitation]);
 
   const handleAccept = async () => {
     if (!invitation || !user) {

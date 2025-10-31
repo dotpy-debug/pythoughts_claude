@@ -150,7 +150,7 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
       today.setHours(0, 0, 0, 0);
 
       const todayLogs = logsData?.filter(
-        (log: { created_at?: string }) => new Date(log.created_at) >= today
+        (log: { created_at?: string }) => log.created_at && new Date(log.created_at) >= today
       ) || [];
 
       setStats({

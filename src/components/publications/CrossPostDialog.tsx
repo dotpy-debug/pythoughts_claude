@@ -97,9 +97,23 @@ export function CrossPostDialog({
         existingPosts?.map((p: { publication_id: string }) => p.publication_id) || []
       );
 
+      // Define type for membership with publication
+      interface MembershipWithPublication {
+        role?: string;
+        can_publish?: boolean;
+        publication: {
+          id: string;
+          slug: string;
+          name: string;
+          logo_url?: string;
+          allow_cross_posting: boolean;
+          require_approval?: boolean;
+        };
+      }
+
       // Filter publications
       const availablePubs = (memberships || [])
-        .filter((m: { role?: string }) => {
+        .filter((m: MembershipWithPublication) => {
           const pub = m.publication;
           return (
             pub.allow_cross_posting && // Publication allows cross-posting
@@ -107,7 +121,7 @@ export function CrossPostDialog({
             pub.id !== currentPublicationId // Not the current publication
           );
         })
-        .map((m: { publication_id: string; publications?: { name?: string } }) => ({
+        .map((m: MembershipWithPublication) => ({
           id: m.publication.id,
           slug: m.publication.slug,
           name: m.publication.name,

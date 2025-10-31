@@ -132,11 +132,22 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
         throw fetchError;
       }
 
+      // Define type for member data from database
+      interface MemberData {
+        id: string;
+        role: string;
+        user: { username: string } | Array<{ username: string }>;
+      }
+
       setMembers(
-        (data || []).map((item) => ({
+        (data || []).map((item: MemberData) => ({
           id: item.id,
           role: item.role,
-          username: item.user.username,
+          username: (typeof item.user === 'object' && !Array.isArray(item.user))
+            ? item.user.username
+            : Array.isArray(item.user) && item.user[0]
+            ? item.user[0].username
+            : 'Unknown',
         }))
       );
     } catch (err) {

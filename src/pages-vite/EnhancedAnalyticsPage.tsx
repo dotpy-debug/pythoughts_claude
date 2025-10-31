@@ -73,7 +73,7 @@ const chartColors = {
   text: '#00ff00',
 };
 
-const defaultChartOptions: ChartOptions<any> = {
+const defaultChartOptions: ChartOptions<'line' | 'bar' | 'doughnut'> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -132,9 +132,19 @@ export function EnhancedAnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   // Data states
-  const [timeSeriesData, setTimeSeriesData] = useState<Record<string, unknown>>({});
+  const [timeSeriesData, setTimeSeriesData] = useState<{
+    views?: Array<{ date: string; value: number }>;
+    reads?: Array<{ date: string; value: number }>;
+    [key: string]: unknown;
+  }>({});
   const [funnelData, setFunnelData] = useState<FunnelStep[]>([]);
-  const [topPosts, setTopPosts] = useState<any[]>([]);
+  const [topPosts, setTopPosts] = useState<Array<{
+    id: string;
+    title: string;
+    views: number;
+    reads: number;
+    engagement: number;
+  }>>([]);
   const [metrics, setMetrics] = useState({
     totalViews: 0,
     totalReads: 0,

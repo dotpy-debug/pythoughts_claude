@@ -36,11 +36,11 @@ export function PresenceBar({ provider }: PresenceBarProps) {
       const states = Array.from(awareness?.getStates().values() || []);
 
       const activeUsers: PresenceUser[] = states
-        .filter((state: { user?: { id?: string } }) => state.user && state.user.id)
-        .map((state: { user: { id: string; name: string; color: string } }) => ({
-          id: state.user.id,
-          name: state.user.name || 'Anonymous',
-          color: state.user.color || '#10b981',
+        .filter((state: { user?: { id?: string; name?: string; color?: string } }) => state.user && state.user.id)
+        .map((state: { user?: { id?: string; name?: string; color?: string } }) => ({
+          id: state.user!.id!,
+          name: state.user!.name || 'Anonymous',
+          color: state.user!.color || '#10b981',
         }));
 
       setUsers(activeUsers);
