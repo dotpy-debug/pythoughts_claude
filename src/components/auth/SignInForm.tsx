@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Input } from '../ui/input';
+import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { checkRateLimit } from '../../utils/security';
 

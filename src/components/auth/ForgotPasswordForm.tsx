@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input } from '../ui/input';
+import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { supabase } from '../../lib/supabase';
 import { ArrowLeft, CheckCircle } from 'lucide-react';

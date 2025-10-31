@@ -84,8 +84,8 @@ export const toggleFeaturedPostSchema = z.object({
  * Get featured posts validation schema
  */
 export const getFeaturedPostsSchema = z.object({
-  limit: z
-    .number({ coerce: true })
+  limit: z.coerce
+    .number()
     .int()
     .min(1)
     .max(50)
@@ -154,8 +154,8 @@ export const searchPostsSchema = z.object({
   tags: z.array(z.string()).optional(),
   status: postStatusSchema.optional(),
   authorId: uuidSchema.optional(),
-  limit: z.number({ coerce: true }).int().min(1).max(100).default(20),
-  offset: z.number({ coerce: true }).int().min(0).default(0),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
 });
 
 /**

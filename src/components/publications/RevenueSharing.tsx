@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/input';
+import { Input } from '../ui/Input';
 import { Label } from '../ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import {
   Select,
   SelectContent,
@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
-import { Badge } from '../ui/badge';
+import { Badge } from '../ui/Badge';
 import { Switch } from '../ui/switch';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
@@ -89,7 +89,7 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
       }
 
       setShares(
-        (data || []).map((item: unknown) => ({
+        (data || []).map((item) => ({
           id: item.id,
           memberId: item.member_id,
           sharePercentage: item.share_percentage,
@@ -133,7 +133,7 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
       }
 
       setMembers(
-        (data || []).map((item: unknown) => ({
+        (data || []).map((item) => ({
           id: item.id,
           role: item.role,
           username: item.user.username,

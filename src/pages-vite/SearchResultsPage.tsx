@@ -88,15 +88,19 @@ export function SearchResultsPage() {
 
         if (postsData) {
           searchResults.push(
-            ...postsData.map((post: Record<string, unknown>) => ({
-              id: post.id,
+            ...postsData.map((post) => ({
+              id: String(post.id),
               type: 'post' as const,
-              title: post.title,
-              description: post.content?.substring(0, 200) || '',
-              author: post.profiles?.username,
-              avatar_url: post.profiles?.avatar_url,
-              created_at: post.created_at,
-              vote_count: post.vote_count,
+              title: String(post.title),
+              description: typeof post.content === 'string' ? post.content.substring(0, 200) : '',
+              author: post.profiles && typeof post.profiles === 'object' && 'username' in post.profiles
+                ? String(post.profiles.username)
+                : undefined,
+              avatar_url: post.profiles && typeof post.profiles === 'object' && 'avatar_url' in post.profiles
+                ? String(post.profiles.avatar_url)
+                : undefined,
+              created_at: typeof post.created_at === 'string' ? post.created_at : undefined,
+              vote_count: typeof post.vote_count === 'number' ? post.vote_count : undefined,
             }))
           );
         }
@@ -146,14 +150,16 @@ export function SearchResultsPage() {
 
         if (pubsData) {
           searchResults.push(
-            ...pubsData.map((pub: Record<string, unknown>) => ({
-              id: pub.id,
+            ...pubsData.map((pub) => ({
+              id: String(pub.id),
               type: 'publication' as const,
-              title: pub.name,
-              description: pub.description || '',
-              slug: pub.slug,
-              author: pub.profiles?.username,
-              created_at: pub.created_at,
+              title: String(pub.name),
+              description: typeof pub.description === 'string' ? pub.description : '',
+              slug: typeof pub.slug === 'string' ? pub.slug : undefined,
+              author: pub.profiles && typeof pub.profiles === 'object' && 'username' in pub.profiles
+                ? String(pub.profiles.username)
+                : undefined,
+              created_at: typeof pub.created_at === 'string' ? pub.created_at : undefined,
             }))
           );
         }
@@ -182,14 +188,16 @@ export function SearchResultsPage() {
 
         if (seriesData) {
           searchResults.push(
-            ...seriesData.map((series: Record<string, unknown>) => ({
-              id: series.id,
+            ...seriesData.map((series) => ({
+              id: String(series.id),
               type: 'series' as const,
-              title: series.name,
-              description: series.description || '',
-              slug: series.slug,
-              author: series.profiles?.username,
-              created_at: series.created_at,
+              title: String(series.name),
+              description: typeof series.description === 'string' ? series.description : '',
+              slug: typeof series.slug === 'string' ? series.slug : undefined,
+              author: series.profiles && typeof series.profiles === 'object' && 'username' in series.profiles
+                ? String(series.profiles.username)
+                : undefined,
+              created_at: typeof series.created_at === 'string' ? series.created_at : undefined,
             }))
           );
         }

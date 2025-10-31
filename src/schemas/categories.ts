@@ -28,8 +28,8 @@ export const createCategorySchema = z.object({
     .string()
     .max(10, 'Icon must be at most 10 characters')
     .default('📁'),
-  display_order: z
-    .number({ coerce: true })
+  display_order: z.coerce
+    .number()
     .int('Display order must be an integer')
     .min(0, 'Display order must be non-negative')
     .default(0),
@@ -48,7 +48,7 @@ export const updateCategorySchema = z.object({
   color: hexColorSchema.optional(),
   icon: z.string().max(10).optional(),
   is_active: z.boolean().optional(),
-  display_order: z.number({ coerce: true }).int().min(0).optional(),
+  display_order: z.coerce.number().int().min(0).optional(),
 });
 
 /**
@@ -94,8 +94,8 @@ export const toggleCategoryActiveSchema = z.object({
  * Get active categories validation schema
  */
 export const getActiveCategoriesSchema = z.object({
-  limit: z
-    .number({ coerce: true })
+  limit: z.coerce
+    .number()
     .int()
     .min(1)
     .max(100)

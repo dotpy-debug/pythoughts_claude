@@ -17,7 +17,7 @@ import { z } from 'zod';
  * Email validation with proper format checking
  */
 export const emailSchema = z
-  .string({ required_error: 'Email is required' })
+  .string({ message: 'Email is required' })
   .email('Invalid email address')
   .min(3, 'Email is too short')
   .max(254, 'Email is too long')
@@ -32,7 +32,7 @@ export const emailSchema = z
  * - At least one number
  */
 export const passwordSchema = z
-  .string({ required_error: 'Password is required' })
+  .string({ message: 'Password is required' })
   .min(8, 'Password must be at least 8 characters')
   .max(128, 'Password is too long')
   .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
@@ -43,7 +43,7 @@ export const passwordSchema = z
  * URL validation with protocol requirement
  */
 export const urlSchema = z
-  .string({ required_error: 'URL is required' })
+  .string({ message: 'URL is required' })
   .url('Invalid URL format')
   .max(2048, 'URL is too long');
 
@@ -62,7 +62,7 @@ export const optionalUrlSchema = z
  * Slug validation (lowercase, numbers, hyphens only)
  */
 export const slugSchema = z
-  .string({ required_error: 'Slug is required' })
+  .string({ message: 'Slug is required' })
   .min(1, 'Slug is required')
   .max(200, 'Slug is too long')
   .regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens')
@@ -72,7 +72,7 @@ export const slugSchema = z
  * UUID validation (v4 format)
  */
 export const uuidSchema = z
-  .string({ required_error: 'ID is required' })
+  .string({ message: 'ID is required' })
   .uuid('Invalid ID format');
 
 /**
@@ -81,7 +81,7 @@ export const uuidSchema = z
  * - Alphanumeric and underscores only
  */
 export const usernameSchema = z
-  .string({ required_error: 'Username is required' })
+  .string({ message: 'Username is required' })
   .min(3, 'Username must be at least 3 characters')
   .max(30, 'Username must be at most 30 characters')
   .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
@@ -98,7 +98,7 @@ export const hexColorSchema = z
  * Tag name validation
  */
 export const tagNameSchema = z
-  .string({ required_error: 'Tag name is required' })
+  .string({ message: 'Tag name is required' })
   .min(2, 'Tag name must be at least 2 characters')
   .max(50, 'Tag name must be at most 50 characters')
   .trim();
@@ -107,7 +107,7 @@ export const tagNameSchema = z
  * Category name validation
  */
 export const categoryNameSchema = z
-  .string({ required_error: 'Category name is required' })
+  .string({ message: 'Category name is required' })
   .min(2, 'Category name must be at least 2 characters')
   .max(100, 'Category name must be at most 100 characters')
   .trim();
@@ -116,7 +116,7 @@ export const categoryNameSchema = z
  * Post title validation
  */
 export const postTitleSchema = z
-  .string({ required_error: 'Title is required' })
+  .string({ message: 'Title is required' })
   .min(1, 'Title is required')
   .max(200, 'Title must be at most 200 characters')
   .trim();
@@ -192,7 +192,7 @@ export function validateSchema<T>(
   // Transform Zod errors into field-level error map
   const errors: Record<string, string[]> = {};
 
-  result.error.errors.forEach((err) => {
+  result.error.issues.forEach((err: z.ZodIssue) => {
     const path = err.path.length > 0 ? err.path.join('.') : 'root';
 
     if (!errors[path]) {
@@ -275,12 +275,12 @@ export function createSuccessResponse<T>(data: T) {
  */
 export const paginationSchema = z.object({
   page: z
-    .number({ coerce: true })
+    .coerce.number()
     .int('Page must be an integer')
     .min(1, 'Page must be at least 1')
     .default(1),
   limit: z
-    .number({ coerce: true })
+    .coerce.number()
     .int('Limit must be an integer')
     .min(1, 'Limit must be at least 1')
     .max(100, 'Limit must be at most 100')
@@ -298,8 +298,8 @@ export const sortOrderSchema = z.enum(['asc', 'desc']).default('desc');
  * Date range validation
  */
 export const dateRangeSchema = z.object({
-  start: z.coerce.date({ required_error: 'Start date is required' }),
-  end: z.coerce.date({ required_error: 'End date is required' }),
+  start: z.coerce.date({ message: 'Start date is required' }),
+  end: z.coerce.date({ message: 'End date is required' }),
 }).refine(
   (data) => data.end >= data.start,
   'End date must be after start date'

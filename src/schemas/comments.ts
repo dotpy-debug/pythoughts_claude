@@ -18,7 +18,7 @@ import { uuidSchema } from '@/lib/validation';
 export const createCommentSchema = z.object({
   post_id: uuidSchema,
   content: z
-    .string({ required_error: 'Comment content is required' })
+    .string()
     .min(1, 'Comment cannot be empty')
     .max(5000, 'Comment must be at most 5000 characters')
     .trim(),
@@ -33,7 +33,7 @@ export const createCommentSchema = z.object({
 export const updateCommentSchema = z.object({
   id: uuidSchema,
   content: z
-    .string({ required_error: 'Comment content is required' })
+    .string()
     .min(1, 'Comment cannot be empty')
     .max(5000, 'Comment must be at most 5000 characters')
     .trim(),
@@ -53,12 +53,12 @@ export const deleteCommentSchema = z.object({
 export const getCommentsSchema = z.object({
   post_id: uuidSchema,
   limit: z
-    .number({ coerce: true })
+    .coerce.number()
     .int()
     .min(1)
     .max(100)
     .default(50),
-  offset: z.number({ coerce: true }).int().min(0).default(0),
+  offset: z.coerce.number().int().min(0).default(0),
   sort: z.enum(['newest', 'oldest', 'popular']).default('newest'),
 });
 
@@ -67,8 +67,8 @@ export const getCommentsSchema = z.object({
  */
 export const getCommentRepliesSchema = z.object({
   parent_id: uuidSchema,
-  limit: z.number({ coerce: true }).int().min(1).max(50).default(20),
-  offset: z.number({ coerce: true }).int().min(0).default(0),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
 });
 
 /**

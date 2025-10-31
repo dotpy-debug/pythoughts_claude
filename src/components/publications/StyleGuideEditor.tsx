@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/input';
+import { Input } from '../ui/Input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
+import { Badge } from '../ui/Badge';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 import { Plus, X } from 'lucide-react';

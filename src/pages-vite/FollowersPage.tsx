@@ -64,7 +64,7 @@ export function FollowersPage() {
       if (error) throw error;
 
       // Cast profiles from array to single object (Supabase returns array for joins)
-      const followers = (data || []).map((item: unknown) => ({
+      const followers = (data || []).map((item: { id: string; follower_id: string; created_at: string; profiles: { username: string; avatar_url: string; bio: string } | { username: string; avatar_url: string; bio: string }[] }) => ({
         ...item,
         profiles: Array.isArray(item.profiles) ? item.profiles[0] : item.profiles
       }));

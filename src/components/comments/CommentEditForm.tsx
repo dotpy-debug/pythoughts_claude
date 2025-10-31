@@ -102,7 +102,7 @@ export function CommentEditForm({
     // Submit on Ctrl/Cmd+Enter
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
-      handleSubmit(e as React.FormEvent<HTMLFormElement>);
+      handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
     }
 
     // Cancel on Escape

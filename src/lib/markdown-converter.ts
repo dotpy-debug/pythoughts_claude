@@ -146,7 +146,7 @@ function serializeChildren(content?: JSONContent[]): string {
 /**
  * Apply text marks (bold, italic, code, etc.)
  */
-function applyMarks(text: string, marks: unknown[]): string {
+function applyMarks(text: string, marks: Array<{ type: string; attrs?: Record<string, unknown> }>): string {
   if (!marks || marks.length === 0) return text;
 
   let result = text;
@@ -166,8 +166,8 @@ function applyMarks(text: string, marks: unknown[]): string {
         result = `~~${result}~~`;
         break;
       case 'link': {
-        const href = mark.attrs?.href || '';
-        const title = mark.attrs?.title;
+        const href = (mark.attrs?.href as string) || '';
+        const title = mark.attrs?.title as string | undefined;
         result = title ? `[${result}](${href} "${title}")` : `[${result}](${href})`;
         break;
       }

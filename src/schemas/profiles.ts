@@ -110,8 +110,8 @@ export const unfollowUserSchema = z.object({
  */
 export const getUserFollowersSchema = z.object({
   userId: uuidSchema,
-  limit: z.number({ coerce: true }).int().min(1).max(100).default(20),
-  offset: z.number({ coerce: true }).int().min(0).default(0),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
 });
 
 /**
@@ -119,8 +119,8 @@ export const getUserFollowersSchema = z.object({
  */
 export const getUserFollowingSchema = z.object({
   userId: uuidSchema,
-  limit: z.number({ coerce: true }).int().min(1).max(100).default(20),
-  offset: z.number({ coerce: true }).int().min(0).default(0),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
 });
 
 /**

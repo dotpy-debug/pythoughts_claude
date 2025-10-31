@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/input';
+import { Input } from '../ui/Input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';

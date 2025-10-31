@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { Badge } from '../ui/badge';
+import { Badge } from '../ui/Badge';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 import { ExternalLink } from 'lucide-react';

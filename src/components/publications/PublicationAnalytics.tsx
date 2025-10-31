@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';

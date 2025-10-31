@@ -108,7 +108,7 @@ export function RecommendedPosts({
                 author_id: string;
               };
               if (post && post.id && post.id !== currentPostId) {
-                taggedPostsData.push(post as RecommendedPost);
+                taggedPostsData.push(post as unknown as RecommendedPost);
               }
             }
           }

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Modal } from '../ui/Modal';
-import { Input } from '../ui/input';
+import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/badge';
+import { Badge } from '../ui/Badge';
 import { X } from 'lucide-react';
 
 interface CreateTaskModalProps {

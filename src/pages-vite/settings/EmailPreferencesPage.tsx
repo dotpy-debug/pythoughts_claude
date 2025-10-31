@@ -55,6 +55,11 @@ export function EmailPreferencesPage() {
   const [testingSent, setTestingSent] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  const showMessage = useCallback((type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
+  }, []);
+
   const loadPreferences = useCallback(async () => {
     try {
       setLoading(true);
@@ -159,11 +164,6 @@ export function EmailPreferencesPage() {
       setTimeout(() => setTestingSent(false), 3000);
     }
   };
-
-  const showMessage = useCallback((type: 'success' | 'error', text: string) => {
-    setMessage({ type, text });
-    setTimeout(() => setMessage(null), 5000);
-  }, []);
 
   const togglePreference = (key: keyof EmailPreferences) => {
     setPreferences((prev) => ({

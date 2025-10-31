@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/badge';
+import { Badge } from '../ui/Badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '../ui/Card';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 import { Users, Mail, ExternalLink, Twitter, Linkedin, Github } from 'lucide-react';
@@ -110,13 +110,13 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
       } else {
         // Transform posts data
         setPosts(
-          (postsData || []).map((item: unknown) => ({
-            id: item.post.id,
-            title: item.post.title,
-            excerpt: item.post.excerpt,
+          (postsData || []).map((item: any) => ({
+            id: (Array.isArray(item.post) ? item.post[0]?.id : item.post?.id) || '',
+            title: (Array.isArray(item.post) ? item.post[0]?.title : item.post?.title) || '',
+            excerpt: (Array.isArray(item.post) ? item.post[0]?.excerpt : item.post?.excerpt) || null,
             publishedAt: item.published_at,
             author: {
-              username: item.post.author.username,
+              username: Array.isArray(item.post) ? (Array.isArray(item.post[0]?.author) ? item.post[0]?.author[0]?.username : item.post[0]?.author?.username) : (Array.isArray(item.post?.author) ? item.post?.author[0]?.username : item.post?.author?.username) || '',
               displayName: item.post.author.display_name,
               avatarUrl: item.post.author.avatar_url,
             },
@@ -151,7 +151,7 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
         logger.error('Failed to load members', membersError);
       } else {
         setMembers(
-          (membersData || []).map((item: unknown) => ({
+          (membersData || []).map((item: any) => ({
             id: item.id,
             role: item.role,
             postCount: item.post_count,

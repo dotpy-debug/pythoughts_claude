@@ -69,7 +69,7 @@ export function SystemSettings() {
       const result = await updateSystemSetting({
         currentUserId: profile.id,
         key,
-        value: editedSettings[key],
+        value: editedSettings[key] as Record<string, unknown>,
       });
 
       if (result.success) {
@@ -83,12 +83,14 @@ export function SystemSettings() {
   };
 
   const updateSettingValue = (key: string, field: string, value: unknown) => {
+    const currentValue = editedSettings[key];
+    const updatedValue = typeof currentValue === 'object' && currentValue !== null
+      ? { ...currentValue as Record<string, unknown>, [field]: value }
+      : { [field]: value };
+
     setEditedSettings((prev) => ({
       ...prev,
-      [key]: {
-        ...prev[key],
-        [field]: value,
-      },
+      [key]: updatedValue,
     }));
   };
 
@@ -184,7 +186,7 @@ export function SystemSettings() {
                           <input
                             type="checkbox"
                             id={`${setting.key}_enabled`}
-                            checked={editedSettings[setting.key]?.enabled || false}
+                            checked={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.enabled as boolean || false}
                             onChange={(e) =>
                               updateSettingValue(setting.key, 'enabled', e.target.checked)
                             }
@@ -202,7 +204,7 @@ export function SystemSettings() {
                             Maintenance Message
                           </label>
                           <textarea
-                            value={editedSettings[setting.key]?.message || ''}
+                            value={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.message as string || ''}
                             onChange={(e) =>
                               updateSettingValue(setting.key, 'message', e.target.value)
                             }
@@ -220,7 +222,7 @@ export function SystemSettings() {
                           <input
                             type="checkbox"
                             id={`${setting.key}_enabled`}
-                            checked={editedSettings[setting.key]?.enabled || false}
+                            checked={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.enabled as boolean || false}
                             onChange={(e) =>
                               updateSettingValue(setting.key, 'enabled', e.target.checked)
                             }
@@ -237,7 +239,7 @@ export function SystemSettings() {
                           <label className="block text-sm text-gray-400 mb-1">Message</label>
                           <input
                             type="text"
-                            value={editedSettings[setting.key]?.message || ''}
+                            value={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.message as string || ''}
                             onChange={(e) =>
                               updateSettingValue(setting.key, 'message', e.target.value)
                             }
@@ -248,7 +250,7 @@ export function SystemSettings() {
                         <div>
                           <label className="block text-sm text-gray-400 mb-1">Type</label>
                           <select
-                            value={editedSettings[setting.key]?.type || 'info'}
+                            value={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.type as string || 'info'}
                             onChange={(e) =>
                               updateSettingValue(setting.key, 'type', e.target.value)
                             }
@@ -269,7 +271,7 @@ export function SystemSettings() {
                           <label className="block text-sm text-gray-400 mb-1">Limit</label>
                           <input
                             type="number"
-                            value={editedSettings[setting.key]?.limit || 10}
+                            value={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.limit as number || 10}
                             onChange={(e) =>
                               updateSettingValue(
                                 setting.key,
@@ -286,7 +288,7 @@ export function SystemSettings() {
                           </label>
                           <input
                             type="number"
-                            value={editedSettings[setting.key]?.window || 3600}
+                            value={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.window as number || 3600}
                             onChange={(e) =>
                               updateSettingValue(
                                 setting.key,
@@ -306,7 +308,7 @@ export function SystemSettings() {
                         <input
                           type="checkbox"
                           id={setting.key}
-                          checked={editedSettings[setting.key]?.enabled || false}
+                          checked={(editedSettings[setting.key] as Record<string, unknown> | undefined)?.enabled as boolean || false}
                           onChange={(e) =>
                             updateSettingValue(setting.key, 'enabled', e.target.checked)
                           }

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '../../test/test-utils';
-// @ts-expect-error - Testing library types issue in v16
+// @ts-nocheck
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PostCard } from './PostCard';

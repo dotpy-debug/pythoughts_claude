@@ -9,7 +9,7 @@
  */
 
 import { supabase } from '../lib/supabase';
-import { BlogPost } from '../types/blog';
+import { BlogPost, TOCItem } from '../types/blog';
 import { logger } from '../lib/logger';
 import {
   cacheGet,
@@ -17,6 +17,7 @@ import {
   cacheDeletePattern,
   CACHE_TTL,
 } from '../lib/redis';
+import { JSONContent } from '@tiptap/react';
 
 /**
  * Cache keys for featured content
@@ -159,22 +160,22 @@ export async function getFeaturedBlogs(
       title: post.title as string,
       slug: post.slug as string,
       summary: post.subtitle as string | undefined,
-      content_json: post.content_json as string | undefined,
-      content_html: post.content_html as string | undefined,
-      toc_data: (post.toc_data || []) as unknown[],
+      content_json: (post.content_json as JSONContent) || { type: 'doc', content: [] },
+      content_html: (post.content_html as string) || '',
+      toc_data: (post.toc_data || []) as TOCItem[],
       author_id: post.author_id as string,
-      author: post.profiles
+      author: Array.isArray(post.profiles) && post.profiles.length > 0
         ? {
-            id: (post.profiles as { id: string }).id,
-            username: (post.profiles as { username: string }).username,
-            avatar_url: (post.profiles as { avatar_url?: string }).avatar_url,
-            bio: (post.profiles as { bio?: string }).bio,
-            follower_count: (post.profiles as { follower_count?: number }).follower_count,
+            id: post.profiles[0].id,
+            username: post.profiles[0].username,
+            avatar_url: post.profiles[0].avatar_url,
+            bio: post.profiles[0].bio,
+            follower_count: post.profiles[0].follower_count,
           }
         : undefined,
       cover_image: post.cover_image as string | undefined,
       cover_image_alt: post.cover_image_alt as string | undefined,
-      status: post.status as string,
+      status: (post.status as 'draft' | 'published' | 'scheduled') || 'published',
       tags: (post.tags || []) as string[],
       category: post.category as string | undefined,
       reading_time_minutes: (post.reading_time_minutes || 0) as number,
@@ -344,22 +345,22 @@ export async function getBlogOfTheDay(): Promise<BlogPost | null> {
       title: winner.title as string,
       slug: winner.slug as string,
       summary: winner.subtitle as string | undefined,
-      content_json: winner.content_json as string | undefined,
-      content_html: winner.content_html as string | undefined,
-      toc_data: (winner.toc_data || []) as unknown[],
+      content_json: (winner.content_json as JSONContent) || { type: 'doc', content: [] },
+      content_html: (winner.content_html as string) || '',
+      toc_data: (winner.toc_data || []) as TOCItem[],
       author_id: winner.author_id as string,
-      author: winner.profiles
+      author: Array.isArray(winner.profiles) && winner.profiles.length > 0
         ? {
-            id: (winner.profiles as { id: string }).id,
-            username: (winner.profiles as { username: string }).username,
-            avatar_url: (winner.profiles as { avatar_url?: string }).avatar_url,
-            bio: (winner.profiles as { bio?: string }).bio,
-            follower_count: (winner.profiles as { follower_count?: number }).follower_count,
+            id: (winner.profiles[0] as { id: string }).id,
+            username: (winner.profiles[0] as { username: string }).username,
+            avatar_url: (winner.profiles[0] as { avatar_url?: string }).avatar_url,
+            bio: (winner.profiles[0] as { bio?: string }).bio,
+            follower_count: (winner.profiles[0] as { follower_count?: number }).follower_count,
           }
         : undefined,
       cover_image: winner.cover_image as string | undefined,
       cover_image_alt: winner.cover_image_alt as string | undefined,
-      status: winner.status as string,
+      status: (winner.status as 'draft' | 'published' | 'scheduled') || 'published',
       tags: (winner.tags || []) as string[],
       category: winner.category as string | undefined,
       reading_time_minutes: (winner.reading_time_minutes || 0) as number,
@@ -462,21 +463,21 @@ export async function getLatestBlogs(limit: number = 6): Promise<BlogPost[]> {
       title: post.title as string,
       slug: post.slug as string,
       summary: post.subtitle as string | undefined,
-      content_json: post.content_json as string | undefined,
-      content_html: post.content_html as string | undefined,
-      toc_data: (post.toc_data || []) as unknown[],
+      content_json: (post.content_json as JSONContent) || { type: 'doc', content: [] },
+      content_html: (post.content_html as string) || '',
+      toc_data: (post.toc_data || []) as TOCItem[],
       author_id: post.author_id as string,
-      author: post.profiles
+      author: Array.isArray(post.profiles) && post.profiles.length > 0
         ? {
-            id: (post.profiles as { id: string }).id,
-            username: (post.profiles as { username: string }).username,
-            avatar_url: (post.profiles as { avatar_url?: string }).avatar_url,
-            bio: (post.profiles as { bio?: string }).bio,
+            id: post.profiles[0].id,
+            username: post.profiles[0].username,
+            avatar_url: post.profiles[0].avatar_url,
+            bio: post.profiles[0].bio,
           }
         : undefined,
       cover_image: post.cover_image as string | undefined,
       cover_image_alt: post.cover_image_alt as string | undefined,
-      status: post.status as string,
+      status: (post.status as 'draft' | 'published' | 'scheduled') || 'published',
       tags: (post.tags || []) as string[],
       category: post.category as string | undefined,
       reading_time_minutes: (post.reading_time_minutes || 0) as number,

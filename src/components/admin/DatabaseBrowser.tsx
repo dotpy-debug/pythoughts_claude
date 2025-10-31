@@ -20,6 +20,7 @@ import {
   deleteTableRecord,
   getDatabaseStats,
 } from '../../actions/database-admin';
+import { DatabaseRecord } from '../../types/common';
 import {
   Database,
   Table,
@@ -40,19 +41,24 @@ interface DatabaseTable {
   row_count: number;
 }
 
+interface DatabaseStats {
+  totalTables: number;
+  totalRecords: number;
+}
+
 export function DatabaseBrowser() {
   const { profile, isSuperAdmin } = useAuth();
   const [tables, setTables] = useState<DatabaseTable[]>([]);
   const [selectedTable, setSelectedTable] = useState<string>('');
-  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableData, setTableData] = useState<DatabaseRecord[]>([]);
   const [tableTotal, setTableTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchColumn, setSearchColumn] = useState('');
   const [searchValue, setSearchValue] = useState('');
-  const [editingRecord, setEditingRecord] = useState<unknown>(null);
+  const [editingRecord, setEditingRecord] = useState<DatabaseRecord | null>(null);
   const [editedFields, setEditedFields] = useState<Record<string, unknown>>({});
-  const [stats, setStats] = useState<unknown>(null);
+  const [stats, setStats] = useState<DatabaseStats | null>(null);
 
   const loadTables = useCallback(async () => {
     if (!profile) return;
@@ -143,7 +149,7 @@ export function DatabaseBrowser() {
     }
   };
 
-  const handleEditRecord = (record: Record<string, unknown>) => {
+  const handleEditRecord = (record: DatabaseRecord) => {
     setEditingRecord(record);
     setEditedFields({ ...record });
   };
@@ -151,10 +157,16 @@ export function DatabaseBrowser() {
   const handleSaveRecord = async () => {
     if (!profile || !editingRecord) return;
 
+    const recordId = editingRecord.id as string | number;
+    if (!recordId) {
+      console.error('Record ID is missing');
+      return;
+    }
+
     const result = await updateTableRecord({
       currentUserId: profile.id,
       tableName: selectedTable,
-      recordId: editingRecord.id,
+      recordId: String(recordId),
       updates: editedFields,
     });
 
@@ -196,7 +208,7 @@ export function DatabaseBrowser() {
     a.click();
   };
 
-  const convertToCSV = (data: unknown[]) => {
+  const convertToCSV = (data: DatabaseRecord[]) => {
     if (data.length === 0) return '';
 
     const headers = Object.keys(data[0]);
@@ -398,10 +410,10 @@ export function DatabaseBrowser() {
                             <tr key={idx} className="hover:bg-gray-800/50">
                               {columns.map((col) => (
                                 <td key={col} className="px-4 py-3 text-sm text-gray-300">
-                                  {editingRecord?.id === row.id ? (
+                                  {editingRecord && editingRecord.id === row.id ? (
                                     <input
                                       type="text"
-                                      value={editedFields[col] ?? ''}
+                                      value={editedFields[col] as string ?? ''}
                                       onChange={(e) =>
                                         setEditedFields({
                                           ...editedFields,
@@ -420,7 +432,7 @@ export function DatabaseBrowser() {
                                 </td>
                               ))}
                               <td className="px-4 py-3 text-right">
-                                {editingRecord?.id === row.id ? (
+                                {editingRecord && editingRecord.id === row.id ? (
                                   <div className="flex justify-end space-x-2">
                                     <button
                                       onClick={handleSaveRecord}
@@ -447,7 +459,7 @@ export function DatabaseBrowser() {
                                       <Edit className="w-4 h-4" />
                                     </button>
                                     <button
-                                      onClick={() => handleDeleteRecord(row.id)}
+                                      onClick={() => handleDeleteRecord(String(row.id))}
                                       className="p-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded"
                                     >
                                       <Trash2 className="w-4 h-4" />

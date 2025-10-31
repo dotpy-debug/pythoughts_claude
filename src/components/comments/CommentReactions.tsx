@@ -67,13 +67,6 @@ export function CommentReactions({
   );
   const [loading, setLoading] = useState(false);
 
-  // Load user's reactions for this comment
-  useEffect(() => {
-    if (!user) return;
-
-    loadUserReactions();
-  }, [user, commentId, loadUserReactions]);
-
   const loadUserReactions = useCallback(async () => {
     if (!user) return;
 
@@ -94,6 +87,12 @@ export function CommentReactions({
       console.error('Error loading user reactions:', error);
     }
   }, [user, commentId]);
+
+  // Load user's reactions for this comment
+  useEffect(() => {
+    if (!user) return;
+    loadUserReactions();
+  }, [user, commentId, loadUserReactions]);
 
   const toggleReaction = async (reactionType: ReactionType) => {
     if (!user) {

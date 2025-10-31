@@ -67,7 +67,7 @@ export function ContentModeration() {
       if (activeTab === 'reports') {
         const result = await getContentReports({
           currentUserId: profile.id,
-          status: reportStatus as "pending" | "reviewed" | "resolved" | "dismissed" | undefined,
+          status: reportStatus as "pending" | "reviewing" | "resolved" | "dismissed" | undefined,
           page,
         });
         if (!result.error) {
@@ -77,7 +77,7 @@ export function ContentModeration() {
       } else if (activeTab === 'posts') {
         const result = await getPostsForModeration({
           currentUserId: profile.id,
-          filter: postFilter as "all" | "flagged" | "reported" | undefined,
+          filter: postFilter as "all" | "published" | "flagged" | "drafts" | undefined,
           search: postSearch || undefined,
           page,
         });

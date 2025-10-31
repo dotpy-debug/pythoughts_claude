@@ -3,8 +3,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase, Task } from '../../lib/supabase';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/badge';
-import { Input } from '../ui/input';
+import { Badge } from '../ui/Badge';
+import { Input } from '../ui/Input';
 import { Calendar, User, Tag, Clock, CheckCircle } from 'lucide-react';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 

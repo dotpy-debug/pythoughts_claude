@@ -14,8 +14,8 @@ import { slugSchema, uuidSchema, tagNameSchema } from '@/lib/validation';
  * Get popular tags validation schema
  */
 export const getPopularTagsSchema = z.object({
-  limit: z
-    .number({ coerce: true })
+  limit: z.coerce
+    .number()
     .int('Limit must be an integer')
     .min(1, 'Limit must be at least 1')
     .max(100, 'Limit must be at most 100')
@@ -27,14 +27,14 @@ export const getPopularTagsSchema = z.object({
  * Get trending tags validation schema
  */
 export const getTrendingTagsSchema = z.object({
-  limit: z
-    .number({ coerce: true })
+  limit: z.coerce
+    .number()
     .int()
     .min(1)
     .max(50)
     .default(10),
-  days: z
-    .number({ coerce: true })
+  days: z.coerce
+    .number()
     .int()
     .min(1, 'Days must be at least 1')
     .max(365, 'Days must be at most 365')
@@ -70,7 +70,7 @@ export const unfollowTagSchema = z.object({
  */
 export const getUserFollowedTagsSchema = z.object({
   userId: uuidSchema,
-  limit: z.number({ coerce: true }).int().min(1).max(100).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
 });
 
 /**
@@ -82,8 +82,8 @@ export const searchTagsSchema = z.object({
     .min(1, 'Search query is required')
     .max(100, 'Query is too long')
     .trim(),
-  limit: z
-    .number({ coerce: true })
+  limit: z.coerce
+    .number()
     .int()
     .min(1)
     .max(100)

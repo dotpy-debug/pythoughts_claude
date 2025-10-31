@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Badge } from '../ui/badge';
+import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import {
   Table,
@@ -90,7 +90,7 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
       }
 
       setLogs(
-        (logsData || []).map((item: unknown) => ({
+        (logsData || []).map((item) => ({
           id: item.id,
           actionType: item.action_type,
           targetType: item.target_type,
@@ -128,7 +128,7 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
       }
 
       setPendingSubmissions(
-        (submissionsData || []).map((item: unknown) => ({
+        (submissionsData || []).map((item) => ({
           id: item.id,
           postId: item.post_id,
           status: item.status,
@@ -150,7 +150,7 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
       today.setHours(0, 0, 0, 0);
 
       const todayLogs = logsData?.filter(
-        (log: { created_at: string }) => new Date(log.created_at) >= today
+        (log: { created_at?: string }) => new Date(log.created_at) >= today
       ) || [];
 
       setStats({
