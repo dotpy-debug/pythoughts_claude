@@ -73,7 +73,8 @@ const chartColors = {
   text: '#00ff00',
 };
 
-const defaultChartOptions: ChartOptions<'line' | 'bar' | 'doughnut'> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const defaultChartOptions: ChartOptions<any> = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -215,7 +216,10 @@ export function EnhancedAnalyticsPage() {
 
       // Load top posts
       const posts = await getTopPerformingPosts(user.id, 'views', 5, timeRange);
-      setTopPosts(posts);
+      setTopPosts(posts.map(p => ({
+        ...p,
+        engagement: p.engagement_rate
+      })));
     } catch (error) {
       console.error('Error loading analytics:', error);
     } finally {

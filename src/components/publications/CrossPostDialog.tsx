@@ -97,40 +97,44 @@ export function CrossPostDialog({
         existingPosts?.map((p: { publication_id: string }) => p.publication_id) || []
       );
 
-      // Define type for membership with publication
+      // Define type for membership with publication (Supabase returns arrays for foreign keys)
       interface MembershipWithPublication {
         role?: string;
         can_publish?: boolean;
-        publication: {
+        publication: Array<{
           id: string;
           slug: string;
           name: string;
           logo_url?: string;
           allow_cross_posting: boolean;
           require_approval?: boolean;
-        };
+        }>;
       }
 
       // Filter publications
       const availablePubs = (memberships || [])
         .filter((m: MembershipWithPublication) => {
-          const pub = m.publication;
+          const pub = m.publication?.[0];
           return (
+            pub &&
             pub.allow_cross_posting && // Publication allows cross-posting
             !existingPublicationIds.has(pub.id) && // Not already posted there
             pub.id !== currentPublicationId // Not the current publication
           );
         })
-        .map((m: MembershipWithPublication) => ({
-          id: m.publication.id,
-          slug: m.publication.slug,
-          name: m.publication.name,
-          logoUrl: m.publication.logo_url,
-          allowCrossPosting: m.publication.allow_cross_posting,
-          requireApproval: m.publication.require_approval,
-          memberRole: m.role,
-          canPublish: m.can_publish,
-        }));
+        .map((m: MembershipWithPublication) => {
+          const pub = m.publication[0];
+          return {
+            id: pub.id,
+            slug: pub.slug,
+            name: pub.name,
+            logoUrl: pub.logo_url ?? null,
+            allowCrossPosting: pub.allow_cross_posting,
+            requireApproval: pub.require_approval ?? false,
+            memberRole: m.role ?? 'member',
+            canPublish: m.can_publish ?? false,
+          };
+        });
 
       setPublications(availablePubs);
     } catch (err) {
