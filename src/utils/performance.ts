@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useMemo, useState } from 'react';
  *
  * Delays function execution until after wait time has elapsed since last call
  */
-export function debounce<T extends (...args: unknown[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -40,7 +40,7 @@ export function debounce<T extends (...args: unknown[]) => any>(
  *
  * Limits function execution to once per wait time
  */
-export function throttle<T extends (...args: unknown[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -73,7 +73,7 @@ export function throttle<T extends (...args: unknown[]) => any>(
  *
  * Throttles function calls to requestAnimationFrame
  */
-export function rafThrottle<T extends (...args: unknown[]) => any>(
+export function rafThrottle<T extends (...args: unknown[]) => unknown>(
   func: T
 ): (...args: Parameters<T>) => void {
   let rafId: number | null = null;
@@ -111,7 +111,7 @@ export function rafThrottle<T extends (...args: unknown[]) => any>(
  * }
  * ```
  */
-export function useDebounce<T extends (...args: unknown[]) => any>(
+export function useDebounce<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -153,7 +153,7 @@ export function useDebounce<T extends (...args: unknown[]) => any>(
  * }
  * ```
  */
-export function useThrottle<T extends (...args: unknown[]) => any>(
+export function useThrottle<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -206,7 +206,7 @@ export function useThrottle<T extends (...args: unknown[]) => any>(
  * }
  * ```
  */
-export function useRAFThrottle<T extends (...args: unknown[]) => any>(
+export function useRAFThrottle<T extends (...args: unknown[]) => unknown>(
   callback: T
 ): (...args: Parameters<T>) => void {
   const rafIdRef = useRef<number | null>(null);
@@ -239,7 +239,7 @@ export function useRAFThrottle<T extends (...args: unknown[]) => any>(
  *
  * Caches function results based on arguments
  */
-export function memoize<T extends (...args: unknown[]) => any>(
+export function memoize<T extends (...args: unknown[]) => unknown>(
   fn: T,
   options: {
     maxSize?: number;
@@ -257,7 +257,7 @@ export function memoize<T extends (...args: unknown[]) => any>(
       return cache.get(key)!;
     }
 
-    const result = fn(...args);
+    const result = fn(...args) as ReturnType<T>;
 
     // Limit cache size
     if (cache.size >= maxSize) {
@@ -355,12 +355,9 @@ export function useBatchUpdate<T>(
     };
   }, []);
 
-  return useCallback(
-    (updater: (prev: T) => T) => {
-      batcherRef.current?.add(updater);
-    },
-    []
-  );
+  return useCallback((updater: (prev: T) => T) => {
+    batcherRef.current?.add(updater);
+  }, []);
 }
 
 /**
@@ -473,10 +470,7 @@ export function usePerformanceMeasure(name: string) {
  * }
  * ```
  */
-export function useIdleCallback(
-  callback: () => void,
-  deps: React.DependencyList = []
-) {
+export function useIdleCallback(callback: () => void, deps: React.DependencyList = []) {
   useEffect(() => {
     if ('requestIdleCallback' in window) {
       const id = requestIdleCallback(callback);

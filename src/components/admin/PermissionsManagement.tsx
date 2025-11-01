@@ -35,11 +35,13 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 
+type RoleUser = Awaited<ReturnType<typeof getUsersByRole>>['users'][number];
+
 export function PermissionsManagement() {
   const { profile, isSuperAdmin } = useAuth();
   const [roles, setRoles] = useState<AdminRole[]>([]);
   const [selectedRole, setSelectedRole] = useState<AdminRole | null>(null);
-  const [roleUsers, setRoleUsers] = useState<any[]>([]);
+  const [roleUsers, setRoleUsers] = useState<RoleUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingRole, setEditingRole] = useState<AdminRole | null>(null);
@@ -65,21 +67,24 @@ export function PermissionsManagement() {
     }
   }, [profile]);
 
-  const loadRoleUsers = useCallback(async (roleName: string) => {
-    if (!profile) return;
+  const loadRoleUsers = useCallback(
+    async (roleName: string) => {
+      if (!profile) return;
 
-    try {
-      const result = await getUsersByRole({
-        currentUserId: profile.id,
-        role: roleName,
-      });
-      if (!result.error) {
-        setRoleUsers(result.users);
+      try {
+        const result = await getUsersByRole({
+          currentUserId: profile.id,
+          role: roleName,
+        });
+        if (!result.error) {
+          setRoleUsers(result.users);
+        }
+      } catch (error) {
+        console.error('Error loading role users:', error);
       }
-    } catch (error) {
-      console.error('Error loading role users:', error);
-    }
-  }, [profile]);
+    },
+    [profile]
+  );
 
   useEffect(() => {
     if (profile && isSuperAdmin) {
@@ -175,10 +180,10 @@ export function PermissionsManagement() {
     'User Management': ['users', 'users_edit', 'users_suspend', 'users_delete'],
     'Content Management': ['content', 'content_edit', 'content_delete', 'content_feature'],
     'Categories & Tags': ['categories', 'tags'],
-    'Reports': ['reports', 'reports_moderate'],
-    'Analytics': ['analytics', 'analytics_export'],
-    'Settings': ['settings', 'settings_security'],
-    'System': ['database', 'roles', 'all'],
+    Reports: ['reports', 'reports_moderate'],
+    Analytics: ['analytics', 'analytics_export'],
+    Settings: ['settings', 'settings_security'],
+    System: ['database', 'roles', 'all'],
   };
 
   return (
@@ -296,7 +301,9 @@ export function PermissionsManagement() {
                         <div className="grid grid-cols-2 gap-2">
                           {perms.map((perm) => {
                             const hasPermission =
-                              selectedRole.permissions[perm as keyof typeof selectedRole.permissions];
+                              selectedRole.permissions[
+                                perm as keyof typeof selectedRole.permissions
+                              ];
                             const permDef =
                               AVAILABLE_PERMISSIONS[perm as keyof typeof AVAILABLE_PERMISSIONS];
 

@@ -1,19 +1,6 @@
-import { ReactElement, ReactNode } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { AuthProvider } from '../contexts/AuthContext';
-import { NotificationProvider } from '../contexts/NotificationContext';
-
-interface AllTheProvidersProps {
-  children: ReactNode;
-}
-
-function AllTheProviders({ children }: AllTheProvidersProps) {
-  return (
-    <AuthProvider>
-      <NotificationProvider>{children}</NotificationProvider>
-    </AuthProvider>
-  );
-}
+import { ReactElement } from 'react';
+import { render as rtlRender, type RenderOptions } from '@testing-library/react';
+import { TestProviders } from './TestProviders';
 
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   withProviders?: boolean;
@@ -28,12 +15,9 @@ function customRender(
   ui: ReactElement,
   { withProviders = true, ...options }: CustomRenderOptions = {}
 ) {
-  const wrapper = withProviders ? AllTheProviders : undefined;
-  return render(ui, { wrapper, ...options });
+  const wrapper = withProviders ? TestProviders : undefined;
+  return rtlRender(ui, { wrapper, ...options });
 }
-
-// Re-export everything from testing library
-export * from '@testing-library/react';
 
 // Override render with our custom version that includes providers
 export { customRender as render };
@@ -41,8 +25,7 @@ export { customRender as render };
 /**
  * Helper to wait for async updates
  */
-export const waitForNextUpdate = () =>
-  new Promise((resolve) => setTimeout(resolve, 0));
+export const waitForNextUpdate = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 /**
  * Helper to create mock user
