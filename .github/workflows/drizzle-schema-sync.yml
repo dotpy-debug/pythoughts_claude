@@ -1,0 +1,110 @@
+name: Drizzle Schema Sync
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/db/schema.ts'
+      - 'drizzle.config.ts'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/db/schema.ts'
+      - 'drizzle.config.ts'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to sync'
+        required: true
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  schema-sync:
+    name: Drizzle Schema Synchronization
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check schema file exists
+        run: |
+          if [ ! -f "src/db/schema.ts" ]; then
+            echo "Schema file not found. This is expected if schema hasn't been created yet."
+            exit 0
+          fi
+
+      - name: Check for schema changes
+        id: schema-check
+        run: |
+          npm run db:sync:check || echo "check_completed=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Generate migrations from schema
+        if: github.event_name != 'pull_request'
+        run: npm run db:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Validate generated migrations
+        if: github.event_name != 'pull_request'
+        run: |
+          if [ -d "supabase/migrations" ]; then
+            echo "Migrations generated successfully"
+            ls -la supabase/migrations/ | tail -5
+          else
+            echo "No migrations directory found"
+          fi
+
+      - name: Run schema sync (staging)
+        if: github.ref == 'refs/heads/develop' && github.event_name != 'pull_request'
+        run: npm run db:sync
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          NODE_ENV: staging
+
+      - name: Run schema sync (production)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: npm run db:sync:production
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          NODE_ENV: production
+          MIGRATION_BACKUP_ENABLED: true
+          MIGRATION_ROLLBACK_ENABLED: true
+
+      - name: Manual schema sync trigger
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            npm run db:sync:production
+          else
+            npm run db:sync
+          fi
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          STAGING_DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          NODE_ENV: ${{ github.event.inputs.environment }}
+
+      - name: Verify schema sync
+        if: github.event_name != 'pull_request'
+        run: npm run health:check
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+

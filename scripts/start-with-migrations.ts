@@ -52,10 +52,20 @@ async function main() {
   console.log(`${colors.cyan}║  Starting Pythoughts Platform          ║${colors.reset}`);
   console.log(`${colors.cyan}╚════════════════════════════════════════╝${colors.reset}\n`);
 
-  // Step 1: Run migrations
-  console.log(`${colors.blue}[1/2]${colors.reset} Running database migrations...`);
+  // Step 1: Run schema sync (includes migrations)
+  console.log(`${colors.blue}[1/3]${colors.reset} Synchronizing database schema...`);
 
-  const migrationExitCode = await runCommand('tsx', ['scripts/migrate-database.ts']);
+  // Check if schema file exists and sync if needed
+  const { existsSync } = await import('node:fs');
+  const schemaPath = resolve(projectRoot, 'src/db/schema.ts');
+  
+  let migrationExitCode = 0;
+  if (existsSync(schemaPath)) {
+    migrationExitCode = await runCommand('tsx', ['scripts/drizzle-schema-sync.ts']);
+  } else {
+    // Fallback to regular migrations if no schema file
+    migrationExitCode = await runCommand('tsx', ['scripts/migrate-database.ts']);
+  }
 
   if (migrationExitCode === 0) {
     console.log(`${colors.green}✓${colors.reset} Migrations completed successfully\n`);
@@ -64,8 +74,17 @@ async function main() {
     console.log(`${colors.yellow}           The app will start anyway (development mode)${colors.reset}\n`);
   }
 
-  // Step 2: Start Next.js server
-  console.log(`${colors.blue}[2/2]${colors.reset} Starting Next.js production server...\n`);
+  // Step 2: Run regular migrations (for non-Drizzle migrations)
+  console.log(`${colors.blue}[2/3]${colors.reset} Running database migrations...`);
+
+  const regularMigrationExitCode = await runCommand('tsx', ['scripts/migrate-database.ts']);
+  
+  if (regularMigrationExitCode === 0) {
+    console.log(`${colors.green}✓${colors.reset} Migrations completed successfully\n`);
+  }
+
+  // Step 3: Start Next.js server
+  console.log(`${colors.blue}[3/3]${colors.reset} Starting Next.js production server...\n`);
 
   const serverExitCode = await runCommand('next', ['start']);
 

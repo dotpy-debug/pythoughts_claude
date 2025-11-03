@@ -1,0 +1,347 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '9'
+
+jobs:
+  # Quality Gates
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint check
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Type check
+        run: npm run typecheck
+        continue-on-error: false
+
+      - name: Format check
+        run: npm run format:check
+        continue-on-error: false
+
+      - name: Security audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+  # Testing
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: quality-gate
+
+    strategy:
+      matrix:
+        test-type: [unit, integration]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: matrix.test-type == 'integration'
+        run: npm run playwright:install
+
+      - name: Run ${{ matrix.test-type }} tests
+        run: |
+          if [ "${{ matrix.test-type }}" == "unit" ]; then
+            npm run test:unit
+          else
+            npm run test:integration
+          fi
+
+      - name: Upload coverage
+        if: matrix.test-type == 'unit'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          flags: ${{ matrix.test-type }}
+          name: ${{ matrix.test-type }}-coverage
+          fail_ci_if_error: false
+
+  # E2E Tests
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: quality-gate
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npm run playwright:install
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          REDIS_URL: redis://localhost:6379
+
+  # Security Scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: quality-gate
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Build Verification
+  build:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [test, security]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vite
+        run: npm run build
+
+      - name: Build Next.js
+        run: npm run build:next
+
+      - name: Verify build artifacts
+        run: |
+          if [ ! -d "dist" ] || [ ! -d ".next" ]; then
+            echo "Build artifacts missing"
+            exit 1
+          fi
+
+  # Database Migration Check
+  migration-check:
+    name: Migration Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: quality-gate
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_migration
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check schema file
+        run: |
+          if [ -f "src/db/schema.ts" ]; then
+            echo "Schema file found"
+          else
+            echo "No schema file (skipping Drizzle checks)"
+            exit 0
+          fi
+
+      - name: Generate migrations from schema
+        if: hashFiles('src/db/schema.ts') != ''
+        run: npm run db:generate
+        continue-on-error: true
+
+      - name: Validate migrations
+        run: npm run migrate:status
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_migration
+
+      - name: Test migration run
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_migration
+        continue-on-error: false
+
+  # Deployment
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build, migration-check]
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging.example.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production
+        run: npm run build:prod
+
+      - name: Run migrations
+        run: npm run db:migrate
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment"
+          # Add your deployment command here
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, migration-check, e2e]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://example.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production
+        run: npm run build:prod
+
+      - name: Run migrations (with rollback support)
+        run: npm run db:migrate:production
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+      - name: Health check before deployment
+        run: npm run health:check
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment"
+          # Add your deployment command here
+
+      - name: Post-deployment verification
+        run: npm run health:check
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+

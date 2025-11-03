@@ -44,7 +44,7 @@ export function CategoriesTagsManagement() {
 
   // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [, setEditingCategory] = useState<Category | undefined>();
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryForm, setCategoryForm] = useState({
     name: '',
@@ -285,7 +285,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={categoryForm.name}
-                        onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                        onChange={(event_) => setCategoryForm({ ...categoryForm, name: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -294,7 +294,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={categoryForm.slug}
-                        onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
+                        onChange={(event_) => setCategoryForm({ ...categoryForm, slug: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -302,7 +302,7 @@ export function CategoriesTagsManagement() {
                       <label className="block text-sm text-gray-400 mb-1">Description</label>
                       <textarea
                         value={categoryForm.description}
-                        onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                        onChange={(event_) => setCategoryForm({ ...categoryForm, description: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 resize-none"
                         rows={3}
                       />
@@ -313,7 +313,7 @@ export function CategoriesTagsManagement() {
                         <input
                           type="color"
                           value={categoryForm.color}
-                          onChange={(e) => setCategoryForm({ ...categoryForm, color: e.target.value })}
+                          onChange={(event_) => setCategoryForm({ ...categoryForm, color: event_.target.value })}
                           className="w-full h-10 bg-gray-800 border border-gray-700 rounded-lg"
                         />
                       </div>
@@ -322,7 +322,7 @@ export function CategoriesTagsManagement() {
                         <input
                           type="text"
                           value={categoryForm.icon}
-                          onChange={(e) => setCategoryForm({ ...categoryForm, icon: e.target.value })}
+                          onChange={(event_) => setCategoryForm({ ...categoryForm, icon: event_.target.value })}
                           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-center text-2xl"
                           maxLength={2}
                         />
@@ -467,7 +467,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={tagForm.name}
-                        onChange={(e) => setTagForm({ ...tagForm, name: e.target.value })}
+                        onChange={(event_) => setTagForm({ ...tagForm, name: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -476,7 +476,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={tagForm.slug}
-                        onChange={(e) => setTagForm({ ...tagForm, slug: e.target.value })}
+                        onChange={(event_) => setTagForm({ ...tagForm, slug: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -484,7 +484,7 @@ export function CategoriesTagsManagement() {
                       <label className="block text-sm text-gray-400 mb-1">Description</label>
                       <textarea
                         value={tagForm.description}
-                        onChange={(e) => setTagForm({ ...tagForm, description: e.target.value })}
+                        onChange={(event_) => setTagForm({ ...tagForm, description: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 resize-none"
                         rows={3}
                       />
