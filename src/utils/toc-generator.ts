@@ -15,9 +15,10 @@ function slugify(text: string): string {
   return text
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replaceAll(/[^\w\s-]/g, '')
+    .replaceAll(/[\s_-]+/g, '-')
+    .replace(/^-+/, '') // Replace leading dashes
+    .replace(/-+$/, ''); // Replace trailing dashes - split to avoid backtracking
 }
 
 function generateUniqueId(text: string, usedIds: Set<string>): string {
@@ -57,25 +58,25 @@ export function extractHeadingsFromMarkdown(markdown: string): TocItem[] {
 
 export function extractHeadingsFromHTML(html: string): TocItem[] {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const headingElements = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  const document_ = parser.parseFromString(html, 'text/html');
+  const headingElements = document_.querySelectorAll('h1, h2, h3, h4, h5, h6');
   const headings: Array<{ level: number; text: string; id: string }> = [];
   const usedIds = new Set<string>();
 
-  headingElements.forEach((element) => {
-    const level = parseInt(element.tagName.substring(1));
+  for (const element of headingElements) {
+    const level = Number.parseInt(element.tagName.slice(1));
     const text = element.textContent?.trim() || '';
 
     let id = element.id;
-    if (!id) {
+    if (id) {
+      usedIds.add(id);
+    } else {
       id = generateUniqueId(text, usedIds);
       element.id = id;
-    } else {
-      usedIds.add(id);
     }
 
     headings.push({ level, text, id });
-  });
+  }
 
   return buildHierarchy(headings);
 }
@@ -88,7 +89,7 @@ function buildHierarchy(headings: Array<{ level: number; text: string; id: strin
   const root: TocItem[] = [];
   const stack: TocItem[] = [];
 
-  headings.forEach(({ level, text, id }) => {
+  for (const { level, text, id } of headings) {
     const item: TocItem = {
       id,
       text,
@@ -96,18 +97,18 @@ function buildHierarchy(headings: Array<{ level: number; text: string; id: strin
       children: [],
     };
 
-    while (stack.length > 0 && stack[stack.length - 1].level >= level) {
+    while (stack.length > 0 && stack.at(-1).level >= level) {
       stack.pop();
     }
 
     if (stack.length === 0) {
       root.push(item);
     } else {
-      stack[stack.length - 1].children.push(item);
+      stack.at(-1).children.push(item);
     }
 
     stack.push(item);
-  });
+  }
 
   return root;
 }
@@ -131,12 +132,12 @@ export function flattenToc(items: TocItem[]): TocItem[] {
   const result: TocItem[] = [];
 
   function traverse(items: TocItem[]) {
-    items.forEach(item => {
+    for (const item of items) {
       result.push(item);
       if (item.children.length > 0) {
         traverse(item.children);
       }
-    });
+    }
   }
 
   traverse(items);
@@ -145,21 +146,21 @@ export function flattenToc(items: TocItem[]): TocItem[] {
 
 export function injectHeadingIds(html: string): string {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const headingElements = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  const document_ = parser.parseFromString(html, 'text/html');
+  const headingElements = document_.querySelectorAll('h1, h2, h3, h4, h5, h6');
   const usedIds = new Set<string>();
 
-  headingElements.forEach((element) => {
-    if (!element.id) {
+  for (const element of headingElements) {
+    if (element.id) {
+      usedIds.add(element.id);
+    } else {
       const text = element.textContent?.trim() || '';
       const id = generateUniqueId(text, usedIds);
       element.id = id;
-    } else {
-      usedIds.add(element.id);
     }
-  });
+  }
 
-  return doc.body.innerHTML;
+  return document_.body.innerHTML;
 }
 
 export function scrollToHeading(headingId: string, behavior: ScrollBehavior = 'smooth'): void {
@@ -180,10 +181,10 @@ export function getActiveHeading(items: TocItem[]): string | null {
   const flatList = flattenToc(items);
   const scrollPosition = window.scrollY + 100;
 
-  for (let i = flatList.length - 1; i >= 0; i--) {
-    const element = document.getElementById(flatList[i].id);
+  for (let index = flatList.length - 1; index >= 0; index--) {
+    const element = document.getElementById(flatList[index].id);
     if (element && element.offsetTop <= scrollPosition) {
-      return flatList[i].id;
+      return flatList[index].id;
     }
   }
 

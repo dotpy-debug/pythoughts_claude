@@ -17,13 +17,13 @@ import { BlogPost } from '../../types/blog';
 import { Clock, User, ArrowRight, AlertCircle } from 'lucide-react';
 import { LazyImage } from '../performance/LazyImage';
 
-interface LatestBlogsSectionProps {
+interface LatestBlogsSectionProperties {
   maxBlogs?: number;
 }
 
 export const LatestBlogsSection = memo(function LatestBlogsSection({
   maxBlogs = 6,
-}: LatestBlogsSectionProps) {
+}: LatestBlogsSectionProperties) {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -35,8 +35,8 @@ export const LatestBlogsSection = memo(function LatestBlogsSection({
         const fetchedBlogs = await getLatestBlogs(maxBlogs);
         setBlogs(fetchedBlogs);
         setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to load blogs'));
+      } catch (error_) {
+        setError(error_ instanceof Error ? error_ : new Error('Failed to load blogs'));
       } finally {
         setLoading(false);
       }
@@ -127,11 +127,11 @@ export const LatestBlogsSection = memo(function LatestBlogsSection({
 /**
  * Compact blog card for latest blogs grid
  */
-interface LatestBlogCardProps {
+interface LatestBlogCardProperties {
   blog: BlogPost;
 }
 
-const LatestBlogCard = memo(function LatestBlogCard({ blog }: LatestBlogCardProps) {
+const LatestBlogCard = memo(function LatestBlogCard({ blog }: LatestBlogCardProperties) {
   const readingTime = blog.reading_time_minutes || Math.ceil(blog.word_count / 200) || 5;
   const publishDate = new Date(blog.published_at || blog.created_at);
   const timeAgo = formatDistanceToNow(publishDate);
@@ -206,13 +206,13 @@ const LatestBlogCard = memo(function LatestBlogCard({ blog }: LatestBlogCardProp
 /**
  * Skeleton loading state
  */
-interface LatestBlogsSkeletonProps {
+interface LatestBlogsSkeletonProperties {
   count?: number;
 }
 
 const LatestBlogsSkeleton = memo(function LatestBlogsSkeleton({
   count = 6,
-}: LatestBlogsSkeletonProps) {
+}: LatestBlogsSkeletonProperties) {
   return (
     <section className="py-12 sm:py-16 bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -257,10 +257,10 @@ function formatDistanceToNow(date: Date): string {
 
   if (diffInSeconds < 60) return 'now';
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d`;
-  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)}mo`;
-  return `${Math.floor(diffInSeconds / 31536000)}y`;
+  if (diffInSeconds < 86_400) return `${Math.floor(diffInSeconds / 3600)}h`;
+  if (diffInSeconds < 2_592_000) return `${Math.floor(diffInSeconds / 86_400)}d`;
+  if (diffInSeconds < 31_536_000) return `${Math.floor(diffInSeconds / 2_592_000)}mo`;
+  return `${Math.floor(diffInSeconds / 31_536_000)}y`;
 }
 
 // Add React import for useEffect

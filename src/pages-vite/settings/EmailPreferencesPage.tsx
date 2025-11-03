@@ -166,15 +166,15 @@ export function EmailPreferencesPage() {
   };
 
   const togglePreference = (key: keyof EmailPreferences) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
+    setPreferences((previous) => ({
+      ...previous,
+      [key]: !previous[key],
     }));
   };
 
   const setDigestDay = (day: number) => {
-    setPreferences((prev) => ({
-      ...prev,
+    setPreferences((previous) => ({
+      ...previous,
       digestDay: day,
     }));
   };
@@ -381,7 +381,7 @@ export function EmailPreferencesPage() {
 }
 
 // Notification Toggle Component
-interface NotificationToggleProps {
+interface NotificationToggleProperties {
   label: string;
   description: string;
   enabled: boolean;
@@ -395,7 +395,7 @@ function NotificationToggle({
   enabled,
   disabled = false,
   onToggle,
-}: NotificationToggleProps) {
+}: NotificationToggleProperties) {
   return (
     <div className="flex items-center justify-between p-4 bg-gray-900 border border-gray-700 rounded-lg">
       <div className="flex-1">

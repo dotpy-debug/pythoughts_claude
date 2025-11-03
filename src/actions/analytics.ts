@@ -36,14 +36,14 @@ export interface AnalyticsData {
 /**
  * Get comprehensive analytics data
  */
-export async function getAnalytics(params: {
+export async function getAnalytics(parameters: {
   currentUserId: string;
   dateRange?: '7d' | '30d' | '90d' | '1y';
 }): Promise<{ data: AnalyticsData | null; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
-    const dateRange = params.dateRange || '30d';
+    const dateRange = parameters.dateRange || '30d';
     const days = dateRange === '7d' ? 7 : dateRange === '30d' ? 30 : dateRange === '90d' ? 90 : 365;
 
     // Get user growth data
@@ -90,9 +90,9 @@ export async function getAnalytics(params: {
 async function getUserGrowth(days: number): Promise<{ label: string; value: number }[]> {
   const result: { label: string; value: number }[] = [];
 
-  for (let i = days - 1; i >= 0; i--) {
+  for (let index = days - 1; index >= 0; index--) {
     const date = new Date();
-    date.setDate(date.getDate() - i);
+    date.setDate(date.getDate() - index);
     date.setHours(0, 0, 0, 0);
 
     const nextDate = new Date(date);
@@ -242,20 +242,20 @@ async function getTrendingPosts() {
 /**
  * Export analytics data
  */
-export async function exportAnalytics(params: {
+export async function exportAnalytics(parameters: {
   currentUserId: string;
   format: 'json' | 'csv';
 }): Promise<{ data: string; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
-    const analytics = await getAnalytics({ currentUserId: params.currentUserId });
+    const analytics = await getAnalytics({ currentUserId: parameters.currentUserId });
 
     if (!analytics.data) {
       return { data: '', error: 'Failed to fetch analytics' };
     }
 
-    if (params.format === 'json') {
+    if (parameters.format === 'json') {
       return { data: JSON.stringify(analytics.data, null, 2) };
     } else {
       // Convert to CSV
@@ -272,30 +272,20 @@ export async function exportAnalytics(params: {
 }
 
 function convertAnalyticsToCSV(data: AnalyticsData): string {
-  const sections: string[] = [];
+  const sections: string[] = [ 'User Growth', 'Date,New Users'];
 
-  // User Growth
-  sections.push('User Growth');
-  sections.push('Date,New Users');
-  data.userGrowth.forEach((item) => {
+  // User Growth
+  for (const item of data.userGrowth) {
     sections.push(`${item.label},${item.value}`);
-  });
-  sections.push('');
-
-  // Content Stats
-  sections.push('Content Statistics');
-  sections.push('Type,Count');
-  data.contentStats.forEach((item) => {
+  }
+  sections.push('', 'Content Statistics', 'Type,Count');
+  for (const item of data.contentStats) {
     sections.push(`${item.label},${item.value}`);
-  });
-  sections.push('');
-
-  // Engagement Metrics
-  sections.push('Engagement Metrics');
-  sections.push('Metric,Value');
-  data.engagementMetrics.forEach((item) => {
+  }
+  sections.push('', 'Engagement Metrics', 'Metric,Value');
+  for (const item of data.engagementMetrics) {
     sections.push(`${item.label},${item.value}`);
-  });
+  }
 
   return sections.join('\n');
 }

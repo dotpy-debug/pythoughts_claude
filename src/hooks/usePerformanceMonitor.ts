@@ -142,9 +142,9 @@ export function usePerformanceMonitor(
   // Add warning
   const addWarning = useCallback(
     (warning: PerformanceWarning) => {
-      setMetrics((prev) => ({
-        ...prev,
-        warnings: [...prev.warnings, warning],
+      setMetrics((previous) => ({
+        ...previous,
+        warnings: [...previous.warnings, warning],
       }));
 
       const logData = {
@@ -161,9 +161,9 @@ export function usePerformanceMonitor(
         const severityLabel =
           warning.severity === 'high'
             ? '🔴'
-            : warning.severity === 'medium'
+            : (warning.severity === 'medium'
               ? '🟡'
-              : '🟢';
+              : '🟢');
         logger.warn(
           `${severityLabel} [Performance Warning] ${componentName}: ${warning.message}`,
           warning.metric ? { metric: `${warning.metric.toFixed(2)}ms` } : undefined
@@ -184,12 +184,12 @@ export function usePerformanceMonitor(
     const renderTime = performance.now() - renderStartTime.current;
     renderTimes.current.push(renderTime);
 
-    setMetrics((prev) => {
-      const newRenderCount = prev.renderCount + 1;
-      const newTotalTime = prev.totalRenderTime + renderTime;
+    setMetrics((previous) => {
+      const newRenderCount = previous.renderCount + 1;
+      const newTotalTime = previous.totalRenderTime + renderTime;
       const newAvgTime = newTotalTime / newRenderCount;
-      const newMaxTime = Math.max(prev.maxRenderTime, renderTime);
-      const newMinTime = Math.min(prev.minRenderTime, renderTime);
+      const newMaxTime = Math.max(previous.maxRenderTime, renderTime);
+      const newMinTime = Math.min(previous.minRenderTime, renderTime);
 
       // Check for slow render
       if (renderTime > slowRenderThreshold) {
@@ -214,7 +214,7 @@ export function usePerformanceMonitor(
       }
 
       return {
-        ...prev,
+        ...previous,
         renderCount: newRenderCount,
         totalRenderTime: newTotalTime,
         avgRenderTime: newAvgTime,
@@ -233,13 +233,13 @@ export function usePerformanceMonitor(
     (type: 'click' | 'scroll' | 'input') => {
       if (!trackInteractions) return;
 
-      setMetrics((prev) => ({
-        ...prev,
+      setMetrics((previous) => ({
+        ...previous,
         interactions: {
-          ...prev.interactions,
-          [type === 'click' ? 'clicks' : type === 'scroll' ? 'scrolls' : 'inputs']:
-            prev.interactions[
-              type === 'click' ? 'clicks' : type === 'scroll' ? 'scrolls' : 'inputs'
+          ...previous.interactions,
+          [type === 'click' ? 'clicks' : (type === 'scroll' ? 'scrolls' : 'inputs')]:
+            previous.interactions[
+              type === 'click' ? 'clicks' : (type === 'scroll' ? 'scrolls' : 'inputs')
             ] + 1,
         },
       }));
@@ -339,14 +339,14 @@ export function usePerformanceMonitor(
  * ```
  */
 export function useEffectPerformanceMonitor(label: string) {
-  const startTimeRef = useRef<number>(0);
+  const startTimeReference = useRef<number>(0);
 
   const startMeasure = useCallback(() => {
-    startTimeRef.current = performance.now();
+    startTimeReference.current = performance.now();
   }, []);
 
   const endMeasure = useCallback(() => {
-    const duration = performance.now() - startTimeRef.current;
+    const duration = performance.now() - startTimeReference.current;
     logger.info(`Effect performance: ${label}`, { duration });
     return duration;
   }, [label]);

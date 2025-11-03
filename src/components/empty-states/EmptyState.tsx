@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-type EmptyStateProps = {
+type EmptyStateProperties = {
   icon: LucideIcon;
   title: string;
   description: string;
@@ -11,7 +11,7 @@ type EmptyStateProps = {
   className?: string;
 };
 
-export function EmptyState({ icon: Icon, title, description, action, className = '' }: EmptyStateProps) {
+export function EmptyState({ icon: Icon, title, description, action, className = '' }: EmptyStateProperties) {
   return (
     <div className={`flex flex-col items-center justify-center py-16 px-4 ${className}`}>
       <div className="bg-gray-800/50 p-6 rounded-full mb-6 border border-gray-700">

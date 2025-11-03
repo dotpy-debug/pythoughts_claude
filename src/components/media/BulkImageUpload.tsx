@@ -35,7 +35,7 @@ interface UploadFile {
   uploadedUrl?: string;
 }
 
-interface BulkImageUploadProps {
+interface BulkImageUploadProperties {
   /**
    * User ID for organizing uploads
    */
@@ -111,7 +111,7 @@ export function BulkImageUpload({
   maxConcurrent = 3,
   className,
   autoUpload = false,
-}: BulkImageUploadProps) {
+}: BulkImageUploadProperties) {
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -126,7 +126,7 @@ export function BulkImageUpload({
     // Upload with concurrency limit
     const uploadPromises: Promise<void>[] = [];
 
-    for (let i = 0; i < maxConcurrent; i++) {
+    for (let index = 0; index < maxConcurrent; index++) {
       uploadPromises.push(processQueue());
     }
 
@@ -142,8 +142,8 @@ export function BulkImageUpload({
     async function uploadSingleFile(uploadFile: UploadFile) {
       try {
         // Update status to uploading
-        setFiles((prev) =>
-          prev.map((f) =>
+        setFiles((previous) =>
+          previous.map((f) =>
             f.id === uploadFile.id ? { ...f, status: 'uploading' } : f
           )
         );
@@ -157,8 +157,8 @@ export function BulkImageUpload({
         const uploadedUrl = response.url;
 
         // Update status to success
-        setFiles((prev) =>
-          prev.map((f) =>
+        setFiles((previous) =>
+          previous.map((f) =>
             f.id === uploadFile.id
               ? { ...f, status: 'success', progress: 100, uploadedUrl }
               : f
@@ -169,8 +169,8 @@ export function BulkImageUpload({
         onFileUploaded?.(uploadedUrl, uploadFile.file);
       } catch (error) {
         // Update status to error
-        setFiles((prev) =>
-          prev.map((f) =>
+        setFiles((previous) =>
+          previous.map((f) =>
             f.id === uploadFile.id
               ? {
                   ...f,
@@ -195,13 +195,13 @@ export function BulkImageUpload({
     (acceptedFiles: File[]) => {
       const newFiles: UploadFile[] = acceptedFiles.map((file) => ({
         file,
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
         preview: URL.createObjectURL(file),
         status: 'pending',
         progress: 0,
       }));
 
-      setFiles((prev) => [...prev, ...newFiles].slice(0, maxFiles));
+      setFiles((previous) => [...previous, ...newFiles].slice(0, maxFiles));
 
       if (autoUpload) {
         uploadFiles(newFiles);
@@ -212,7 +212,7 @@ export function BulkImageUpload({
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
-    accept: acceptedTypes.reduce((acc, type) => ({ ...acc, [type]: [] }), {}),
+    accept: Object.fromEntries(acceptedTypes.map(( type) => [type, []])),
     maxFiles,
     maxSize: maxSizeMB * 1024 * 1024,
     multiple: true,
@@ -220,12 +220,12 @@ export function BulkImageUpload({
 
   // Remove file from list
   const removeFile = (id: string) => {
-    setFiles((prev) => {
-      const file = prev.find((f) => f.id === id);
+    setFiles((previous) => {
+      const file = previous.find((f) => f.id === id);
       if (file) {
         URL.revokeObjectURL(file.preview);
       }
-      return prev.filter((f) => f.id !== id);
+      return previous.filter((f) => f.id !== id);
     });
   };
 
@@ -233,8 +233,8 @@ export function BulkImageUpload({
   const retryFile = (id: string) => {
     const file = files.find((f) => f.id === id);
     if (file) {
-      setFiles((prev) =>
-        prev.map((f) =>
+      setFiles((previous) =>
+        previous.map((f) =>
           f.id === id ? { ...f, status: 'pending', progress: 0, error: undefined } : f
         )
       );
@@ -291,7 +291,7 @@ export function BulkImageUpload({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4 text-sm font-mono">
               <span className="text-gray-400">
-                {files.length} file{files.length !== 1 ? 's' : ''}
+                {files.length} file{files.length === 1 ? '' : 's'}
               </span>
               {successCount > 0 && (
                 <span className="text-terminal-green">✓ {successCount} uploaded</span>
@@ -307,7 +307,7 @@ export function BulkImageUpload({
                 className="px-4 py-2 rounded-lg bg-terminal-blue text-gray-900 hover:bg-terminal-green font-bold transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2"
               >
                 <Upload size={16} />
-                <span>Upload {pendingCount} file{pendingCount !== 1 ? 's' : ''}</span>
+                <span>Upload {pendingCount} file{pendingCount === 1 ? '' : 's'}</span>
               </button>
             )}
           </div>

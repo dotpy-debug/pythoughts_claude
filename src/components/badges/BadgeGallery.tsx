@@ -5,12 +5,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import type { UserBadge, Badge } from '../../actions/reputation';
 import { logger } from '../../lib/logger';
 
-interface BadgeGalleryProps {
+interface BadgeGalleryProperties {
   userId: string;
   variant?: 'full' | 'compact';
 }
 
-export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProps) {
+export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProperties) {
   const { user } = useAuth();
   const [earnedBadges, setEarnedBadges] = useState<UserBadge[]>([]);
   const [allBadges, setAllBadges] = useState<Badge[]>([]);
@@ -43,8 +43,8 @@ export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProps) {
 
       if (result.success) {
         // Update local state
-        setEarnedBadges(prev =>
-          prev.map(b =>
+        setEarnedBadges(previous =>
+          previous.map(b =>
             b.badge_id === badgeId
               ? { ...b, is_featured: result.is_featured ?? false }
               : b
@@ -65,12 +65,12 @@ export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProps) {
   const earnedBadgeIds = new Set(earnedBadges.map(b => b.badge_id));
 
   // Group badges by category
-  const badgesByCategory = allBadges.reduce((acc, badge) => {
-    if (!acc[badge.category]) {
-      acc[badge.category] = [];
+  const badgesByCategory = allBadges.reduce((accumulator, badge) => {
+    if (!accumulator[badge.category]) {
+      accumulator[badge.category] = [];
     }
-    acc[badge.category].push(badge);
-    return acc;
+    accumulator[badge.category].push(badge);
+    return accumulator;
   }, {} as Record<string, Badge[]>);
 
   if (loading) {
@@ -78,8 +78,8 @@ export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProps) {
       <div className="space-y-3 animate-pulse">
         <div className="h-8 bg-gray-800 rounded w-32"></div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-24 bg-gray-800 rounded"></div>
+          {[1, 2, 3, 4].map(index => (
+            <div key={index} className="h-24 bg-gray-800 rounded"></div>
           ))}
         </div>
       </div>
@@ -191,7 +191,7 @@ export function BadgeGallery({ userId, variant = 'full' }: BadgeGalleryProps) {
                         {badge.description}
                       </div>
                       <div className="text-xs text-gray-600 mt-1 font-mono">
-                        {badge.requirement_type.replace(/_/g, ' ')}: {badge.requirement_value}
+                        {badge.requirement_type.replaceAll('_', ' ')}: {badge.requirement_value}
                       </div>
                     </div>
 

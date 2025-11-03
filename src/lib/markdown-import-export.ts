@@ -78,11 +78,11 @@ export function downloadMarkdown(markdown: string, options: ExportOptions = {}):
   link.download = sanitizeFilename(filename) + '.md';
 
   // Trigger download
-  document.body.appendChild(link);
+  document.body.append(link);
   link.click();
 
   // Cleanup
-  document.body.removeChild(link);
+  link.remove();
   URL.revokeObjectURL(url);
 }
 
@@ -93,7 +93,7 @@ export function readMarkdownFile(file: File): Promise<ImportResult> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.addEventListener('load', (e) => {
       try {
         const text = e.target?.result as string;
 
@@ -112,7 +112,7 @@ export function readMarkdownFile(file: File): Promise<ImportResult> {
       } catch (error) {
         reject(error);
       }
-    };
+    });
 
     reader.onerror = () => {
       reject(new Error('Failed to read file'));
@@ -153,11 +153,11 @@ export async function importMarkdown(fileInput: HTMLInputElement): Promise<Impor
  */
 export function sanitizeFilename(filename: string): string {
   return filename
-    .replace(/[^a-z0-9_-]/gi, '_') // Replace invalid characters
-    .replace(/_{2,}/g, '_') // Remove duplicate underscores
-    .replace(/^_|_$/g, '') // Remove leading/trailing underscores
+    .replaceAll(/[^a-z0-9_-]/gi, '_') // Replace invalid characters
+    .replaceAll(/_{2,}/g, '_') // Remove duplicate underscores
+    .replaceAll(/^_|_$/g, '') // Remove leading/trailing underscores
     .toLowerCase()
-    .substring(0, 100) || 'post'; // Max length 100, default to 'post'
+    .slice(0, 100) || 'post'; // Max length 100, default to 'post'
 }
 
 /**
@@ -165,9 +165,9 @@ export function sanitizeFilename(filename: string): string {
  */
 export function generateFilename(title: string, date?: Date): string {
   const sanitized = sanitizeFilename(title);
-  const dateStr = date ? formatDate(date) : formatDate(new Date());
+  const dateString = date ? formatDate(date) : formatDate(new Date());
 
-  return `${dateStr}_${sanitized}`;
+  return `${dateString}_${sanitized}`;
 }
 
 /**
@@ -187,16 +187,23 @@ function formatDate(date: Date): string {
 export async function copyMarkdownToClipboard(markdown: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(markdown);
-  } catch (_error) {
+  } catch (error) {
     // Fallback for older browsers
+    console.warn('Clipboard API failed, using fallback:', error);
     const textarea = document.createElement('textarea');
     textarea.value = markdown;
     textarea.style.position = 'fixed';
     textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
+    document.body.append(textarea);
     textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+    try {
+      document.execCommand('copy');
+    } catch (fallbackError) {
+      console.error('Fallback clipboard copy failed:', fallbackError);
+      throw new Error('Failed to copy to clipboard');
+    } finally {
+      textarea.remove();
+    }
   }
 }
 
@@ -206,8 +213,9 @@ export async function copyMarkdownToClipboard(markdown: string): Promise<void> {
 export async function readMarkdownFromClipboard(): Promise<string> {
   try {
     return await navigator.clipboard.readText();
-  } catch (_error) {
-    throw new Error('Failed to read from clipboard. Please grant clipboard access.');
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to read from clipboard: ${errorMessage}. Please grant clipboard access.`);
   }
 }
 
@@ -223,9 +231,9 @@ export function downloadMetadata(metadata: PostMetadata, filename: string = 'met
   link.href = url;
   link.download = sanitizeFilename(filename) + '.json';
 
-  document.body.appendChild(link);
+  document.body.append(link);
   link.click();
-  document.body.removeChild(link);
+  link.remove();
 
   URL.revokeObjectURL(url);
 }
@@ -240,7 +248,7 @@ export function downloadMultipleMarkdown(
   // Note: This is a simple implementation that downloads files one by one
   // For true ZIP support, you'd need to add a library like JSZip
 
-  posts.forEach((post, index) => {
+  for (const [index, post] of posts.entries()) {
     const filename = post.metadata.title
       ? generateFilename(post.metadata.title)
       : `post_${index + 1}`;
@@ -253,7 +261,7 @@ export function downloadMultipleMarkdown(
         metadata: post.metadata,
       });
     }, index * 100);
-  });
+  }
 }
 
 /**

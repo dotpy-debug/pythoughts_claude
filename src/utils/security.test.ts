@@ -160,7 +160,7 @@ describe('Security Utilities', () => {
     it('uses default length bounds', () => {
       expect(isValidContentLength('Test')).toBe(true);
       expect(isValidContentLength('')).toBe(false);
-      expect(isValidContentLength('a'.repeat(10001))).toBe(false);
+      expect(isValidContentLength('a'.repeat(10_001))).toBe(false);
     });
   });
 
@@ -171,40 +171,40 @@ describe('Security Utilities', () => {
     });
 
     it('allows requests within limit', () => {
-      const result1 = checkRateLimit('test-user', 5, 60000);
+      const result1 = checkRateLimit('test-user', 5, 60_000);
       expect(result1.allowed).toBe(true);
       expect(result1.remaining).toBe(4);
 
-      const result2 = checkRateLimit('test-user', 5, 60000);
+      const result2 = checkRateLimit('test-user', 5, 60_000);
       expect(result2.allowed).toBe(true);
       expect(result2.remaining).toBe(3);
     });
 
     it('blocks requests over limit', () => {
-      for (let i = 0; i < 5; i++) {
-        checkRateLimit('test-user', 5, 60000);
+      for (let index = 0; index < 5; index++) {
+        checkRateLimit('test-user', 5, 60_000);
       }
 
-      const result = checkRateLimit('test-user', 5, 60000);
+      const result = checkRateLimit('test-user', 5, 60_000);
       expect(result.allowed).toBe(false);
       expect(result.remaining).toBe(0);
     });
 
     it('tracks different identifiers separately', () => {
-      checkRateLimit('user1', 2, 60000);
-      checkRateLimit('user1', 2, 60000);
+      checkRateLimit('user1', 2, 60_000);
+      checkRateLimit('user1', 2, 60_000);
 
-      const user1Result = checkRateLimit('user1', 2, 60000);
+      const user1Result = checkRateLimit('user1', 2, 60_000);
       expect(user1Result.allowed).toBe(false);
 
-      const user2Result = checkRateLimit('user2', 2, 60000);
+      const user2Result = checkRateLimit('user2', 2, 60_000);
       expect(user2Result.allowed).toBe(true);
     });
 
     it('provides reset time', () => {
-      const result = checkRateLimit('test-user', 5, 60000);
+      const result = checkRateLimit('test-user', 5, 60_000);
       expect(result.resetTime).toBeGreaterThan(Date.now());
-      expect(result.resetTime).toBeLessThanOrEqual(Date.now() + 60000);
+      expect(result.resetTime).toBeLessThanOrEqual(Date.now() + 60_000);
     });
   });
 

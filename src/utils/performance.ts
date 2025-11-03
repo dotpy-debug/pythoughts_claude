@@ -16,16 +16,16 @@ import { useCallback, useEffect, useRef, useMemo, useState } from 'react';
  *
  * Delays function execution until after wait time has elapsed since last call
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  func: T,
+export function debounce<T extends (...arguments_: unknown[]) => unknown>(
+  function_: T,
   wait: number
-): (...args: Parameters<T>) => void {
+): (...arguments_: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
 
-  return function executedFunction(...args: Parameters<T>) {
+  return function executedFunction(...arguments_: Parameters<T>) {
     const later = () => {
       timeout = null;
-      func(...args);
+      function_(...arguments_);
     };
 
     if (timeout) {
@@ -40,30 +40,30 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
  *
  * Limits function execution to once per wait time
  */
-export function throttle<T extends (...args: unknown[]) => unknown>(
-  func: T,
+export function throttle<T extends (...arguments_: unknown[]) => unknown>(
+  function_: T,
   wait: number
-): (...args: Parameters<T>) => void {
+): (...arguments_: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
   let lastRan: number = 0;
 
-  return function executedFunction(...args: Parameters<T>) {
-    if (!lastRan) {
-      func(...args);
-      lastRan = Date.now();
-    } else {
+  return function executedFunction(...arguments_: Parameters<T>) {
+    if (lastRan) {
       if (timeout) {
         clearTimeout(timeout);
       }
       timeout = setTimeout(
         () => {
           if (Date.now() - lastRan >= wait) {
-            func(...args);
+            function_(...arguments_);
             lastRan = Date.now();
           }
         },
         wait - (Date.now() - lastRan)
       );
+    } else {
+      function_(...arguments_);
+      lastRan = Date.now();
     }
   };
 }
@@ -73,18 +73,18 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
  *
  * Throttles function calls to requestAnimationFrame
  */
-export function rafThrottle<T extends (...args: unknown[]) => unknown>(
-  func: T
-): (...args: Parameters<T>) => void {
+export function rafThrottle<T extends (...arguments_: unknown[]) => unknown>(
+  function_: T
+): (...arguments_: Parameters<T>) => void {
   let rafId: number | null = null;
 
-  return function executedFunction(...args: Parameters<T>) {
+  return function executedFunction(...arguments_: Parameters<T>) {
     if (rafId !== null) {
       return;
     }
 
     rafId = requestAnimationFrame(() => {
-      func(...args);
+      function_(...arguments_);
       rafId = null;
     });
   };
@@ -111,28 +111,28 @@ export function rafThrottle<T extends (...args: unknown[]) => unknown>(
  * }
  * ```
  */
-export function useDebounce<T extends (...args: unknown[]) => unknown>(
+export function useDebounce<T extends (...arguments_: unknown[]) => unknown>(
   callback: T,
   delay: number
-): (...args: Parameters<T>) => void {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+): (...arguments_: Parameters<T>) => void {
+  const timeoutReference = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutReference.current) {
+        clearTimeout(timeoutReference.current);
       }
     };
   }, []);
 
   return useCallback(
-    (...args: Parameters<T>) => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+    (...arguments_: Parameters<T>) => {
+      if (timeoutReference.current) {
+        clearTimeout(timeoutReference.current);
       }
 
-      timeoutRef.current = setTimeout(() => {
-        callback(...args);
+      timeoutReference.current = setTimeout(() => {
+        callback(...arguments_);
       }, delay);
     },
     [callback, delay]
@@ -153,39 +153,39 @@ export function useDebounce<T extends (...args: unknown[]) => unknown>(
  * }
  * ```
  */
-export function useThrottle<T extends (...args: unknown[]) => unknown>(
+export function useThrottle<T extends (...arguments_: unknown[]) => unknown>(
   callback: T,
   delay: number
-): (...args: Parameters<T>) => void {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+): (...arguments_: Parameters<T>) => void {
+  const timeoutReference = useRef<NodeJS.Timeout | null>(null);
   const lastRan = useRef<number>(0);
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutReference.current) {
+        clearTimeout(timeoutReference.current);
       }
     };
   }, []);
 
   return useCallback(
-    (...args: Parameters<T>) => {
-      if (!lastRan.current) {
-        callback(...args);
-        lastRan.current = Date.now();
-      } else {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
+    (...arguments_: Parameters<T>) => {
+      if (lastRan.current) {
+        if (timeoutReference.current) {
+          clearTimeout(timeoutReference.current);
         }
-        timeoutRef.current = setTimeout(
+        timeoutReference.current = setTimeout(
           () => {
             if (Date.now() - lastRan.current >= delay) {
-              callback(...args);
+              callback(...arguments_);
               lastRan.current = Date.now();
             }
           },
           delay - (Date.now() - lastRan.current)
         );
+      } else {
+        callback(...arguments_);
+        lastRan.current = Date.now();
       }
     },
     [callback, delay]
@@ -206,28 +206,28 @@ export function useThrottle<T extends (...args: unknown[]) => unknown>(
  * }
  * ```
  */
-export function useRAFThrottle<T extends (...args: unknown[]) => unknown>(
+export function useRAFThrottle<T extends (...arguments_: unknown[]) => unknown>(
   callback: T
-): (...args: Parameters<T>) => void {
-  const rafIdRef = useRef<number | null>(null);
+): (...arguments_: Parameters<T>) => void {
+  const rafIdReference = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
+      if (rafIdReference.current !== null) {
+        cancelAnimationFrame(rafIdReference.current);
       }
     };
   }, []);
 
   return useCallback(
-    (...args: Parameters<T>) => {
-      if (rafIdRef.current !== null) {
+    (...arguments_: Parameters<T>) => {
+      if (rafIdReference.current !== null) {
         return;
       }
 
-      rafIdRef.current = requestAnimationFrame(() => {
-        callback(...args);
-        rafIdRef.current = null;
+      rafIdReference.current = requestAnimationFrame(() => {
+        callback(...arguments_);
+        rafIdReference.current = null;
       });
     },
     [callback]
@@ -239,25 +239,25 @@ export function useRAFThrottle<T extends (...args: unknown[]) => unknown>(
  *
  * Caches function results based on arguments
  */
-export function memoize<T extends (...args: unknown[]) => unknown>(
-  fn: T,
+export function memoize<T extends (...arguments_: unknown[]) => unknown>(
+  function_: T,
   options: {
     maxSize?: number;
-    keyFn?: (...args: Parameters<T>) => string;
+    keyFn?: (...arguments_: Parameters<T>) => string;
   } = {}
 ): T {
-  const { maxSize = 100, keyFn = (...args) => JSON.stringify(args) } = options;
+  const { maxSize = 100, keyFn: keyFunction = (...arguments_) => JSON.stringify(arguments_) } = options;
 
   const cache = new Map<string, ReturnType<T>>();
 
-  return ((...args: Parameters<T>): ReturnType<T> => {
-    const key = keyFn(...args);
+  return ((...arguments_: Parameters<T>): ReturnType<T> => {
+    const key = keyFunction(...arguments_);
 
     if (cache.has(key)) {
       return cache.get(key)!;
     }
 
-    const result = fn(...args) as ReturnType<T>;
+    const result = function_(...arguments_) as ReturnType<T>;
 
     // Limit cache size
     if (cache.size >= maxSize) {
@@ -276,18 +276,18 @@ export function memoize<T extends (...args: unknown[]) => unknown>(
  * Batches multiple state updates into a single render
  */
 export class BatchUpdater<T> {
-  private queue: Array<(prev: T) => T> = [];
+  private queue: Array<(previous: T) => T> = [];
   private timeoutId: NodeJS.Timeout | null = null;
-  private callback: (updater: (prev: T) => T) => void;
+  private callback: (updater: (previous: T) => T) => void;
 
   constructor(
-    callback: (updater: (prev: T) => T) => void,
+    callback: (updater: (previous: T) => T) => void,
     private delay: number = 16
   ) {
     this.callback = callback;
   }
 
-  add(updater: (prev: T) => T) {
+  add(updater: (previous: T) => T) {
     this.queue.push(updater);
 
     if (this.timeoutId) {
@@ -305,8 +305,8 @@ export class BatchUpdater<T> {
     const updates = this.queue;
     this.queue = [];
 
-    this.callback((prev) => {
-      return updates.reduce((acc, updater) => updater(acc), prev);
+    this.callback((previous) => {
+      return updates.reduce((accumulator, updater) => updater(accumulator), previous);
     });
   }
 
@@ -340,23 +340,23 @@ export class BatchUpdater<T> {
  * ```
  */
 export function useBatchUpdate<T>(
-  setter: (updater: (prev: T) => T) => void,
+  setter: (updater: (previous: T) => T) => void,
   delay: number = 16
-): (updater: (prev: T) => T) => void {
-  const batcherRef = useRef<BatchUpdater<T> | null>(null);
+): (updater: (previous: T) => T) => void {
+  const batcherReference = useRef<BatchUpdater<T> | null>(null);
 
-  if (!batcherRef.current) {
-    batcherRef.current = new BatchUpdater(setter, delay);
+  if (!batcherReference.current) {
+    batcherReference.current = new BatchUpdater(setter, delay);
   }
 
   useEffect(() => {
     return () => {
-      batcherRef.current?.clear();
+      batcherReference.current?.clear();
     };
   }, []);
 
-  return useCallback((updater: (prev: T) => T) => {
-    batcherRef.current?.add(updater);
+  return useCallback((updater: (previous: T) => T) => {
+    batcherReference.current?.add(updater);
   }, []);
 }
 
@@ -389,8 +389,9 @@ export function createPerformanceMeasure(name: string) {
 
       try {
         performance.measure(name, `${name}-start`, `${name}-end`);
-      } catch (_e) {
-        // Measure failed
+      } catch (error) {
+        // Measure failed - log for debugging
+        console.warn('Performance measure failed:', error);
       }
 
       return endTime - startTime;
@@ -405,8 +406,9 @@ export function createPerformanceMeasure(name: string) {
         performance.clearMarks(`${name}-start`);
         performance.clearMarks(`${name}-end`);
         performance.clearMeasures(name);
-      } catch (_e) {
-        // Clear failed
+      } catch (error) {
+        // Clear failed - log for debugging
+        console.warn('Performance clear failed:', error);
       }
     },
   };
@@ -472,7 +474,7 @@ export function usePerformanceMeasure(name: string) {
  */
 export function useIdleCallback(callback: () => void, deps: React.DependencyList = []) {
   useEffect(() => {
-    if ('requestIdleCallback' in window) {
+    if ('requestIdleCallback' in globalThis) {
       const id = requestIdleCallback(callback);
       return () => cancelIdleCallback(id);
     } else {

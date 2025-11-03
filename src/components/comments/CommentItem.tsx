@@ -9,7 +9,7 @@ import { sanitizeURL } from '../../utils/security';
 import { ReportModal } from '../moderation/ReportModal';
 import { useAuth } from '../../contexts/AuthContext';
 
-type CommentItemProps = {
+type CommentItemProperties = {
   comment: Comment;
   userVote?: 1 | -1 | null;
   onVote: (commentId: string, voteType: 1 | -1) => void;
@@ -19,7 +19,7 @@ type CommentItemProps = {
   depth: number;
 };
 
-export const CommentItem = memo(function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, postAuthorId, depth }: CommentItemProps) {
+export const CommentItem = memo(function CommentItem({ comment, userVote, onVote, onReply, onPinToggle, postAuthorId, depth }: CommentItemProperties) {
   const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
@@ -161,7 +161,7 @@ export const CommentItem = memo(function CommentItem({ comment, userVote, onVote
                     <ArrowUp size={14} />
                   </button>
                   <span className={`font-medium ${
-                    userVote === 1 ? 'text-terminal-green' : userVote === -1 ? 'text-terminal-pink' : 'text-gray-500'
+                    userVote === 1 ? 'text-terminal-green' : (userVote === -1 ? 'text-terminal-pink' : 'text-gray-500')
                   }`}>
                     {comment.vote_count}
                   </span>

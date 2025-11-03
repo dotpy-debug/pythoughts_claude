@@ -4,13 +4,13 @@ import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { checkRateLimit } from '../../utils/security';
 
-type SignInFormProps = {
+type SignInFormProperties = {
   onSuccess: () => void;
   onToggleMode: () => void;
   onForgotPassword: () => void;
 };
 
-export function SignInForm({ onSuccess, onToggleMode, onForgotPassword }: SignInFormProps) {
+export function SignInForm({ onSuccess, onToggleMode, onForgotPassword }: SignInFormProperties) {
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,7 +23,7 @@ export function SignInForm({ onSuccess, onToggleMode, onForgotPassword }: SignIn
     setLoading(true);
 
     // Check rate limit (5 attempts per 60 seconds per email)
-    const rateLimit = checkRateLimit(`signin:${email}`, 5, 60000);
+    const rateLimit = checkRateLimit(`signin:${email}`, 5, 60_000);
     if (!rateLimit.allowed) {
       const waitTime = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
       setError(`Too many login attempts. Please wait ${waitTime} seconds before trying again.`);

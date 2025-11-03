@@ -54,11 +54,11 @@ type DailyAnalytics = {
   newsletters_sent: number;
 };
 
-type PublicationAnalyticsProps = {
+type PublicationAnalyticsProperties = {
   publicationId: string;
 };
 
-type StatCardProps = {
+type StatCardProperties = {
   title: string;
   value: number | string;
   icon: React.ReactNode;
@@ -66,7 +66,7 @@ type StatCardProps = {
   trend?: number;
 };
 
-function StatCard({ title, value, icon, description, trend }: StatCardProps) {
+function StatCard({ title, value, icon, description, trend }: StatCardProperties) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -96,7 +96,7 @@ function StatCard({ title, value, icon, description, trend }: StatCardProps) {
   );
 }
 
-export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProps) {
+export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProperties) {
   const [stats, setStats] = useState<PublicationStats | null>(null);
   const [dailyAnalytics, setDailyAnalytics] = useState<DailyAnalytics[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -122,7 +122,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
       setStats(statsData);
 
       // Load daily analytics for the selected time range
-      const days = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+      const days = timeRange === '7d' ? 7 : (timeRange === '30d' ? 30 : 90);
       const startDate = subDays(new Date(), days);
 
       const { data: analyticsData, error: analyticsError } = await supabase
@@ -145,9 +145,9 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
         publicationId,
         dataPoints: analyticsData?.length || 0,
       });
-    } catch (err) {
-      if (err instanceof Error) {
-        logger.error('Failed to load publication analytics', err, {
+    } catch (error) {
+      if (error instanceof Error) {
+        logger.error('Failed to load publication analytics', error, {
           publicationId,
         });
       } else {
@@ -166,14 +166,14 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
 
   const calculateTotals = () => {
     return dailyAnalytics.reduce(
-      (acc, day) => ({
-        views: acc.views + day.total_views,
-        reads: acc.reads + day.total_reads,
-        claps: acc.claps + day.total_claps,
-        comments: acc.comments + day.total_comments,
-        bookmarks: acc.bookmarks + day.total_bookmarks,
-        newSubscribers: acc.newSubscribers + day.new_subscribers,
-        newsletters: acc.newsletters + day.newsletters_sent,
+      (accumulator, day) => ({
+        views: accumulator.views + day.total_views,
+        reads: accumulator.reads + day.total_reads,
+        claps: accumulator.claps + day.total_claps,
+        comments: accumulator.comments + day.total_comments,
+        bookmarks: accumulator.bookmarks + day.total_bookmarks,
+        newSubscribers: accumulator.newSubscribers + day.new_subscribers,
+        newsletters: accumulator.newsletters + day.newsletters_sent,
       }),
       {
         views: 0,
@@ -269,7 +269,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
               title="Views"
               value={totals.views}
               icon={<Eye className="h-4 w-4" />}
-              description={`Last ${timeRange === '7d' ? '7' : timeRange === '30d' ? '30' : '90'} days`}
+              description={`Last ${timeRange === '7d' ? '7' : (timeRange === '30d' ? '30' : '90')} days`}
             />
             <StatCard
               title="Reads"
@@ -310,7 +310,7 @@ export function PublicationAnalytics({ publicationId }: PublicationAnalyticsProp
               title="New Subscribers"
               value={totals.newSubscribers}
               icon={<Users className="h-4 w-4" />}
-              description={`Last ${timeRange === '7d' ? '7' : timeRange === '30d' ? '30' : '90'} days`}
+              description={`Last ${timeRange === '7d' ? '7' : (timeRange === '30d' ? '30' : '90')} days`}
             />
             <StatCard
               title="Newsletters Sent"

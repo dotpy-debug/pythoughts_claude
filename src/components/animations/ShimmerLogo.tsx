@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Terminal } from 'lucide-react';
 
-interface ShimmerLogoProps {
+interface ShimmerLogoProperties {
   /**
    * Show the "pythoughts.com" text next to the icon
    * @default true
@@ -49,7 +49,7 @@ export const ShimmerLogo = memo(function ShimmerLogo({
   size = 'md',
   className = '',
   ariaLabel = 'Pythoughts logo',
-}: ShimmerLogoProps) {
+}: ShimmerLogoProperties) {
   const currentSize = SIZE_CONFIG[size];
 
   return (

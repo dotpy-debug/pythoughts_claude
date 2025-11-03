@@ -67,11 +67,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             .single();
 
           if (newNotification) {
-            setNotifications(prev => [newNotification, ...prev]);
-            setUnreadCount(prev => prev + 1);
+            setNotifications(previous => [newNotification, ...previous]);
+            setUnreadCount(previous => previous + 1);
 
-            if ('Notification' in window && Notification.permission === 'granted') {
-              new window.Notification(newNotification.title, {
+            if ('Notification' in globalThis && Notification.permission === 'granted') {
+              new globalThis.Notification(newNotification.title, {
                 body: newNotification.message,
                 icon: '/favicon.ico',
               });
@@ -88,11 +88,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           filter: `recipient_id=eq.${user.id}`,
         },
         (payload) => {
-          setNotifications(prev =>
-            prev.map(n => (n.id === payload.new.id ? { ...n, ...payload.new } : n))
+          setNotifications(previous =>
+            previous.map(n => (n.id === payload.new.id ? { ...n, ...payload.new } : n))
           );
           if (payload.new.is_read && !payload.old.is_read) {
-            setUnreadCount(prev => Math.max(0, prev - 1));
+            setUnreadCount(previous => Math.max(0, previous - 1));
           }
         }
       )
@@ -127,10 +127,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      setNotifications(prev =>
-        prev.map(n => (n.id === notificationId ? { ...n, is_read: true } : n))
+      setNotifications(previous =>
+        previous.map(n => (n.id === notificationId ? { ...n, is_read: true } : n))
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setUnreadCount(previous => Math.max(0, previous - 1));
     } catch (error) {
       logger.error('Error marking notification as read', {
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
@@ -152,7 +152,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      setNotifications(previous => previous.map(n => ({ ...n, is_read: true })));
       setUnreadCount(0);
     } catch (error) {
       logger.error('Error marking all notifications as read', {

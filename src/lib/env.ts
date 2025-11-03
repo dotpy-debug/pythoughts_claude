@@ -18,7 +18,7 @@ export type Environment = 'development' | 'production' | 'test';
 /**
  * Client-safe environment configuration (exposed via VITE_ prefix)
  */
-export interface EnvConfig {
+export interface EnvironmentConfig {
   // Application
   NODE_ENV: Environment;
   MODE: string;
@@ -42,7 +42,7 @@ export interface EnvConfig {
  * Server-only environment configuration (NOT exposed to client)
  * These variables do NOT have VITE_ prefix and are only available server-side
  */
-export interface ServerEnvConfig {
+export interface ServerEnvironmentConfig {
   // Redis (server-only)
   REDIS_URL: string;
 
@@ -59,23 +59,21 @@ export interface ServerEnvConfig {
 export class EnvValidationError extends Error {
   constructor(
     message: string,
-    public readonly missingVars?: string[],
-    public readonly invalidVars?: Array<{ name: string; reason: string }>
+    public readonly missingVariables?: string[],
+    public readonly invalidVariables?: Array<{ name: string; reason: string }>
   ) {
     super(message);
     this.name = 'EnvValidationError';
 
     // Maintain proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, EnvValidationError);
-    }
+    if (Error.captureStackTrace) {}
   }
 }
 
 /**
  * Validates a required environment variable from import.meta.env (client-safe)
  */
-function requireEnv(key: string, errorContext: string[] = []): string {
+function requireEnvironment(key: string, errorContext: string[] = []): string {
   const value = import.meta.env[key];
 
   if (!value || value.trim() === '') {
@@ -89,7 +87,7 @@ function requireEnv(key: string, errorContext: string[] = []): string {
 /**
  * Validates a required environment variable from process.env (server-only)
  */
-function requireServerEnv(key: string, errorContext: string[] = []): string {
+function requireServerEnvironment(key: string, errorContext: string[] = []): string {
   const value = process.env[key];
 
   if (!value || value.trim() === '') {
@@ -103,7 +101,7 @@ function requireServerEnv(key: string, errorContext: string[] = []): string {
 /**
  * Validates an optional environment variable with a default value (server-only)
  */
-function optionalServerEnv(key: string, defaultValue: string): string {
+function optionalServerEnvironment(key: string, defaultValue: string): string {
   const value = process.env[key];
   return value && value.trim() !== '' ? value : defaultValue;
 }
@@ -111,13 +109,13 @@ function optionalServerEnv(key: string, defaultValue: string): string {
 /**
  * Validates a URL format
  */
-function validateUrl(url: string, varName: string, invalidVars: Array<{ name: string; reason: string }> = []): boolean {
+function validateUrl(url: string, variableName: string, invalidVariables: Array<{ name: string; reason: string }> = []): boolean {
   try {
     new URL(url);
     return true;
   } catch {
-    invalidVars.push({
-      name: varName,
+    invalidVariables.push({
+      name: variableName,
       reason: `Invalid URL format: ${url}`,
     });
     return false;
@@ -131,7 +129,7 @@ function maskSecret(secret: string): string {
   if (!secret || secret.length < 8) {
     return '***';
   }
-  return `${secret.substring(0, 4)}...${secret.substring(secret.length - 4)}`;
+  return `${secret.slice(0, 4)}...${secret.slice(Math.max(0, secret.length - 4))}`;
 }
 
 /**
@@ -139,14 +137,14 @@ function maskSecret(secret: string): string {
  */
 function maskUrl(url: string): string {
   try {
-    const urlObj = new URL(url);
-    if (urlObj.password) {
-      urlObj.password = '***';
+    const urlObject = new URL(url);
+    if (urlObject.password) {
+      urlObject.password = '***';
     }
-    if (urlObj.username) {
-      urlObj.username = '***';
+    if (urlObject.username) {
+      urlObject.username = '***';
     }
-    return urlObj.toString();
+    return urlObject.toString();
   } catch {
     return url;
   }
@@ -158,30 +156,30 @@ function maskUrl(url: string): string {
  * @throws {EnvValidationError} If required variables are missing or invalid
  * @returns {EnvConfig} Validated environment configuration
  */
-function validateEnv(): EnvConfig {
-  const missingVars: string[] = [];
-  const invalidVars: Array<{ name: string; reason: string }> = [];
+function validateEnvironment(): EnvironmentConfig {
+  const missingVariables: string[] = [];
+  const invalidVariables: Array<{ name: string; reason: string }> = [];
 
   // Get environment
-  const nodeEnv = import.meta.env.MODE || 'development';
-  const isProd = nodeEnv === 'production';
+  const nodeEnvironment = import.meta.env.MODE || 'development';
+  const isProduction_ = nodeEnvironment === 'production';
 
   // Validate required client-safe variables
-  const supabaseUrl = requireEnv('VITE_SUPABASE_URL', missingVars);
-  const supabaseAnonKey = requireEnv('VITE_SUPABASE_ANON_KEY', missingVars);
+  const supabaseUrl = requireEnvironment('VITE_SUPABASE_URL', missingVariables);
+  const supabaseAnonKey = requireEnvironment('VITE_SUPABASE_ANON_KEY', missingVariables);
 
   // Validate URLs if present
-  if (supabaseUrl && !validateUrl(supabaseUrl, 'VITE_SUPABASE_URL', invalidVars)) {
+  if (supabaseUrl && !validateUrl(supabaseUrl, 'VITE_SUPABASE_URL', invalidVariables)) {
     // URL validation already added to invalidVars
   }
 
   // Validate production-only required variables
   let betterAuthUrl: string | undefined;
 
-  if (isProd) {
-    betterAuthUrl = requireEnv('VITE_BETTER_AUTH_URL', missingVars);
+  if (isProduction_) {
+    betterAuthUrl = requireEnvironment('VITE_BETTER_AUTH_URL', missingVariables);
 
-    if (betterAuthUrl && !validateUrl(betterAuthUrl, 'VITE_BETTER_AUTH_URL', invalidVars)) {
+    if (betterAuthUrl && !validateUrl(betterAuthUrl, 'VITE_BETTER_AUTH_URL', invalidVariables)) {
       // URL validation already added to invalidVars
     }
   } else {
@@ -190,38 +188,38 @@ function validateEnv(): EnvConfig {
   }
 
   // Check for validation errors
-  if (missingVars.length > 0 || invalidVars.length > 0) {
+  if (missingVariables.length > 0 || invalidVariables.length > 0) {
     const errorParts: string[] = ['Environment validation failed:'];
 
-    if (missingVars.length > 0) {
+    if (missingVariables.length > 0) {
       errorParts.push('\n\nMissing required variables:');
-      missingVars.forEach(v => {
+      for (const v of missingVariables) {
         errorParts.push(`  - ${v}`);
-      });
+      }
 
       errorParts.push('\n\nPlease set these variables in your .env file:');
-      missingVars.forEach(v => {
+      for (const v of missingVariables) {
         errorParts.push(`  ${v}=your_value_here`);
-      });
+      }
     }
 
-    if (invalidVars.length > 0) {
+    if (invalidVariables.length > 0) {
       errorParts.push('\n\nInvalid variable values:');
-      invalidVars.forEach(({ name, reason }) => {
+      for (const { name, reason } of invalidVariables) {
         errorParts.push(`  - ${name}: ${reason}`);
-      });
+      }
     }
 
     throw new EnvValidationError(
       errorParts.join('\n'),
-      missingVars,
-      invalidVars
+      missingVariables,
+      invalidVariables
     );
   }
 
   return {
-    NODE_ENV: nodeEnv as Environment,
-    MODE: nodeEnv,
+    NODE_ENV: nodeEnvironment as Environment,
+    MODE: nodeEnvironment,
     VITE_SUPABASE_URL: supabaseUrl,
     VITE_SUPABASE_ANON_KEY: supabaseAnonKey,
     VITE_BETTER_AUTH_URL: betterAuthUrl,
@@ -237,20 +235,20 @@ function validateEnv(): EnvConfig {
  * @throws {EnvValidationError} If required variables are missing or invalid
  * @returns {ServerEnvConfig} Validated server environment configuration
  */
-function validateServerEnv(): ServerEnvConfig {
-  const missingVars: string[] = [];
-  const invalidVars: Array<{ name: string; reason: string }> = [];
+function validateServerEnvironment(): ServerEnvironmentConfig {
+  const missingVariables: string[] = [];
+  const invalidVariables: Array<{ name: string; reason: string }> = [];
 
   // Get environment
-  const nodeEnv = process.env.NODE_ENV || 'development';
-  const isProd = nodeEnv === 'production';
+  const nodeEnvironment = process.env.NODE_ENV || 'development';
+  const isProduction_ = nodeEnvironment === 'production';
 
   // Optional variables with defaults
-  const redisUrl = optionalServerEnv('REDIS_URL', 'redis://localhost:6379');
+  const redisUrl = optionalServerEnvironment('REDIS_URL', 'redis://localhost:6379');
 
   // Validate Redis URL if provided
   if (redisUrl !== 'redis://localhost:6379' && !redisUrl.startsWith('redis://') && !redisUrl.startsWith('rediss://')) {
-    invalidVars.push({
+    invalidVariables.push({
       name: 'REDIS_URL',
       reason: 'Must start with redis:// or rediss://',
     });
@@ -260,12 +258,12 @@ function validateServerEnv(): ServerEnvConfig {
   let betterAuthSecret: string | undefined;
   let resendApiKey: string | undefined;
 
-  if (isProd) {
-    betterAuthSecret = requireServerEnv('BETTER_AUTH_SECRET', missingVars);
-    resendApiKey = requireServerEnv('RESEND_API_KEY', missingVars);
+  if (isProduction_) {
+    betterAuthSecret = requireServerEnvironment('BETTER_AUTH_SECRET', missingVariables);
+    resendApiKey = requireServerEnvironment('RESEND_API_KEY', missingVariables);
 
     if (resendApiKey && !resendApiKey.startsWith('re_')) {
-      invalidVars.push({
+      invalidVariables.push({
         name: 'RESEND_API_KEY',
         reason: 'API key must start with "re_"',
       });
@@ -277,36 +275,36 @@ function validateServerEnv(): ServerEnvConfig {
   }
 
   // Check for validation errors
-  if (missingVars.length > 0 || invalidVars.length > 0) {
+  if (missingVariables.length > 0 || invalidVariables.length > 0) {
     const errorParts: string[] = ['Server environment validation failed:'];
 
-    if (missingVars.length > 0) {
+    if (missingVariables.length > 0) {
       errorParts.push('\n\nMissing required server variables:');
-      missingVars.forEach(v => {
+      for (const v of missingVariables) {
         errorParts.push(`  - ${v}`);
-      });
+      }
 
       errorParts.push('\n\nPlease set these variables in your .env file:');
-      missingVars.forEach(v => {
+      for (const v of missingVariables) {
         errorParts.push(`  ${v}=your_value_here`);
-      });
+      }
     }
 
-    if (invalidVars.length > 0) {
+    if (invalidVariables.length > 0) {
       errorParts.push('\n\nInvalid variable values:');
-      invalidVars.forEach(({ name, reason }) => {
+      for (const { name, reason } of invalidVariables) {
         errorParts.push(`  - ${name}: ${reason}`);
-      });
+      }
     }
 
-    if (isProd) {
+    if (isProduction_) {
       errorParts.push('\n\nNote: Running in PRODUCTION mode - all authentication and email variables are required.');
     }
 
     throw new EnvValidationError(
       errorParts.join('\n'),
-      missingVars,
-      invalidVars
+      missingVariables,
+      invalidVariables
     );
   }
 
@@ -323,9 +321,9 @@ function validateServerEnv(): ServerEnvConfig {
  * This is initialized on module load and will throw an error if validation fails,
  * ensuring the application fails fast with clear error messages.
  */
-export const env: EnvConfig = (() => {
+export const env: EnvironmentConfig = (() => {
   try {
-    const config = validateEnv();
+    const config = validateEnvironment();
 
     // Log successful validation in development
     if (config.NODE_ENV === 'development') {
@@ -364,7 +362,7 @@ export const env: EnvConfig = (() => {
  *
  * This is initialized on module load in server contexts and will throw an error if validation fails.
  */
-export const serverEnv: ServerEnvConfig = (() => {
+export const serverEnv: ServerEnvironmentConfig = (() => {
   // Only validate server env in Node.js/Bun environment (not in browser)
   if (typeof process === 'undefined') {
     // Return empty config for client-side (should never be accessed)
@@ -376,7 +374,7 @@ export const serverEnv: ServerEnvConfig = (() => {
   }
 
   try {
-    const config = validateServerEnv();
+    const config = validateServerEnvironment();
 
     // Log successful validation in development
     if (process.env.NODE_ENV === 'development') {

@@ -14,7 +14,7 @@ import { useState, useRef, useEffect } from 'react';
 import { FileText } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-interface MarkdownTextareaProps {
+interface MarkdownTextareaProperties {
   /**
    * Markdown content
    */
@@ -89,8 +89,8 @@ export function MarkdownTextarea({
   showCharCount = true,
   className,
   autoFocus = false,
-}: MarkdownTextareaProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+}: MarkdownTextareaProperties) {
+  const textareaReference = useRef<HTMLTextAreaElement>(null);
   const [lineCount, setLineCount] = useState(1);
   const [charCount, setCharCount] = useState(0);
   const [wordCount, setWordCount] = useState(0);
@@ -108,7 +108,7 @@ export function MarkdownTextarea({
 
   // Auto-resize textarea
   useEffect(() => {
-    const textarea = textareaRef.current;
+    const textarea = textareaReference.current;
     if (!textarea) return;
 
     // Reset height to get accurate scrollHeight
@@ -131,7 +131,7 @@ export function MarkdownTextarea({
       e.preventDefault();
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const newValue = value.substring(0, start) + '  ' + value.substring(end);
+      const newValue = value.slice(0, Math.max(0, start)) + '  ' + value.slice(Math.max(0, end));
 
       onChange(newValue);
 
@@ -161,7 +161,7 @@ export function MarkdownTextarea({
   };
 
   const insertMarkdown = (before: string, after: string) => {
-    const textarea = textareaRef.current;
+    const textarea = textareaReference.current;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
@@ -169,11 +169,11 @@ export function MarkdownTextarea({
     const selectedText = value.substring(start, end);
 
     const newValue =
-      value.substring(0, start) +
+      value.slice(0, Math.max(0, start)) +
       before +
       selectedText +
       after +
-      value.substring(end);
+      value.slice(Math.max(0, end));
 
     onChange(newValue);
 
@@ -189,7 +189,7 @@ export function MarkdownTextarea({
     <div className={cn('relative flex flex-col', className)}>
       {/* Textarea */}
       <textarea
-        ref={textareaRef}
+        ref={textareaReference}
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}

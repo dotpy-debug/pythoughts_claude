@@ -19,7 +19,7 @@ interface TOCHeading {
   element?: HTMLElement;
 }
 
-interface BlogTOCProps {
+interface BlogTOCProperties {
   /**
    * The HTML content to parse for headings
    */
@@ -67,32 +67,32 @@ export function BlogTOC({
   showTitle = true,
   className = '',
   onHeadingClick,
-}: BlogTOCProps) {
+}: BlogTOCProperties) {
   const [activeId, setActiveId] = useState<string>('');
   const [headings, setHeadings] = useState<TOCHeading[]>([]);
 
   // Parse content and extract headings
   const parsedHeadings = useMemo(() => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
+    const temporaryDiv = document.createElement('div');
+    temporaryDiv.innerHTML = content;
 
-    const headingElements = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    const headingElements = temporaryDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
     const parsed: TOCHeading[] = [];
 
-    headingElements.forEach((heading, index) => {
-      const level = parseInt(heading.tagName[1]);
-      if (level > maxDepth) return;
+    for (const [index, heading] of headingElements.entries()) {
+      const level = Number.parseInt(heading.tagName[1]);
+      if (level > maxDepth) continue;
 
       const text = heading.textContent || '';
       // Generate ID from text if not present
-      const id = heading.id || `heading-${index}-${text.toLowerCase().replace(/\s+/g, '-')}`;
+      const id = heading.id || `heading-${index}-${text.toLowerCase().replaceAll(/\s+/g, '-')}`;
 
       parsed.push({
         id,
         text,
         level,
       });
-    });
+    }
 
     return parsed;
   }, [content, maxDepth]);
@@ -117,8 +117,8 @@ export function BlogTOC({
 
       // Find the heading that's currently in view
       let currentId = '';
-      for (let i = headings.length - 1; i >= 0; i--) {
-        const heading = headings[i];
+      for (let index = headings.length - 1; index >= 0; index--) {
+        const heading = headings[index];
         if (heading.element) {
           const top = heading.element.offsetTop;
           if (scrollPosition >= top) {
@@ -248,7 +248,7 @@ export function useTOC(markdownContent: string, maxDepth: number = 3) {
       if (level > maxDepth) continue;
 
       const text = match[2];
-      const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+      const id = text.toLowerCase().replaceAll(/[^\w\s-]/g, '').replaceAll(/\s+/g, '-');
 
       headings.push({ id, text, level });
     }
@@ -261,8 +261,8 @@ export function useTOC(markdownContent: string, maxDepth: number = 3) {
  * Utility function to inject IDs into markdown headings
  */
 export function addHeadingIds(markdown: string): string {
-  return markdown.replace(/^(#{1,6})\s+(.+)$/gm, (_match, hashes, text) => {
-    const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+  return markdown.replaceAll(/^(#{1,6})\s+(.+)$/gm, (_match, hashes, text) => {
+    const id = text.toLowerCase().replaceAll(/[^\w\s-]/g, '').replaceAll(/\s+/g, '-');
     return `${hashes} ${text} {#${id}}`;
   });
 }
@@ -274,25 +274,25 @@ export function buildNestedTOC(headings: TOCHeading[]): NestedTOCItem[] {
   const root: NestedTOCItem[] = [];
   const stack: NestedTOCItem[] = [];
 
-  headings.forEach((heading) => {
+  for (const heading of headings) {
     const item: NestedTOCItem = {
       ...heading,
       children: [],
     };
 
     // Find the correct parent based on level
-    while (stack.length > 0 && stack[stack.length - 1].level >= heading.level) {
+    while (stack.length > 0 && stack.at(-1).level >= heading.level) {
       stack.pop();
     }
 
     if (stack.length === 0) {
       root.push(item);
     } else {
-      stack[stack.length - 1].children!.push(item);
+      stack.at(-1).children!.push(item);
     }
 
     stack.push(item);
-  });
+  }
 
   return root;
 }

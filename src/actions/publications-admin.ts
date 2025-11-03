@@ -61,26 +61,26 @@ export interface PublicationSubmission {
 /**
  * Get all publications
  */
-export async function getPublications(params: {
+export async function getPublications(parameters: {
   currentUserId: string;
   search?: string;
   page?: number;
   limit?: number;
 }): Promise<{ publications: Publication[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     let query = supabase
       .from('publications')
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false });
 
-    if (params.search) {
-      query = query.or(`name.ilike.%${params.search}%,slug.ilike.%${params.search}%`);
+    if (parameters.search) {
+      query = query.or(`name.ilike.%${parameters.search}%,slug.ilike.%${parameters.search}%`);
     }
 
-    const page = params.page || 1;
-    const limit = params.limit || 20;
+    const page = parameters.page || 1;
+    const limit = parameters.limit || 20;
     const offset = (page - 1) * limit;
 
     const { data, error, count } = await query.range(offset, offset + limit - 1);
@@ -107,17 +107,17 @@ export async function getPublications(params: {
 /**
  * Get publication details
  */
-export async function getPublicationDetails(params: {
+export async function getPublicationDetails(parameters: {
   currentUserId: string;
   publicationId: string;
 }): Promise<{ publication: Publication | null; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     const { data, error } = await supabase
       .from('publications')
       .select('*')
-      .eq('id', params.publicationId)
+      .eq('id', parameters.publicationId)
       .single();
 
     if (error) {
@@ -138,21 +138,21 @@ export async function getPublicationDetails(params: {
 /**
  * Update publication
  */
-export async function updatePublication(params: {
+export async function updatePublication(parameters: {
   currentUserId: string;
   publicationId: string;
   updates: Partial<Publication>;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     const { error } = await supabase
       .from('publications')
       .update({
-        ...params.updates,
+        ...parameters.updates,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.publicationId);
+      .eq('id', parameters.publicationId);
 
     if (error) {
       logger.error('Error updating publication', { errorDetails: error });
@@ -160,11 +160,11 @@ export async function updatePublication(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_publication',
       targetType: 'publication',
-      targetId: params.publicationId,
-      details: { updates: params.updates },
+      targetId: parameters.publicationId,
+      details: { updates: parameters.updates },
     });
 
     return { success: true };
@@ -180,17 +180,17 @@ export async function updatePublication(params: {
 /**
  * Delete publication
  */
-export async function deletePublication(params: {
+export async function deletePublication(parameters: {
   currentUserId: string;
   publicationId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     const { error } = await supabase
       .from('publications')
       .delete()
-      .eq('id', params.publicationId);
+      .eq('id', parameters.publicationId);
 
     if (error) {
       logger.error('Error deleting publication', { errorDetails: error });
@@ -198,10 +198,10 @@ export async function deletePublication(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_publication',
       targetType: 'publication',
-      targetId: params.publicationId,
+      targetId: parameters.publicationId,
     });
 
     return { success: true };
@@ -217,12 +217,12 @@ export async function deletePublication(params: {
 /**
  * Get publication members
  */
-export async function getPublicationMembers(params: {
+export async function getPublicationMembers(parameters: {
   currentUserId: string;
   publicationId: string;
 }): Promise<{ members: PublicationMemberWithProfile[]; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     const { data, error } = await supabase
       .from('publication_members')
@@ -232,7 +232,7 @@ export async function getPublicationMembers(params: {
         profiles:user_id (id, username, avatar_url)
       `
       )
-      .eq('publication_id', params.publicationId)
+      .eq('publication_id', parameters.publicationId)
       .order('joined_at', { ascending: false });
 
     if (error) {
@@ -253,31 +253,31 @@ export async function getPublicationMembers(params: {
 /**
  * Update member role
  */
-export async function updateMemberRole(params: {
+export async function updateMemberRole(parameters: {
   currentUserId: string;
   memberId: string;
   role: 'owner' | 'editor' | 'writer' | 'contributor';
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     // Set permissions based on role
     const permissions = {
-      can_publish: ['owner', 'editor'].includes(params.role),
-      can_edit_others: ['owner', 'editor'].includes(params.role),
-      can_delete_posts: ['owner', 'editor'].includes(params.role),
-      can_manage_members: params.role === 'owner',
-      can_manage_settings: params.role === 'owner',
+      can_publish: ['owner', 'editor'].includes(parameters.role),
+      can_edit_others: ['owner', 'editor'].includes(parameters.role),
+      can_delete_posts: ['owner', 'editor'].includes(parameters.role),
+      can_manage_members: parameters.role === 'owner',
+      can_manage_settings: parameters.role === 'owner',
     };
 
     const { error } = await supabase
       .from('publication_members')
       .update({
-        role: params.role,
+        role: parameters.role,
         ...permissions,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.memberId);
+      .eq('id', parameters.memberId);
 
     if (error) {
       logger.error('Error updating member role', { errorDetails: error });
@@ -285,11 +285,11 @@ export async function updateMemberRole(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_publication_member',
       targetType: 'publication_member',
-      targetId: params.memberId,
-      details: { role: params.role },
+      targetId: parameters.memberId,
+      details: { role: parameters.role },
     });
 
     return { success: true };
@@ -305,17 +305,17 @@ export async function updateMemberRole(params: {
 /**
  * Remove publication member
  */
-export async function removeMember(params: {
+export async function removeMember(parameters: {
   currentUserId: string;
   memberId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     const { error } = await supabase
       .from('publication_members')
       .delete()
-      .eq('id', params.memberId);
+      .eq('id', parameters.memberId);
 
     if (error) {
       logger.error('Error removing member', { errorDetails: error });
@@ -323,10 +323,10 @@ export async function removeMember(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'remove_publication_member',
       targetType: 'publication_member',
-      targetId: params.memberId,
+      targetId: parameters.memberId,
     });
 
     return { success: true };
@@ -342,13 +342,13 @@ export async function removeMember(params: {
 /**
  * Get publication submissions
  */
-export async function getPublicationSubmissions(params: {
+export async function getPublicationSubmissions(parameters: {
   currentUserId: string;
   publicationId?: string;
   status?: 'pending' | 'approved' | 'rejected' | 'revision_requested';
 }): Promise<{ submissions: PublicationSubmissionWithRelations[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     let query = supabase
       .from('publication_submissions')
@@ -364,12 +364,12 @@ export async function getPublicationSubmissions(params: {
       )
       .order('created_at', { ascending: false });
 
-    if (params.publicationId) {
-      query = query.eq('publication_id', params.publicationId);
+    if (parameters.publicationId) {
+      query = query.eq('publication_id', parameters.publicationId);
     }
 
-    if (params.status) {
-      query = query.eq('status', params.status);
+    if (parameters.status) {
+      query = query.eq('status', parameters.status);
     }
 
     const { data, error, count } = await query;
@@ -396,21 +396,21 @@ export async function getPublicationSubmissions(params: {
 /**
  * Review submission (approve/reject)
  */
-export async function reviewSubmission(params: {
+export async function reviewSubmission(parameters: {
   currentUserId: string;
   submissionId: string;
   status: 'approved' | 'rejected' | 'revision_requested';
   reviewNotes?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     // If approving, use the database function
-    if (params.status === 'approved') {
+    if (parameters.status === 'approved') {
       const { error } = await supabase.rpc('approve_publication_submission', {
-        p_submission_id: params.submissionId,
-        p_reviewer_id: params.currentUserId,
-        p_notes: params.reviewNotes || null,
+        p_submission_id: parameters.submissionId,
+        p_reviewer_id: parameters.currentUserId,
+        p_notes: parameters.reviewNotes || null,
       });
 
       if (error) {
@@ -422,13 +422,13 @@ export async function reviewSubmission(params: {
       const { error } = await supabase
         .from('publication_submissions')
         .update({
-          status: params.status,
-          reviewer_id: params.currentUserId,
-          review_notes: params.reviewNotes,
+          status: parameters.status,
+          reviewer_id: parameters.currentUserId,
+          review_notes: parameters.reviewNotes,
           reviewed_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .eq('id', params.submissionId);
+        .eq('id', parameters.submissionId);
 
       if (error) {
         logger.error('Error reviewing submission', { errorDetails: error });
@@ -437,11 +437,11 @@ export async function reviewSubmission(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'review_publication_submission',
       targetType: 'submission',
-      targetId: params.submissionId,
-      details: { status: params.status, notes: params.reviewNotes },
+      targetId: parameters.submissionId,
+      details: { status: parameters.status, notes: parameters.reviewNotes },
     });
 
     return { success: true };
@@ -457,22 +457,22 @@ export async function reviewSubmission(params: {
 /**
  * Get publication analytics
  */
-export async function getPublicationAnalytics(params: {
+export async function getPublicationAnalytics(parameters: {
   currentUserId: string;
   publicationId: string;
   dateRange?: '7d' | '30d' | '90d';
 }): Promise<{ analytics: DatabaseRecord[] | null; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
-    const days = params.dateRange === '7d' ? 7 : params.dateRange === '30d' ? 30 : 90;
+    const days = parameters.dateRange === '7d' ? 7 : (parameters.dateRange === '30d' ? 30 : 90);
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
     const { data, error } = await supabase
       .from('publication_analytics')
       .select('*')
-      .eq('publication_id', params.publicationId)
+      .eq('publication_id', parameters.publicationId)
       .gte('date', startDate.toISOString().split('T')[0])
       .order('date', { ascending: true });
 
@@ -494,7 +494,7 @@ export async function getPublicationAnalytics(params: {
 /**
  * Get publication stats summary
  */
-export async function getPublicationStats(params: {
+export async function getPublicationStats(parameters: {
   currentUserId: string;
 }): Promise<{
   stats: {
@@ -506,7 +506,7 @@ export async function getPublicationStats(params: {
   error?: string;
 }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     const [publications, members, submissions, pending] = await Promise.all([
       supabase.from('publications').select('*', { count: 'exact', head: true }),

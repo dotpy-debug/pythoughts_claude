@@ -219,7 +219,7 @@ describe('Trending Algorithm', () => {
 
   describe('TRENDING_CONSTANTS', () => {
     it('has correct constant values', () => {
-      expect(TRENDING_CONSTANTS.COMMENT_WEIGHT).toBe(2.0);
+      expect(TRENDING_CONSTANTS.COMMENT_WEIGHT).toBe(2);
       expect(TRENDING_CONSTANTS.REACTION_WEIGHT).toBe(0.5);
       expect(TRENDING_CONSTANTS.GRAVITY).toBe(12);
       expect(TRENDING_CONSTANTS.DECAY_EXPONENT).toBe(1.8);
@@ -250,7 +250,7 @@ describe('Trending Algorithm', () => {
       veryOld.setFullYear(veryOld.getFullYear() - 1);
 
       const post = {
-        vote_count: 10000,
+        vote_count: 10_000,
         comment_count: 500,
         reaction_count: 1000,
         created_at: veryOld.toISOString(),

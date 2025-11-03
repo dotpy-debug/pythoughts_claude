@@ -6,7 +6,7 @@ import { TrendingUp, Clock, BarChart } from 'lucide-react';
 import { InfiniteScroll } from '../performance/InfiniteScroll';
 import { PostCardSkeleton } from '../performance/SkeletonLoaders';
 
-type PostListProps = {
+type PostListProperties = {
   postType: 'news' | 'blog';
   onPostClick: (post: Post) => void;
   authorId?: string; // Optional filter by author
@@ -17,7 +17,7 @@ type SortOption = 'hot' | 'new' | 'top';
 // Pagination configuration
 const POSTS_PER_PAGE = 50;
 
-export function PostList({ postType, onPostClick, authorId }: PostListProps) {
+export function PostList({ postType, onPostClick, authorId }: PostListProperties) {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, 1 | -1>>({});
@@ -27,7 +27,7 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  const loadPosts = useCallback(async (pageNum: number = 0, append: boolean = false) => {
+  const loadPosts = useCallback(async (pageNumber: number = 0, append: boolean = false) => {
     if (append) {
       setLoadingMore(true);
     } else {
@@ -36,7 +36,7 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
 
     try {
       // Calculate range for pagination
-      const from = pageNum * POSTS_PER_PAGE;
+      const from = pageNumber * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
 
       // Build optimized query with explicit fields
@@ -80,12 +80,23 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
       }
 
       // Apply sorting
-      if (sortBy === 'hot') {
+      switch (sortBy) {
+      case 'hot': {
         query = query.order('vote_count', { ascending: false }).order('created_at', { ascending: false });
-      } else if (sortBy === 'new') {
+      
+      break;
+      }
+      case 'new': {
         query = query.order('created_at', { ascending: false });
-      } else if (sortBy === 'top') {
+      
+      break;
+      }
+      case 'top': {
         query = query.order('vote_count', { ascending: false });
+      
+      break;
+      }
+      // No default
       }
 
       // Apply pagination
@@ -118,18 +129,18 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
 
         if (!votesError && votesData) {
           const votesMap: Record<string, 1 | -1> = {};
-          votesData.forEach((vote) => {
+          for (const vote of votesData) {
             if (vote.post_id) {
               votesMap[vote.post_id] = vote.vote_type;
             }
-          });
-          setUserVotes(prev => append ? { ...prev, ...votesMap } : votesMap);
+          }
+          setUserVotes(previous => append ? { ...previous, ...votesMap } : votesMap);
         }
       }
 
       // Update posts (append or replace)
       if (append) {
-        setPosts(prev => [...prev, ...postsData]);
+        setPosts(previous => [...previous, ...postsData]);
       } else {
         setPosts(postsData);
       }
@@ -167,8 +178,8 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
         delete newVotes[postId];
         setUserVotes(newVotes);
 
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
+        setPosts((previousPosts) =>
+          previousPosts.map((post) =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count - voteType }
               : post
@@ -183,8 +194,8 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
 
         setUserVotes({ ...userVotes, [postId]: voteType });
 
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
+        setPosts((previousPosts) =>
+          previousPosts.map((post) =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count - existingVote + voteType }
               : post
@@ -199,8 +210,8 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
 
         setUserVotes({ ...userVotes, [postId]: voteType });
 
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
+        setPosts((previousPosts) =>
+          previousPosts.map((post) =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count + voteType }
               : post
@@ -221,8 +232,8 @@ export function PostList({ postType, onPostClick, authorId }: PostListProps) {
   if (loading) {
     return (
       <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <PostCardSkeleton key={i} />
+        {Array.from({length: 3}).map((_, index) => (
+          <PostCardSkeleton key={index} />
         ))}
       </div>
     );

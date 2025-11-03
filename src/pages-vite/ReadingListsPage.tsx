@@ -221,7 +221,7 @@ export function ReadingListsPage() {
         <div className="flex items-center justify-center py-12">
           <Loader2 className="animate-spin text-terminal-green" size={48} />
         </div>
-      ) : readingLists.length === 0 ? (
+      ) : (readingLists.length === 0 ? (
         <div className="text-center py-12 bg-gray-900 border border-gray-700 rounded-lg">
           <BookOpen size={48} className="mx-auto text-gray-500 mb-4" />
           <h3 className="text-xl font-bold text-gray-100 mb-2 font-mono">
@@ -291,7 +291,7 @@ export function ReadingListsPage() {
             </div>
           ))}
         </div>
-      )}
+      ))}
     </div>
   );
 }

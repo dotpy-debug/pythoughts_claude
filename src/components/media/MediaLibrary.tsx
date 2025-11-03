@@ -5,12 +5,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ShadcnButton } from '../ui/ShadcnButton';
 import { logger } from '../../lib/logger';
 
-interface MediaLibraryProps {
+interface MediaLibraryProperties {
   onImageSelect?: (url: string) => void;
   selectionMode?: boolean;
 }
 
-export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibraryProps) {
+export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibraryProperties) {
   const { user } = useAuth();
   const [media, setMedia] = useState<UploadedMedia[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,11 +25,11 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
       setLoading(true);
       const userMedia = await mediaUpload.getUserMedia(user.id);
       setMedia(userMedia);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load media';
-      const errorObj = err instanceof Error ? err : new Error(errorMessage);
+    } catch (error_) {
+      const errorMessage = error_ instanceof Error ? error_.message : 'Failed to load media';
+      const errorObject = error_ instanceof Error ? error_ : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Failed to load media library', errorObj);
+      logger.error('Failed to load media library', errorObject);
     } finally {
       setLoading(false);
     }
@@ -47,7 +47,7 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
     setError('');
 
     try {
-      const uploadPromises = Array.from(files).map(async (file) => {
+      const uploadPromises = [...files].map(async (file) => {
         const isVideo = file.type.startsWith('video/');
         return isVideo
           ? await mediaUpload.uploadVideo(file, user.id)
@@ -55,12 +55,12 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
       });
 
       const uploadedMedia = await Promise.all(uploadPromises);
-      setMedia((prev) => [...uploadedMedia, ...prev]);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Upload failed';
-      const errorObj = err instanceof Error ? err : new Error(errorMessage);
+      setMedia((previous) => [...uploadedMedia, ...previous]);
+    } catch (error_) {
+      const errorMessage = error_ instanceof Error ? error_.message : 'Upload failed';
+      const errorObject = error_ instanceof Error ? error_ : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Media upload failed', errorObj);
+      logger.error('Media upload failed', errorObject);
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -72,12 +72,12 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
 
     try {
       await mediaUpload.deleteMedia(mediaId, user.id);
-      setMedia((prev) => prev.filter((m) => m.id !== mediaId));
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Delete failed';
-      const errorObj = err instanceof Error ? err : new Error(errorMessage);
+      setMedia((previous) => previous.filter((m) => m.id !== mediaId));
+    } catch (error_) {
+      const errorMessage = error_ instanceof Error ? error_.message : 'Delete failed';
+      const errorObject = error_ instanceof Error ? error_ : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Media delete failed', errorObj);
+      logger.error('Media delete failed', errorObject);
     }
   };
 
@@ -86,9 +86,9 @@ export function MediaLibrary({ onImageSelect, selectionMode = false }: MediaLibr
       await navigator.clipboard.writeText(url);
       setCopiedUrl(url);
       setTimeout(() => setCopiedUrl(null), 2000);
-    } catch (err) {
-      const errorObj = err instanceof Error ? err : new Error(String(err));
-      logger.error('Failed to copy URL', errorObj);
+    } catch (error_) {
+      const errorObject = error_ instanceof Error ? error_ : new Error(String(error_));
+      logger.error('Failed to copy URL', errorObject);
     }
   };
 

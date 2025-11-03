@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { useAuth } from '../../../contexts/AuthContext';
 
-interface CollaborationProviderProps {
+interface CollaborationProviderProperties {
   /** Post ID to collaborate on */
   postId: string;
   /** Callback when provider is ready */
@@ -32,7 +32,7 @@ export function CollaborationProvider({
   postId,
   onProviderReady,
   children,
-}: CollaborationProviderProps) {
+}: CollaborationProviderProperties) {
   const { user } = useAuth();
   const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');

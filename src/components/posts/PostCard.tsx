@@ -12,14 +12,14 @@ import { ReputationBadge } from '../reputation/ReputationBadge';
 import { BadgeGallery } from '../badges/BadgeGallery';
 import { LazyImage } from '../performance/LazyImage';
 
-type PostCardProps = {
+type PostCardProperties = {
   post: Post;
   userVote?: 1 | -1 | null;
   onVote: (postId: string, voteType: 1 | -1) => void;
   onClick: () => void;
 };
 
-export const PostCard = memo(function PostCard({ post, userVote, onVote, onClick }: PostCardProps) {
+export const PostCard = memo(function PostCard({ post, userVote, onVote, onClick }: PostCardProperties) {
   const [reportModalOpen, setReportModalOpen] = useState(false);
 
   const handleVote = (e: React.MouseEvent, voteType: 1 | -1) => {
@@ -74,7 +74,7 @@ export const PostCard = memo(function PostCard({ post, userVote, onVote, onClick
           </button>
           <span
             className={`font-bold text-sm font-mono ${
-              userVote === 1 ? 'text-terminal-green' : userVote === -1 ? 'text-terminal-pink' : 'text-gray-400'
+              userVote === 1 ? 'text-terminal-green' : (userVote === -1 ? 'text-terminal-pink' : 'text-gray-400')
             }`}
             aria-label={getVoteAriaLabel(post.vote_count, userVote)}
           >

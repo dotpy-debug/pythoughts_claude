@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react';
 import { generateTocData, injectHeadingIds } from '../../utils/toc-generator';
 import { TableOfContents } from '../blog/TableOfContents';
 
-type MarkdownRendererProps = {
+type MarkdownRendererProperties = {
   content: string;
   showToc?: boolean;
 };
 
-export default function MarkdownRenderer({ content, showToc = true }: MarkdownRendererProps) {
+export default function MarkdownRenderer({ content, showToc = true }: MarkdownRendererProperties) {
   const [processedContent, setProcessedContent] = useState(content);
   const [tocData, setTocData] = useState<ReturnType<typeof generateTocData> | null>(null);
 
@@ -20,11 +20,12 @@ export default function MarkdownRenderer({ content, showToc = true }: MarkdownRe
       const toc = generateTocData(content, 'markdown');
       setTocData(toc);
 
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = content;
-      const withIds = injectHeadingIds(tempDiv.innerHTML);
+      const temporaryDiv = document.createElement('div');
+      temporaryDiv.innerHTML = content;
+      const withIds = injectHeadingIds(temporaryDiv.innerHTML);
       setProcessedContent(withIds);
-    } catch (_error) {
+    } catch (error) {
+      console.warn('Failed to process markdown content:', error);
       setProcessedContent(content);
       setTocData(null);
     }
@@ -40,42 +41,42 @@ export default function MarkdownRenderer({ content, showToc = true }: MarkdownRe
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, rehypeSanitize]}
             components={{
-              h1: ({ node: _node, ...props }) => (
-                <h1 {...props} style={{ scrollMarginTop: '80px' }} />
+              h1: ({ node: _node, ...properties }) => (
+                <h1 {...properties} style={{ scrollMarginTop: '80px' }} />
               ),
-              h2: ({ node: _node, ...props }) => (
-                <h2 {...props} style={{ scrollMarginTop: '80px' }} />
+              h2: ({ node: _node, ...properties }) => (
+                <h2 {...properties} style={{ scrollMarginTop: '80px' }} />
               ),
-              h3: ({ node: _node, ...props }) => (
-                <h3 {...props} style={{ scrollMarginTop: '80px' }} />
+              h3: ({ node: _node, ...properties }) => (
+                <h3 {...properties} style={{ scrollMarginTop: '80px' }} />
               ),
-              h4: ({ node: _node, ...props }) => (
-                <h4 {...props} style={{ scrollMarginTop: '80px' }} />
+              h4: ({ node: _node, ...properties }) => (
+                <h4 {...properties} style={{ scrollMarginTop: '80px' }} />
               ),
-              h5: ({ node: _node, ...props }) => (
-                <h5 {...props} style={{ scrollMarginTop: '80px' }} />
+              h5: ({ node: _node, ...properties }) => (
+                <h5 {...properties} style={{ scrollMarginTop: '80px' }} />
               ),
-              h6: ({ node: _node, ...props }) => (
-                <h6 {...props} style={{ scrollMarginTop: '80px' }} />
+              h6: ({ node: _node, ...properties }) => (
+                <h6 {...properties} style={{ scrollMarginTop: '80px' }} />
               ),
-              img: ({ node: _node, ...props }) => (
+              img: ({ node: _node, ...properties }) => (
                 <img
-                  {...props}
+                  {...properties}
                   className="rounded-lg max-w-full h-auto my-6"
                   loading="lazy"
-                  alt={props.alt || 'Blog image'}
+                  alt={properties.alt || 'Blog image'}
                 />
               ),
-              iframe: ({ node: _node, ...props }) => {
-                const src = props.src || '';
+              iframe: ({ node: _node, ...properties }) => {
+                const source = properties.src || '';
                 const isYoutube =
-                  src.includes('youtube.com') || src.includes('youtu.be');
+                  source.includes('youtube.com') || source.includes('youtu.be');
 
                 if (isYoutube) {
                   return (
                     <div className="relative aspect-video my-6 rounded-lg overflow-hidden">
                       <iframe
-                        {...props}
+                        {...properties}
                         className="absolute inset-0 w-full h-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -84,23 +85,23 @@ export default function MarkdownRenderer({ content, showToc = true }: MarkdownRe
                   );
                 }
 
-                return <iframe {...props} className="w-full rounded-lg my-6" />;
+                return <iframe {...properties} className="w-full rounded-lg my-6" />;
               },
-              a: ({ node: _node, ...props }) => (
+              a: ({ node: _node, ...properties }) => (
                 <a
-                  {...props}
+                  {...properties}
                   className="text-blue-400 hover:text-blue-300 underline"
-                  target={props.href?.startsWith('http') ? '_blank' : undefined}
-                  rel={props.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  target={properties.href?.startsWith('http') ? '_blank' : undefined}
+                  rel={properties.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
                 />
               ),
-              code: ({ node: _node, className, children, ...props }) => {
+              code: ({ node: _node, className, children, ...properties }) => {
                 const isInline = !className?.includes('language-');
                 if (isInline) {
                   return (
                     <code
                       className="bg-gray-800 text-blue-400 px-1.5 py-0.5 rounded text-sm font-mono"
-                      {...props}
+                      {...properties}
                     >
                       {children}
                     </code>
@@ -109,28 +110,28 @@ export default function MarkdownRenderer({ content, showToc = true }: MarkdownRe
                 return (
                   <code
                     className={`block bg-gray-900 p-4 rounded-lg overflow-x-auto ${className || ''}`}
-                    {...props}
+                    {...properties}
                   >
                     {children}
                   </code>
                 );
               },
-              table: ({ node: _node, ...props }) => (
+              table: ({ node: _node, ...properties }) => (
                 <div className="overflow-x-auto my-6">
                   <table
                     className="min-w-full border-collapse border border-gray-700"
-                    {...props}
+                    {...properties}
                   />
                 </div>
               ),
-              th: ({ node: _node, ...props }) => (
+              th: ({ node: _node, ...properties }) => (
                 <th
                   className="border border-gray-700 px-4 py-2 bg-gray-800 text-left font-semibold"
-                  {...props}
+                  {...properties}
                 />
               ),
-              td: ({ node: _node, ...props }) => (
-                <td className="border border-gray-700 px-4 py-2" {...props} />
+              td: ({ node: _node, ...properties }) => (
+                <td className="border border-gray-700 px-4 py-2" {...properties} />
               ),
             }}
           >

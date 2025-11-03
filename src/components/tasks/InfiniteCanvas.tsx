@@ -14,16 +14,16 @@ type Task = {
   color: string;
 };
 
-type InfiniteCanvasProps = {
+type InfiniteCanvasProperties = {
   tasks: Task[];
   onTaskMove: (taskId: string, x: number, y: number) => void;
   onTaskClick: (task: Task) => void;
   onAddTask: () => void;
 };
 
-export function InfiniteCanvas({ tasks, onTaskMove, onTaskClick, onAddTask }: InfiniteCanvasProps) {
+export function InfiniteCanvas({ tasks, onTaskMove, onTaskClick, onAddTask }: InfiniteCanvasProperties) {
   const [scale, setScale] = useState(1);
-  const transformRef = useRef<ReactZoomPanPinchRef>(null);
+  const transformReference = useRef<ReactZoomPanPinchRef>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -44,15 +44,15 @@ export function InfiniteCanvas({ tasks, onTaskMove, onTaskClick, onAddTask }: In
   };
 
   const handleZoomIn = () => {
-    transformRef.current?.zoomIn(0.2);
+    transformReference.current?.zoomIn(0.2);
   };
 
   const handleZoomOut = () => {
-    transformRef.current?.zoomOut(0.2);
+    transformReference.current?.zoomOut(0.2);
   };
 
   const handleReset = () => {
-    transformRef.current?.resetTransform();
+    transformReference.current?.resetTransform();
   };
 
   return (
@@ -101,13 +101,13 @@ export function InfiniteCanvas({ tasks, onTaskMove, onTaskClick, onAddTask }: In
       </div>
 
       <TransformWrapper
-        ref={transformRef}
+        ref={transformReference}
         initialScale={1}
         minScale={0.3}
         maxScale={3}
         centerOnInit
         limitToBounds={false}
-        onTransformed={(ref) => setScale(ref.state.scale)}
+        onTransformed={(reference) => setScale(reference.state.scale)}
       >
         <TransformComponent
           wrapperStyle={{

@@ -36,7 +36,7 @@ export interface DashboardStats {
 /**
  * Get all users with pagination and filtering
  */
-export async function getUsers(params: {
+export async function getUsers(parameters: {
   currentUserId: string;
   page?: number;
   limit?: number;
@@ -45,10 +45,10 @@ export async function getUsers(params: {
   suspended?: boolean;
 }): Promise<{ users: Profile[]; total: number; error?: string }> {
   try {
-    await requireAdmin(params.currentUserId);
+    await requireAdmin(parameters.currentUserId);
 
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const page = parameters.page ?? 1;
+    const limit = parameters.limit ?? 50;
     const offset = (page - 1) * limit;
 
     let query = supabase
@@ -57,16 +57,16 @@ export async function getUsers(params: {
       .order('created_at', { ascending: false });
 
     // Apply filters
-    if (params.search) {
-      query = query.or(`username.ilike.%${params.search}%,bio.ilike.%${params.search}%`);
+    if (parameters.search) {
+      query = query.or(`username.ilike.%${parameters.search}%,bio.ilike.%${parameters.search}%`);
     }
 
-    if (params.role) {
-      query = query.eq('role', params.role);
+    if (parameters.role) {
+      query = query.eq('role', parameters.role);
     }
 
-    if (params.suspended !== undefined) {
-      query = query.eq('is_suspended', params.suspended);
+    if (parameters.suspended !== undefined) {
+      query = query.eq('is_suspended', parameters.suspended);
     }
 
     query = query.range(offset, offset + limit - 1);
@@ -95,17 +95,17 @@ export async function getUsers(params: {
 /**
  * Get a single user's detailed information
  */
-export async function getUserDetails(params: {
+export async function getUserDetails(parameters: {
   currentUserId: string;
   targetUserId: string;
 }): Promise<{ user: Profile | null; error?: string }> {
   try {
-    await requireAdmin(params.currentUserId);
+    await requireAdmin(parameters.currentUserId);
 
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', params.targetUserId)
+      .eq('id', parameters.targetUserId)
       .single();
 
     if (error) {
@@ -126,19 +126,19 @@ export async function getUserDetails(params: {
 /**
  * Update a user's role
  */
-export async function updateUserRole(params: {
+export async function updateUserRole(parameters: {
   currentUserId: string;
   targetUserId: string;
   newRole: AdminRole;
 }): Promise<{ success: boolean; error?: string }> {
   try {
     // Only super_admin can change roles
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     const { error } = await supabase
       .from('profiles')
-      .update({ role: params.newRole })
-      .eq('id', params.targetUserId);
+      .update({ role: parameters.newRole })
+      .eq('id', parameters.targetUserId);
 
     if (error) {
       logger.error('Error updating user role', { errorDetails: error });
@@ -147,11 +147,11 @@ export async function updateUserRole(params: {
 
     // Log the activity
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_user_role',
       targetType: 'user',
-      targetId: params.targetUserId,
-      details: { newRole: params.newRole },
+      targetId: parameters.targetUserId,
+      details: { newRole: parameters.newRole },
     });
 
     return { success: true };
@@ -167,7 +167,7 @@ export async function updateUserRole(params: {
 /**
  * Suspend a user
  */
-export async function suspendUser(params: {
+export async function suspendUser(parameters: {
   currentUserId: string;
   targetUserId: string;
   reason: string;
@@ -175,17 +175,17 @@ export async function suspendUser(params: {
   expiresAt?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
     // Create suspension record
     const { error: suspensionError } = await supabase
       .from('user_suspensions')
       .insert({
-        user_id: params.targetUserId,
-        suspended_by: params.currentUserId,
-        reason: params.reason,
-        suspension_type: params.suspensionType,
-        expires_at: params.expiresAt ?? null,
+        user_id: parameters.targetUserId,
+        suspended_by: parameters.currentUserId,
+        reason: parameters.reason,
+        suspension_type: parameters.suspensionType,
+        expires_at: parameters.expiresAt ?? null,
         is_active: true,
       });
 
@@ -198,7 +198,7 @@ export async function suspendUser(params: {
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ is_suspended: true })
-      .eq('id', params.targetUserId);
+      .eq('id', parameters.targetUserId);
 
     if (updateError) {
       logger.error('Error updating user suspension status', { error: updateError });
@@ -207,14 +207,14 @@ export async function suspendUser(params: {
 
     // Log the activity
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'suspend_user',
       targetType: 'user',
-      targetId: params.targetUserId,
+      targetId: parameters.targetUserId,
       details: {
-        reason: params.reason,
-        suspensionType: params.suspensionType,
-        expiresAt: params.expiresAt,
+        reason: parameters.reason,
+        suspensionType: parameters.suspensionType,
+        expiresAt: parameters.expiresAt,
       },
     });
 
@@ -231,18 +231,18 @@ export async function suspendUser(params: {
 /**
  * Unsuspend a user
  */
-export async function unsuspendUser(params: {
+export async function unsuspendUser(parameters: {
   currentUserId: string;
   targetUserId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
     // Deactivate all active suspensions
     const { error: suspensionError } = await supabase
       .from('user_suspensions')
       .update({ is_active: false })
-      .eq('user_id', params.targetUserId)
+      .eq('user_id', parameters.targetUserId)
       .eq('is_active', true);
 
     if (suspensionError) {
@@ -254,7 +254,7 @@ export async function unsuspendUser(params: {
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ is_suspended: false })
-      .eq('id', params.targetUserId);
+      .eq('id', parameters.targetUserId);
 
     if (updateError) {
       logger.error('Error updating user suspension status', { error: updateError });
@@ -263,10 +263,10 @@ export async function unsuspendUser(params: {
 
     // Log the activity
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'unsuspend_user',
       targetType: 'user',
-      targetId: params.targetUserId,
+      targetId: parameters.targetUserId,
     });
 
     return { success: true };
@@ -282,21 +282,21 @@ export async function unsuspendUser(params: {
 /**
  * Ban a user permanently
  */
-export async function banUser(params: {
+export async function banUser(parameters: {
   currentUserId: string;
   targetUserId: string;
   reason: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     // Create permanent suspension
     const { error: suspensionError } = await supabase
       .from('user_suspensions')
       .insert({
-        user_id: params.targetUserId,
-        suspended_by: params.currentUserId,
-        reason: params.reason,
+        user_id: parameters.targetUserId,
+        suspended_by: parameters.currentUserId,
+        reason: parameters.reason,
         suspension_type: 'permanent',
         is_active: true,
       });
@@ -313,7 +313,7 @@ export async function banUser(params: {
         is_banned: true,
         is_suspended: true,
       })
-      .eq('id', params.targetUserId);
+      .eq('id', parameters.targetUserId);
 
     if (updateError) {
       logger.error('Error updating user ban status', { error: updateError });
@@ -322,11 +322,11 @@ export async function banUser(params: {
 
     // Log the activity
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'ban_user',
       targetType: 'user',
-      targetId: params.targetUserId,
-      details: { reason: params.reason },
+      targetId: parameters.targetUserId,
+      details: { reason: parameters.reason },
     });
 
     return { success: true };
@@ -342,18 +342,18 @@ export async function banUser(params: {
 /**
  * Unban a user
  */
-export async function unbanUser(params: {
+export async function unbanUser(parameters: {
   currentUserId: string;
   targetUserId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     // Deactivate all suspensions
     const { error: suspensionError } = await supabase
       .from('user_suspensions')
       .update({ is_active: false })
-      .eq('user_id', params.targetUserId)
+      .eq('user_id', parameters.targetUserId)
       .eq('is_active', true);
 
     if (suspensionError) {
@@ -368,7 +368,7 @@ export async function unbanUser(params: {
         is_banned: false,
         is_suspended: false,
       })
-      .eq('id', params.targetUserId);
+      .eq('id', parameters.targetUserId);
 
     if (updateError) {
       logger.error('Error updating user ban status', { error: updateError });
@@ -377,10 +377,10 @@ export async function unbanUser(params: {
 
     // Log the activity
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'unban_user',
       targetType: 'user',
-      targetId: params.targetUserId,
+      targetId: parameters.targetUserId,
     });
 
     return { success: true };
@@ -396,18 +396,18 @@ export async function unbanUser(params: {
 /**
  * Update admin notes for a user
  */
-export async function updateUserNotes(params: {
+export async function updateUserNotes(parameters: {
   currentUserId: string;
   targetUserId: string;
   notes: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireAdmin(params.currentUserId);
+    await requireAdmin(parameters.currentUserId);
 
     const { error } = await supabase
       .from('profiles')
-      .update({ admin_notes: params.notes })
-      .eq('id', params.targetUserId);
+      .update({ admin_notes: parameters.notes })
+      .eq('id', parameters.targetUserId);
 
     if (error) {
       logger.error('Error updating user notes', { errorDetails: error });
@@ -415,10 +415,10 @@ export async function updateUserNotes(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_user_notes',
       targetType: 'user',
-      targetId: params.targetUserId,
+      targetId: parameters.targetUserId,
     });
 
     return { success: true };
@@ -434,11 +434,11 @@ export async function updateUserNotes(params: {
 /**
  * Get dashboard statistics
  */
-export async function getDashboardStats(params: {
+export async function getDashboardStats(parameters: {
   currentUserId: string;
 }): Promise<{ stats: DashboardStats | null; error?: string }> {
   try {
-    await requireAdmin(params.currentUserId);
+    await requireAdmin(parameters.currentUserId);
 
     const stats = await getAdminStats();
 
@@ -455,13 +455,13 @@ export async function getDashboardStats(params: {
 /**
  * Get user suspensions
  */
-export async function getUserSuspensions(params: {
+export async function getUserSuspensions(parameters: {
   currentUserId: string;
   targetUserId?: string;
   activeOnly?: boolean;
 }): Promise<{ suspensions: UserSuspension[]; error?: string }> {
   try {
-    await requireAdmin(params.currentUserId);
+    await requireAdmin(parameters.currentUserId);
 
     let query = supabase
       .from('user_suspensions')
@@ -472,11 +472,11 @@ export async function getUserSuspensions(params: {
       `)
       .order('created_at', { ascending: false });
 
-    if (params.targetUserId) {
-      query = query.eq('user_id', params.targetUserId);
+    if (parameters.targetUserId) {
+      query = query.eq('user_id', parameters.targetUserId);
     }
 
-    if (params.activeOnly) {
+    if (parameters.activeOnly) {
       query = query.eq('is_active', true);
     }
 
@@ -500,12 +500,12 @@ export async function getUserSuspensions(params: {
 /**
  * Get system settings
  */
-export async function getSystemSettings(params: {
+export async function getSystemSettings(parameters: {
   currentUserId: string;
   category?: string;
 }): Promise<{ settings: SystemSetting[]; error?: string }> {
   try {
-    await requireAdmin(params.currentUserId);
+    await requireAdmin(parameters.currentUserId);
 
     let query = supabase
       .from('system_settings')
@@ -513,8 +513,8 @@ export async function getSystemSettings(params: {
       .order('category', { ascending: true })
       .order('key', { ascending: true });
 
-    if (params.category) {
-      query = query.eq('category', params.category);
+    if (parameters.category) {
+      query = query.eq('category', parameters.category);
     }
 
     const { data, error } = await query;
@@ -537,22 +537,22 @@ export async function getSystemSettings(params: {
 /**
  * Update system setting
  */
-export async function updateSystemSetting(params: {
+export async function updateSystemSetting(parameters: {
   currentUserId: string;
   key: string;
   value: Record<string, unknown>;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
     const { error } = await supabase
       .from('system_settings')
       .update({
-        value: params.value,
-        updated_by: params.currentUserId,
+        value: parameters.value,
+        updated_by: parameters.currentUserId,
         updated_at: new Date().toISOString(),
       })
-      .eq('key', params.key);
+      .eq('key', parameters.key);
 
     if (error) {
       logger.error('Error updating system setting', { errorDetails: error });
@@ -560,10 +560,10 @@ export async function updateSystemSetting(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_system_setting',
       targetType: 'setting',
-      details: { key: params.key, value: params.value },
+      details: { key: parameters.key, value: parameters.value },
     });
 
     return { success: true };
@@ -579,19 +579,19 @@ export async function updateSystemSetting(params: {
 /**
  * Delete a user (soft delete)
  */
-export async function deleteUser(params: {
+export async function deleteUser(parameters: {
   currentUserId: string;
   targetUserId: string;
   reason: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     // Instead of hard delete, ban the user permanently
     const result = await banUser({
-      currentUserId: params.currentUserId,
-      targetUserId: params.targetUserId,
-      reason: `Account deleted: ${params.reason}`,
+      currentUserId: parameters.currentUserId,
+      targetUserId: parameters.targetUserId,
+      reason: `Account deleted: ${parameters.reason}`,
     });
 
     if (!result.success) {
@@ -600,11 +600,11 @@ export async function deleteUser(params: {
 
     // Log the deletion
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_user',
       targetType: 'user',
-      targetId: params.targetUserId,
-      details: { reason: params.reason },
+      targetId: parameters.targetUserId,
+      details: { reason: parameters.reason },
     });
 
     return { success: true };

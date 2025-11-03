@@ -39,8 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw error;
       }
       setProfile(data);
-    } catch (err) {
-      logger.error('Error loading profile', { userId, errorMessage: err instanceof Error ? err.message : String(err) });
+    } catch (error) {
+      logger.error('Error loading profile', { userId, errorMessage: error instanceof Error ? error.message : String(error) });
     } finally {
       setLoading(false);
     }
@@ -105,8 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       logger.info('User signed up successfully', { userId: authData.user.id, username });
       return { error: null };
-    } catch (err) {
-      logger.error('Unexpected error during sign up', { email, errorMessage: err instanceof Error ? err.message : String(err) });
+    } catch (error) {
+      logger.error('Unexpected error during sign up', { email, errorMessage: error instanceof Error ? error.message : String(error) });
       return { error: { message: 'An unexpected error occurred during sign up', name: 'UnknownError', status: 500 } as AuthError };
     }
   };

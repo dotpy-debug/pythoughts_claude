@@ -34,14 +34,14 @@ const badgeVariants = cva(
   }
 );
 
-export interface BadgeProps
+export interface BadgeProperties
   extends HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
-export type BadgeVariant = NonNullable<BadgeProps['variant']>;
+export type BadgeVariant = NonNullable<BadgeProperties['variant']>;
 
-export function Badge({ className, variant, ...props }: BadgeProps) {
+export function Badge({ className, variant, ...properties }: BadgeProperties) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant }), className)} {...properties} />
   );
 }

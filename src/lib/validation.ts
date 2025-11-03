@@ -192,14 +192,14 @@ export function validateSchema<T>(
   // Transform Zod errors into field-level error map
   const errors: Record<string, string[]> = {};
 
-  result.error.issues.forEach((err: z.ZodIssue) => {
-    const path = err.path.length > 0 ? err.path.join('.') : 'root';
+  result.error.issues.forEach((error: z.ZodIssue) => {
+    const path = error.path.length > 0 ? error.path.join('.') : 'root';
 
     if (!errors[path]) {
       errors[path] = [];
     }
 
-    errors[path].push(err.message);
+    errors[path].push(error.message);
   });
 
   return { success: false, errors };
@@ -314,20 +314,20 @@ export const dateRangeSchema = z.object({
  * @returns Plain object representation
  */
 export function formDataToObject(formData: FormData): Record<string, unknown> {
-  const obj: Record<string, unknown> = {};
+  const object: Record<string, unknown> = {};
 
-  formData.forEach((value, key) => {
-    if (obj[key]) {
+  for (const [key, value] of formData.entries()) {
+    if (object[key]) {
       // Handle multiple values for same key (arrays)
-      if (Array.isArray(obj[key])) {
-        (obj[key] as unknown[]).push(value);
+      if (Array.isArray(object[key])) {
+        (object[key] as unknown[]).push(value);
       } else {
-        obj[key] = [obj[key], value];
+        object[key] = [object[key], value];
       }
     } else {
-      obj[key] = value;
+      object[key] = value;
     }
-  });
+  }
 
-  return obj;
+  return object;
 }

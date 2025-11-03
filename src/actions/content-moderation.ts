@@ -15,7 +15,7 @@ import { logger } from '../lib/logger';
 /**
  * Get content reports with filters
  */
-export async function getContentReports(params: {
+export async function getContentReports(parameters: {
   currentUserId: string;
   status?: 'pending' | 'reviewing' | 'resolved' | 'dismissed';
   reportType?: string;
@@ -23,10 +23,10 @@ export async function getContentReports(params: {
   limit?: number;
 }): Promise<{ reports: ContentReport[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const page = parameters.page ?? 1;
+    const limit = parameters.limit ?? 50;
     const offset = (page - 1) * limit;
 
     let query = supabase
@@ -44,12 +44,12 @@ export async function getContentReports(params: {
       )
       .order('created_at', { ascending: false });
 
-    if (params.status) {
-      query = query.eq('status', params.status);
+    if (parameters.status) {
+      query = query.eq('status', parameters.status);
     }
 
-    if (params.reportType) {
-      query = query.eq('report_type', params.reportType);
+    if (parameters.reportType) {
+      query = query.eq('report_type', parameters.reportType);
     }
 
     query = query.range(offset, offset + limit - 1);
@@ -78,14 +78,14 @@ export async function getContentReports(params: {
 /**
  * Update report status
  */
-export async function updateReportStatus(params: {
+export async function updateReportStatus(parameters: {
   currentUserId: string;
   reportId: string;
   status: 'reviewing' | 'resolved' | 'dismissed';
   resolutionNotes?: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
     const updates: {
       status: string;
@@ -94,23 +94,23 @@ export async function updateReportStatus(params: {
       resolution_notes?: string;
       resolved_at?: string;
     } = {
-      status: params.status,
-      assigned_to: params.currentUserId,
+      status: parameters.status,
+      assigned_to: parameters.currentUserId,
       updated_at: new Date().toISOString(),
     };
 
-    if (params.resolutionNotes) {
-      updates.resolution_notes = params.resolutionNotes;
+    if (parameters.resolutionNotes) {
+      updates.resolution_notes = parameters.resolutionNotes;
     }
 
-    if (params.status === 'resolved') {
+    if (parameters.status === 'resolved') {
       updates.resolved_at = new Date().toISOString();
     }
 
     const { error } = await supabase
       .from('content_reports')
       .update(updates)
-      .eq('id', params.reportId);
+      .eq('id', parameters.reportId);
 
     if (error) {
       logger.error('Error updating report status', { errorDetails: error });
@@ -118,11 +118,11 @@ export async function updateReportStatus(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_report_status',
       targetType: 'report',
-      targetId: params.reportId,
-      details: { status: params.status },
+      targetId: parameters.reportId,
+      details: { status: parameters.status },
     });
 
     return { success: true };
@@ -138,7 +138,7 @@ export async function updateReportStatus(params: {
 /**
  * Get posts for moderation
  */
-export async function getPostsForModeration(params: {
+export async function getPostsForModeration(parameters: {
   currentUserId: string;
   filter?: 'all' | 'flagged' | 'drafts' | 'published';
   search?: string;
@@ -146,10 +146,10 @@ export async function getPostsForModeration(params: {
   limit?: number;
 }): Promise<{ posts: Post[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const page = parameters.page ?? 1;
+    const limit = parameters.limit ?? 50;
     const offset = (page - 1) * limit;
 
     let query = supabase
@@ -164,14 +164,14 @@ export async function getPostsForModeration(params: {
       )
       .order('created_at', { ascending: false });
 
-    if (params.filter === 'drafts') {
+    if (parameters.filter === 'drafts') {
       query = query.eq('is_draft', true);
-    } else if (params.filter === 'published') {
+    } else if (parameters.filter === 'published') {
       query = query.eq('is_published', true);
     }
 
-    if (params.search) {
-      query = query.or(`title.ilike.%${params.search}%,content.ilike.%${params.search}%`);
+    if (parameters.search) {
+      query = query.or(`title.ilike.%${parameters.search}%,content.ilike.%${parameters.search}%`);
     }
 
     query = query.range(offset, offset + limit - 1);
@@ -200,15 +200,15 @@ export async function getPostsForModeration(params: {
 /**
  * Delete post (moderator action)
  */
-export async function deletePost(params: {
+export async function deletePost(parameters: {
   currentUserId: string;
   postId: string;
   reason: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
-    const { error } = await supabase.from('posts').delete().eq('id', params.postId);
+    const { error } = await supabase.from('posts').delete().eq('id', parameters.postId);
 
     if (error) {
       logger.error('Error deleting post', { errorDetails: error });
@@ -216,11 +216,11 @@ export async function deletePost(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_post',
       targetType: 'post',
-      targetId: params.postId,
-      details: { reason: params.reason },
+      targetId: parameters.postId,
+      details: { reason: parameters.reason },
     });
 
     return { success: true };
@@ -236,7 +236,7 @@ export async function deletePost(params: {
 /**
  * Update post (moderator edit)
  */
-export async function moderatePost(params: {
+export async function moderatePost(parameters: {
   currentUserId: string;
   postId: string;
   updates: {
@@ -248,15 +248,15 @@ export async function moderatePost(params: {
   reason: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     const { error } = await supabase
       .from('posts')
       .update({
-        ...params.updates,
+        ...parameters.updates,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.postId);
+      .eq('id', parameters.postId);
 
     if (error) {
       logger.error('Error moderating post', { errorDetails: error });
@@ -264,11 +264,11 @@ export async function moderatePost(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'moderate_post',
       targetType: 'post',
-      targetId: params.postId,
-      details: { updates: params.updates, reason: params.reason },
+      targetId: parameters.postId,
+      details: { updates: parameters.updates, reason: parameters.reason },
     });
 
     return { success: true };
@@ -284,18 +284,18 @@ export async function moderatePost(params: {
 /**
  * Feature/unfeature post
  */
-export async function toggleFeaturedPost(params: {
+export async function toggleFeaturedPost(parameters: {
   currentUserId: string;
   postId: string;
   featured: boolean;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     const { error } = await supabase
       .from('posts')
-      .update({ featured: params.featured })
-      .eq('id', params.postId);
+      .update({ featured: parameters.featured })
+      .eq('id', parameters.postId);
 
     if (error) {
       logger.error('Error toggling featured status', { errorDetails: error });
@@ -303,10 +303,10 @@ export async function toggleFeaturedPost(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
-      actionType: params.featured ? 'feature_post' : 'unfeature_post',
+      adminId: parameters.currentUserId,
+      actionType: parameters.featured ? 'feature_post' : 'unfeature_post',
       targetType: 'post',
-      targetId: params.postId,
+      targetId: parameters.postId,
     });
 
     return { success: true };
@@ -322,7 +322,7 @@ export async function toggleFeaturedPost(params: {
 /**
  * Get comments for moderation
  */
-export async function getCommentsForModeration(params: {
+export async function getCommentsForModeration(parameters: {
   currentUserId: string;
   postId?: string;
   flagged?: boolean;
@@ -330,10 +330,10 @@ export async function getCommentsForModeration(params: {
   limit?: number;
 }): Promise<{ comments: Comment[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const page = parameters.page ?? 1;
+    const limit = parameters.limit ?? 50;
     const offset = (page - 1) * limit;
 
     let query = supabase
@@ -347,11 +347,11 @@ export async function getCommentsForModeration(params: {
       )
       .order('created_at', { ascending: false });
 
-    if (params.postId) {
-      query = query.eq('post_id', params.postId);
+    if (parameters.postId) {
+      query = query.eq('post_id', parameters.postId);
     }
 
-    if (params.flagged !== undefined) {
+    if (parameters.flagged !== undefined) {
       // This would require a flagged column in comments table
       // For now, we'll just filter deleted comments
       query = query.eq('is_deleted', false);
@@ -383,13 +383,13 @@ export async function getCommentsForModeration(params: {
 /**
  * Delete comment (moderator action)
  */
-export async function deleteComment(params: {
+export async function deleteComment(parameters: {
   currentUserId: string;
   commentId: string;
   reason: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
     // Soft delete
     const { error } = await supabase
@@ -399,7 +399,7 @@ export async function deleteComment(params: {
         content: '[deleted by moderator]',
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.commentId);
+      .eq('id', parameters.commentId);
 
     if (error) {
       logger.error('Error deleting comment', { errorDetails: error });
@@ -407,11 +407,11 @@ export async function deleteComment(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_comment',
       targetType: 'comment',
-      targetId: params.commentId,
-      details: { reason: params.reason },
+      targetId: parameters.commentId,
+      details: { reason: parameters.reason },
     });
 
     return { success: true };
@@ -427,18 +427,18 @@ export async function deleteComment(params: {
 /**
  * Bulk delete posts
  */
-export async function bulkDeletePosts(params: {
+export async function bulkDeletePosts(parameters: {
   currentUserId: string;
   postIds: string[];
   reason: string;
 }): Promise<{ success: boolean; deleted: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
     const { error, count } = await supabase
       .from('posts')
       .delete()
-      .in('id', params.postIds);
+      .in('id', parameters.postIds);
 
     if (error) {
       logger.error('Error bulk deleting posts', { errorDetails: error });
@@ -446,10 +446,10 @@ export async function bulkDeletePosts(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'bulk_delete_posts',
       targetType: 'post',
-      details: { count: params.postIds.length, reason: params.reason },
+      details: { count: parameters.postIds.length, reason: parameters.reason },
     });
 
     return { success: true, deleted: count ?? 0 };
@@ -466,13 +466,13 @@ export async function bulkDeletePosts(params: {
 /**
  * Bulk delete comments
  */
-export async function bulkDeleteComments(params: {
+export async function bulkDeleteComments(parameters: {
   currentUserId: string;
   commentIds: string[];
   reason: string;
 }): Promise<{ success: boolean; deleted: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.MODERATOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.MODERATOR);
 
     const { error, count } = await supabase
       .from('comments')
@@ -481,7 +481,7 @@ export async function bulkDeleteComments(params: {
         content: '[deleted by moderator]',
         updated_at: new Date().toISOString(),
       })
-      .in('id', params.commentIds);
+      .in('id', parameters.commentIds);
 
     if (error) {
       logger.error('Error bulk deleting comments', { errorDetails: error });
@@ -489,10 +489,10 @@ export async function bulkDeleteComments(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'bulk_delete_comments',
       targetType: 'comment',
-      details: { count: params.commentIds.length, reason: params.reason },
+      details: { count: parameters.commentIds.length, reason: parameters.reason },
     });
 
     return { success: true, deleted: count ?? 0 };

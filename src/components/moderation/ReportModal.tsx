@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { ShadcnButton } from '../ui/ShadcnButton';
 
-type ReportModalProps = {
+type ReportModalProperties = {
   isOpen: boolean;
   onClose: () => void;
   contentType: 'post' | 'comment';
@@ -28,7 +28,7 @@ export function ReportModal({
   contentType,
   contentId,
   reportedUserId,
-}: ReportModalProps) {
+}: ReportModalProperties) {
   const { user } = useAuth();
   const [category, setCategory] = useState<ReportCategory>('spam');
   const [description, setDescription] = useState('');
@@ -75,8 +75,8 @@ export function ReportModal({
         setSuccess(false);
         onClose();
       }, 2000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit report');
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to submit report');
     } finally {
       setSubmitting(false);
     }

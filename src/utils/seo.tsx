@@ -13,7 +13,7 @@ export function generateBlogPostSchema(post: Post, baseUrl: string = 'https://py
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
-    description: post.subtitle || post.content.substring(0, 160),
+    description: post.subtitle || post.content.slice(0, 160),
     image: post.image_url ? `${baseUrl}${post.image_url}` : `${baseUrl}/og-image.png`,
     datePublished: post.published_at || post.created_at,
     dateModified: post.updated_at,
@@ -223,7 +223,7 @@ function updateMetaTag(name: string, content: string) {
     } else {
       element.setAttribute('name', name);
     }
-    document.head.appendChild(element);
+    document.head.append(element);
   }
 
   element.setAttribute('content', content);
@@ -238,7 +238,7 @@ function updateLinkTag(rel: string, href: string) {
   if (!element) {
     element = document.createElement('link');
     element.setAttribute('rel', rel);
-    document.head.appendChild(element);
+    document.head.append(element);
   }
 
   element.setAttribute('href', href);
@@ -258,7 +258,7 @@ export function generateRSSFeed(posts: Post[], baseUrl: string = 'https://pythou
       return `
     <item>
       <title><![CDATA[${post.title}]]></title>
-      <description><![CDATA[${post.subtitle || post.content.substring(0, 200)}]]></description>
+      <description><![CDATA[${post.subtitle || post.content.slice(0, 200)}]]></description>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${pubDate}</pubDate>

@@ -7,13 +7,13 @@ import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { X } from 'lucide-react';
 
-interface CreateTaskModalProps {
+interface CreateTaskModalProperties {
   isOpen: boolean;
   onClose: () => void;
   onTaskCreated?: () => void;
 }
 
-export function CreateTaskModal({ isOpen, onClose, onTaskCreated }: CreateTaskModalProps) {
+export function CreateTaskModal({ isOpen, onClose, onTaskCreated }: CreateTaskModalProperties) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -65,8 +65,8 @@ export function CreateTaskModal({ isOpen, onClose, onTaskCreated }: CreateTaskMo
       setTagInput('');
       onTaskCreated?.();
       onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create task');
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to create task');
     } finally {
       setLoading(false);
     }

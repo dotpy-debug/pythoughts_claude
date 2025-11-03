@@ -130,17 +130,13 @@ class Logger {
   error(message: string, errorOrMetadata?: Error | LogMetadata, metadata?: LogMetadata): void {
     let finalMetadata: LogMetadata = {};
 
-    if (errorOrMetadata instanceof Error) {
-      finalMetadata = {
+    finalMetadata = errorOrMetadata instanceof Error ? {
         ...metadata,
         error: errorOrMetadata,
         stack: errorOrMetadata.stack,
         errorName: errorOrMetadata.name,
         errorMessage: errorOrMetadata.message,
-      };
-    } else {
-      finalMetadata = errorOrMetadata || {};
-    }
+      } : errorOrMetadata || {};
 
     this.log(LogLevel.ERROR, message, finalMetadata);
   }
@@ -153,17 +149,13 @@ class Logger {
   fatal(message: string, errorOrMetadata?: Error | LogMetadata, metadata?: LogMetadata): void {
     let finalMetadata: LogMetadata = {};
 
-    if (errorOrMetadata instanceof Error) {
-      finalMetadata = {
+    finalMetadata = errorOrMetadata instanceof Error ? {
         ...metadata,
         error: errorOrMetadata,
         stack: errorOrMetadata.stack,
         errorName: errorOrMetadata.name,
         errorMessage: errorOrMetadata.message,
-      };
-    } else {
-      finalMetadata = errorOrMetadata || {};
-    }
+      } : errorOrMetadata || {};
 
     this.log(LogLevel.FATAL, message, finalMetadata);
   }
@@ -208,7 +200,7 @@ class Logger {
    * Pretty prints log entry for development
    */
   private prettyPrint(
-    consoleMethod: (...args: unknown[]) => void,
+    consoleMethod: (...arguments_: unknown[]) => void,
     level: LogLevel,
     entry: LogEntry
   ): void {
@@ -222,11 +214,10 @@ class Logger {
     const parts: string[] = [];
 
     if (timestamp) {
-      parts.push(`\x1b[90m${timestamp}\x1b[0m`);
+      parts.push(`\u001B[90m${timestamp}\u001B[0m`);
     }
 
-    parts.push(`${levelColor}${levelBadge}\x1b[0m`);
-    parts.push(entry.message);
+    parts.push(`${levelColor}${levelBadge}\u001B[0m`, entry.message);
 
     consoleMethod(parts.join(' '));
 
@@ -252,7 +243,7 @@ class Logger {
   /**
    * Prints structured JSON log entry for production
    */
-  private structuredPrint(consoleMethod: (...args: unknown[]) => void, entry: LogEntry): void {
+  private structuredPrint(consoleMethod: (...arguments_: unknown[]) => void, entry: LogEntry): void {
     // Serialize error objects properly
     const serializedEntry = {
       ...entry,
@@ -271,18 +262,18 @@ class Logger {
     for (const [key, value] of Object.entries(metadata)) {
       if (value instanceof Error) {
         // Serialize Error with its basic properties
-        const errorObj: Record<string, unknown> = {
+        const errorObject: Record<string, unknown> = {
           name: value.name,
           message: value.message,
           stack: value.stack,
         };
         // Include any custom properties from the error
-        Object.keys(value).forEach(errKey => {
-          if (!['name', 'message', 'stack'].includes(errKey)) {
-            errorObj[errKey] = (value as unknown as Record<string, unknown>)[errKey];
+        for (const errorKey of Object.keys(value)) {
+          if (!['name', 'message', 'stack'].includes(errorKey)) {
+            errorObject[errorKey] = (value as unknown as Record<string, unknown>)[errorKey];
           }
-        });
-        serialized[key] = errorObj;
+        }
+        serialized[key] = errorObject;
       } else if (value !== undefined) {
         serialized[key] = value;
       }
@@ -294,19 +285,24 @@ class Logger {
   /**
    * Gets the console method for a log level
    */
-  private getConsoleMethod(level: LogLevel): (...args: unknown[]) => void {
+  private getConsoleMethod(level: LogLevel): (...arguments_: unknown[]) => void {
     switch (level) {
-      case LogLevel.DEBUG:
+      case LogLevel.DEBUG: {
         return console.debug;
-      case LogLevel.INFO:
+      }
+      case LogLevel.INFO: {
         return console.info;
-      case LogLevel.WARN:
+      }
+      case LogLevel.WARN: {
         return console.warn;
+      }
       case LogLevel.ERROR:
-      case LogLevel.FATAL:
+      case LogLevel.FATAL: {
         return console.error;
-      default:
+      }
+      default: {
         return console.log;
+      }
     }
   }
 
@@ -315,18 +311,24 @@ class Logger {
    */
   private getLevelString(level: LogLevel): LogLevelString {
     switch (level) {
-      case LogLevel.DEBUG:
+      case LogLevel.DEBUG: {
         return 'debug';
-      case LogLevel.INFO:
+      }
+      case LogLevel.INFO: {
         return 'info';
-      case LogLevel.WARN:
+      }
+      case LogLevel.WARN: {
         return 'warn';
-      case LogLevel.ERROR:
+      }
+      case LogLevel.ERROR: {
         return 'error';
-      case LogLevel.FATAL:
+      }
+      case LogLevel.FATAL: {
         return 'fatal';
-      default:
+      }
+      default: {
         return 'info';
+      }
     }
   }
 
@@ -335,18 +337,24 @@ class Logger {
    */
   private getLevelColor(level: LogLevel): string {
     switch (level) {
-      case LogLevel.DEBUG:
-        return '\x1b[36m'; // Cyan
-      case LogLevel.INFO:
-        return '\x1b[32m'; // Green
-      case LogLevel.WARN:
-        return '\x1b[33m'; // Yellow
-      case LogLevel.ERROR:
-        return '\x1b[31m'; // Red
-      case LogLevel.FATAL:
-        return '\x1b[35m'; // Magenta
-      default:
-        return '\x1b[0m'; // Reset
+      case LogLevel.DEBUG: {
+        return '\u001B[36m';
+      } // Cyan
+      case LogLevel.INFO: {
+        return '\u001B[32m';
+      } // Green
+      case LogLevel.WARN: {
+        return '\u001B[33m';
+      } // Yellow
+      case LogLevel.ERROR: {
+        return '\u001B[31m';
+      } // Red
+      case LogLevel.FATAL: {
+        return '\u001B[35m';
+      } // Magenta
+      default: {
+        return '\u001B[0m';
+      } // Reset
     }
   }
 
@@ -378,14 +386,14 @@ class Logger {
    */
   async measureTime<T>(
     name: string,
-    fn: () => Promise<T> | T,
+    function_: () => Promise<T> | T,
     metadata?: LogMetadata
   ): Promise<T> {
     const startTime = performance.now();
     this.debug(`Starting: ${name}`, metadata);
 
     try {
-      const result = await fn();
+      const result = await function_();
       const duration = performance.now() - startTime;
 
       this.info(`Completed: ${name}`, {

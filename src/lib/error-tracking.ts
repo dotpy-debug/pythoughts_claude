@@ -156,7 +156,7 @@ class ErrorTracker {
       extra: context.extra,
       level: context.level || 'error',
       breadcrumbs: context.breadcrumbs || this.breadcrumbs.slice(-10), // Last 10 breadcrumbs
-      url: window.location.href,
+      url: globalThis.location.href,
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString(),
     };
@@ -183,7 +183,7 @@ class ErrorTracker {
       tags: { ...this.globalTags, ...context.tags },
       extra: context.extra,
       level: context.level || 'info',
-      url: window.location.href,
+      url: globalThis.location.href,
       timestamp: new Date().toISOString(),
     };
 
@@ -259,9 +259,9 @@ export function initErrorTracking(config: {
   errorTracker.init(config);
 
   // Set up global error handlers
-  if (typeof window !== 'undefined') {
+  if (globalThis.window !== undefined) {
     // Unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    globalThis.addEventListener('unhandledrejection', (event) => {
       errorTracker.captureError(
         new Error(`Unhandled Promise Rejection: ${event.reason}`),
         {
@@ -278,7 +278,7 @@ export function initErrorTracking(config: {
     });
 
     // Global errors
-    window.addEventListener('error', (event) => {
+    globalThis.addEventListener('error', (event) => {
       errorTracker.captureError(event.error || new Error(event.message), {
         level: 'error',
         tags: {
@@ -297,13 +297,13 @@ export function initErrorTracking(config: {
 /**
  * Helper to wrap async functions with error tracking
  */
-export function withErrorTracking<TArgs extends unknown[], TReturn>(
-  fn: (...args: TArgs) => Promise<TReturn>,
+export function withErrorTracking<TArguments extends unknown[], TReturn>(
+  function_: (...arguments_: TArguments) => Promise<TReturn>,
   context: Omit<ErrorContext, 'user'> = {}
-): (...args: TArgs) => Promise<TReturn> {
-  return async (...args: TArgs): Promise<TReturn> => {
+): (...arguments_: TArguments) => Promise<TReturn> {
+  return async (...arguments_: TArguments): Promise<TReturn> => {
     try {
-      return await fn(...args);
+      return await function_(...arguments_);
     } catch (error) {
       if (error instanceof Error) {
         errorTracker.captureError(error, context);
@@ -316,13 +316,13 @@ export function withErrorTracking<TArgs extends unknown[], TReturn>(
 /**
  * Helper to wrap sync functions with error tracking
  */
-export function withErrorTrackingSync<TArgs extends unknown[], TReturn>(
-  fn: (...args: TArgs) => TReturn,
+export function withErrorTrackingSync<TArguments extends unknown[], TReturn>(
+  function_: (...arguments_: TArguments) => TReturn,
   context: Omit<ErrorContext, 'user'> = {}
-): (...args: TArgs) => TReturn {
-  return (...args: TArgs): TReturn => {
+): (...arguments_: TArguments) => TReturn {
+  return (...arguments_: TArguments): TReturn => {
     try {
-      return fn(...args);
+      return function_(...arguments_);
     } catch (error) {
       if (error instanceof Error) {
         errorTracker.captureError(error, context);

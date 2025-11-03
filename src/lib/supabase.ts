@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { env } from './env';
+import { env as environment } from './env';
 import { ExternalServiceError, ErrorLogger } from './errors';
 import { logger } from './logger';
 
@@ -7,10 +7,10 @@ import { logger } from './logger';
 export const supabase = (() => {
   try {
     logger.info('Initializing Supabase client', {
-      url: env.VITE_SUPABASE_URL,
+      url: environment.VITE_SUPABASE_URL,
     });
 
-    return createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY, {
+    return createClient(environment.VITE_SUPABASE_URL, environment.VITE_SUPABASE_ANON_KEY, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -18,13 +18,13 @@ export const supabase = (() => {
       },
     });
   } catch (error) {
-    const err = new ExternalServiceError(
+    const error_ = new ExternalServiceError(
       'Supabase',
       'Failed to initialize Supabase client',
       error instanceof Error ? error : undefined
     );
-    ErrorLogger.logExternalService(err, 'supabase-init');
-    throw err;
+    ErrorLogger.logExternalService(error_, 'supabase-init');
+    throw error_;
   }
 })();
 

@@ -13,7 +13,7 @@
 import { useState, useEffect, useRef, useMemo, ReactNode, memo } from 'react';
 import { cn } from '../../lib/utils';
 
-export interface VirtualScrollProps<T> {
+export interface VirtualScrollProperties<T> {
   /**
    * Array of items to render
    */
@@ -88,10 +88,10 @@ function VirtualScrollInner<T>({
   getKey,
   onEndReached,
   endReachedThreshold = 0.8,
-}: VirtualScrollProps<T>) {
+}: VirtualScrollProperties<T>) {
   const [scrollTop, setScrollTop] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const endReachedRef = useRef(false);
+  const containerReference = useRef<HTMLDivElement>(null);
+  const endReachedReference = useRef(false);
 
   // Calculate visible range
   const { startIndex, endIndex, offsetY, totalHeight } = useMemo(() => {
@@ -118,17 +118,17 @@ function VirtualScrollInner<T>({
     setScrollTop(target.scrollTop);
 
     // Check if reached end
-    if (onEndReached && !endReachedRef.current) {
+    if (onEndReached && !endReachedReference.current) {
       const scrollPercentage =
         (target.scrollTop + target.clientHeight) / target.scrollHeight;
 
       if (scrollPercentage >= endReachedThreshold) {
-        endReachedRef.current = true;
+        endReachedReference.current = true;
         onEndReached();
 
         // Reset after a delay to allow multiple loads
         setTimeout(() => {
-          endReachedRef.current = false;
+          endReachedReference.current = false;
         }, 1000);
       }
     }
@@ -144,7 +144,7 @@ function VirtualScrollInner<T>({
 
   return (
     <div
-      ref={containerRef}
+      ref={containerReference}
       className={cn('relative overflow-auto', className)}
       style={{ height: `${containerHeight}px` }}
       onScroll={handleScroll}
@@ -177,7 +177,7 @@ export const VirtualScroll = memo(VirtualScrollInner) as typeof VirtualScrollInn
  *
  * Supports variable item heights by measuring each item
  */
-export interface DynamicVirtualScrollProps<T> {
+export interface DynamicVirtualScrollProperties<T> {
   items: T[];
   containerHeight: number;
   renderItem: (item: T, index: number) => ReactNode;
@@ -199,23 +199,23 @@ export function DynamicVirtualScroll<T>({
   getKey,
   onEndReached,
   endReachedThreshold = 0.8,
-}: DynamicVirtualScrollProps<T>) {
+}: DynamicVirtualScrollProperties<T>) {
   const [scrollTop, setScrollTop] = useState(0);
   const [itemHeights, setItemHeights] = useState<Map<number, number>>(
     new Map()
   );
-  const containerRef = useRef<HTMLDivElement>(null);
-  const endReachedRef = useRef(false);
-  const itemRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const containerReference = useRef<HTMLDivElement>(null);
+  const endReachedReference = useRef(false);
+  const itemReferences = useRef<Map<number, HTMLDivElement>>(new Map());
 
   // Measure item heights
   useEffect(() => {
     const heights = new Map<number, number>();
-    itemRefs.current.forEach((element, index) => {
+    for (const [index, element] of itemReferences.current.entries()) {
       if (element) {
         heights.set(index, element.getBoundingClientRect().height);
       }
-    });
+    }
     setItemHeights(heights);
   }, [items]);
 
@@ -224,9 +224,9 @@ export function DynamicVirtualScroll<T>({
     const positions: number[] = [];
     let currentTop = 0;
 
-    for (let i = 0; i < items.length; i++) {
+    for (let index = 0; index < items.length; index++) {
       positions.push(currentTop);
-      const height = itemHeights.get(i) || estimatedItemHeight;
+      const height = itemHeights.get(index) || estimatedItemHeight;
       currentTop += height;
     }
 
@@ -234,17 +234,17 @@ export function DynamicVirtualScroll<T>({
     let start = 0;
     let end = items.length - 1;
 
-    for (let i = 0; i < positions.length; i++) {
-      if (positions[i] >= scrollTop) {
-        start = Math.max(0, i - overscan);
+    for (const [index, position] of positions.entries()) {
+      if (position >= scrollTop) {
+        start = Math.max(0, index - overscan);
         break;
       }
     }
 
-    for (let i = start; i < positions.length; i++) {
-      const itemHeight = itemHeights.get(i) || estimatedItemHeight;
-      if (positions[i] + itemHeight >= scrollTop + containerHeight) {
-        end = Math.min(items.length - 1, i + overscan);
+    for (let index = start; index < positions.length; index++) {
+      const itemHeight = itemHeights.get(index) || estimatedItemHeight;
+      if (positions[index] + itemHeight >= scrollTop + containerHeight) {
+        end = Math.min(items.length - 1, index + overscan);
         break;
       }
     }
@@ -270,16 +270,16 @@ export function DynamicVirtualScroll<T>({
     setScrollTop(target.scrollTop);
 
     // Check if reached end
-    if (onEndReached && !endReachedRef.current) {
+    if (onEndReached && !endReachedReference.current) {
       const scrollPercentage =
         (target.scrollTop + target.clientHeight) / target.scrollHeight;
 
       if (scrollPercentage >= endReachedThreshold) {
-        endReachedRef.current = true;
+        endReachedReference.current = true;
         onEndReached();
 
         setTimeout(() => {
-          endReachedRef.current = false;
+          endReachedReference.current = false;
         }, 1000);
       }
     }
@@ -296,7 +296,7 @@ export function DynamicVirtualScroll<T>({
 
   return (
     <div
-      ref={containerRef}
+      ref={containerReference}
       className={cn('relative overflow-auto', className)}
       style={{ height: `${containerHeight}px` }}
       onScroll={handleScroll}
@@ -305,11 +305,11 @@ export function DynamicVirtualScroll<T>({
         {visibleItems.map(({ item, index, top }) => (
           <div
             key={getKey(item, index)}
-            ref={(el) => {
-              if (el) {
-                itemRefs.current.set(index, el);
+            ref={(element) => {
+              if (element) {
+                itemReferences.current.set(index, element);
               } else {
-                itemRefs.current.delete(index);
+                itemReferences.current.delete(index);
               }
             }}
             style={{

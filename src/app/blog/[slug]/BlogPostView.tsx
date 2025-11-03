@@ -8,11 +8,11 @@ import { BlogContent } from '../../../components/blog/reader/BlogContent';
 import { EngagementBar } from '../../../components/blog/reader/EngagementBar';
 import { CommentsPanel } from '../../../components/blog/reader/CommentsPanel';
 
-interface BlogPostViewProps {
+interface BlogPostViewProperties {
   post: BlogPost;
 }
 
-export function BlogPostView({ post }: BlogPostViewProps) {
+export function BlogPostView({ post }: BlogPostViewProperties) {
   // Set page title and meta description
   useEffect(() => {
     // Update document title for client-side navigation

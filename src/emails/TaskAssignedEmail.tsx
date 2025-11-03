@@ -17,7 +17,7 @@ import {
   Hr,
 } from '@react-email/components';
 
-export interface TaskAssignedEmailProps {
+export interface TaskAssignedEmailProperties {
   recipientName: string;
   assignerName: string;
   taskTitle: string;
@@ -37,19 +37,24 @@ export function TaskAssignedEmail({
   priority = 'medium',
   taskUrl = 'https://pythoughts.com',
   unsubscribeUrl = 'https://pythoughts.com/settings/preferences',
-}: TaskAssignedEmailProps) {
+}: TaskAssignedEmailProperties) {
   const getPriorityColor = () => {
     switch (priority) {
-      case 'urgent':
+      case 'urgent': {
         return '#ff0000';
-      case 'high':
+      }
+      case 'high': {
         return '#ff6600';
-      case 'medium':
+      }
+      case 'medium': {
         return '#ffaa00';
-      case 'low':
+      }
+      case 'low': {
         return '#00ff00';
-      default:
+      }
+      default: {
         return '#00ff00';
+      }
     }
   };
 

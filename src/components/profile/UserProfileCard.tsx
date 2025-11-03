@@ -8,7 +8,7 @@ import { sanitizeURL } from '../../utils/security';
 import { ReputationBadge } from '../reputation/ReputationBadge';
 import { BadgeGallery } from '../badges/BadgeGallery';
 
-type UserProfileCardProps = {
+type UserProfileCardProperties = {
   profile: Profile;
   extended?: UserProfileExtended;
   skills?: UserSkill[];
@@ -32,7 +32,7 @@ export function UserProfileCard({
   onBlock,
   isFollowing = false,
   isBlocked = false,
-}: UserProfileCardProps) {
+}: UserProfileCardProperties) {
   const [showAllSkills, setShowAllSkills] = useState(false);
   const displayedSkills = showAllSkills ? skills : skills.slice(0, 6);
 

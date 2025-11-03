@@ -27,7 +27,7 @@ type Publication = {
   canPublish: boolean;
 };
 
-type CrossPostDialogProps = {
+type CrossPostDialogProperties = {
   postId: string;
   postTitle: string;
   currentPublicationId?: string;
@@ -43,7 +43,7 @@ export function CrossPostDialog({
   isOpen,
   onClose,
   onSuccess,
-}: CrossPostDialogProps) {
+}: CrossPostDialogProperties) {
   const [publications, setPublications] = useState<Publication[]>([]);
   const [selectedPublications, setSelectedPublications] = useState<Set<string>>(new Set());
   const [submissionNotes, setSubmissionNotes] = useState('');
@@ -137,9 +137,9 @@ export function CrossPostDialog({
         });
 
       setPublications(availablePubs);
-    } catch (err) {
-      logger.error('Failed to load publications', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to load publications');
+    } catch (error_) {
+      logger.error('Failed to load publications', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to load publications');
     } finally {
       setIsLoading(false);
     }
@@ -152,8 +152,8 @@ export function CrossPostDialog({
   }, [isOpen, loadAvailablePublications]);
 
   const handleTogglePublication = (publicationId: string) => {
-    setSelectedPublications((prev) => {
-      const newSet = new Set(prev);
+    setSelectedPublications((previous) => {
+      const newSet = new Set(previous);
       if (newSet.has(publicationId)) {
         newSet.delete(publicationId);
       } else {
@@ -180,7 +180,7 @@ export function CrossPostDialog({
 
       // Process each selected publication
       const results = await Promise.allSettled(
-        Array.from(selectedPublications).map(async (publicationId) => {
+        [...selectedPublications].map(async (publicationId) => {
           const publication = publications.find((p) => p.id === publicationId);
           if (!publication) return;
 
@@ -237,9 +237,9 @@ export function CrossPostDialog({
         }
         onClose();
       }
-    } catch (err) {
-      logger.error('Failed to cross-post', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to cross-post');
+    } catch (error_) {
+      logger.error('Failed to cross-post', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to cross-post');
     } finally {
       setIsSubmitting(false);
     }
@@ -269,7 +269,7 @@ export function CrossPostDialog({
             <div className="text-center py-8 text-muted-foreground">
               Loading publications...
             </div>
-          ) : publications.length === 0 ? (
+          ) : (publications.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">No publications available for cross-posting</p>
               <p className="text-sm text-muted-foreground mt-2">
@@ -357,7 +357,7 @@ export function CrossPostDialog({
                   </div>
                 )}
             </>
-          )}
+          ))}
 
           {error && (
             <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
@@ -369,7 +369,7 @@ export function CrossPostDialog({
             <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
               <p className="text-sm text-blue-600">
                 Selected {selectedPublications.size} publication
-                {selectedPublications.size !== 1 ? 's' : ''}
+                {selectedPublications.size === 1 ? '' : 's'}
               </p>
             </div>
           )}

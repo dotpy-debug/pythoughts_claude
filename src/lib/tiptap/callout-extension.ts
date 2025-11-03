@@ -41,7 +41,7 @@ export const Callout = Node.create<CalloutOptions>({
     return {
       type: {
         default: 'info',
-        parseHTML: (element) => element.getAttribute('data-type'),
+        parseHTML: (element) => element.dataset.type,
         renderHTML: (attributes) => ({
           'data-type': attributes.type,
           class: `callout callout-${attributes.type}`,

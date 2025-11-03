@@ -62,54 +62,63 @@ function serializeNode(node: JSONContent, context: { listLevel?: number } = {}):
 
   // Handle different node types
   switch (type) {
-    case 'doc':
+    case 'doc': {
       return serializeChildren(content);
+    }
 
-    case 'paragraph':
+    case 'paragraph': {
       return serializeChildren(content) + '\n\n';
+    }
 
     case 'heading': {
       const level = attrs?.level || 1;
       return '#'.repeat(level) + ' ' + serializeChildren(content) + '\n\n';
     }
-    case 'blockquote':
+    case 'blockquote': {
       return serializeChildren(content)
         .split('\n')
         .map(line => line ? `> ${line}` : '>')
         .join('\n') + '\n\n';
+    }
 
     case 'codeBlock': {
       const language = attrs?.language || '';
       const code = serializeChildren(content);
       return '```' + language + '\n' + code + '\n```\n\n';
     }
-    case 'bulletList':
+    case 'bulletList': {
       return serializeList(content, '- ', context.listLevel) + '\n';
+    }
 
-    case 'orderedList':
+    case 'orderedList': {
       return serializeList(content, '1. ', context.listLevel) + '\n';
+    }
 
-    case 'listItem':
+    case 'listItem': {
       return serializeChildren(content);
+    }
 
-    case 'taskList':
+    case 'taskList': {
       return serializeTaskList(content) + '\n';
+    }
 
     case 'taskItem': {
       const checked = attrs?.checked ? '[x]' : '[ ]';
       return checked + ' ' + serializeChildren(content);
     }
-    case 'horizontalRule':
+    case 'horizontalRule': {
       return '---\n\n';
+    }
 
-    case 'hardBreak':
+    case 'hardBreak': {
       return '  \n';
+    }
 
     case 'image': {
       const alt = attrs?.alt || '';
-      const src = attrs?.src || '';
+      const source = attrs?.src || '';
       const title = attrs?.title || '';
-      return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`;
+      return title ? `![${alt}](${source} "${title}")` : `![${alt}](${source})`;
     }
     case 'youtube': {
       const youtubeId = attrs?.videoId || extractYouTubeId(attrs?.src);
@@ -119,19 +128,23 @@ function serializeNode(node: JSONContent, context: { listLevel?: number } = {}):
       const vimeoId = attrs?.videoId || '';
       return `{{vimeo:${vimeoId}}}\n\n`;
     }
-    case 'table':
+    case 'table': {
       return serializeTable(content) + '\n';
+    }
 
-    case 'tableRow':
+    case 'tableRow': {
       return '| ' + serializeChildren(content) + '\n';
+    }
 
     case 'tableHeader':
-    case 'tableCell':
+    case 'tableCell': {
       return serializeChildren(content) + ' | ';
+    }
 
-    default:
+    default: {
       // Unknown node type, try to serialize children
       return serializeChildren(content);
+    }
   }
 }
 
@@ -151,31 +164,36 @@ function applyMarks(text: string, marks: Array<{ type: string; attrs?: Record<st
 
   let result = text;
 
-  marks.forEach(mark => {
+  for (const mark of marks) {
     switch (mark.type) {
-      case 'bold':
+      case 'bold': {
         result = `**${result}**`;
         break;
-      case 'italic':
+      }
+      case 'italic': {
         result = `*${result}*`;
         break;
-      case 'code':
+      }
+      case 'code': {
         result = `\`${result}\``;
         break;
-      case 'strike':
+      }
+      case 'strike': {
         result = `~~${result}~~`;
         break;
+      }
       case 'link': {
         const href = (mark.attrs?.href as string) || '';
         const title = mark.attrs?.title as string | undefined;
         result = title ? `[${result}](${href} "${title}")` : `[${result}](${href})`;
         break;
       }
-      case 'highlight':
+      case 'highlight': {
         result = `==${result}==`;
         break;
+      }
     }
-  });
+  }
 
   return result;
 }
@@ -222,7 +240,7 @@ function serializeTable(content: JSONContent[] | undefined): string {
   if (rows.length > 0) {
     const headerRow = rows[0];
     const columnCount = (headerRow.match(/\|/g) || []).length - 1;
-    const separator = '| ' + Array(columnCount).fill('---').join(' | ') + ' |\n';
+    const separator = '| ' + new Array(columnCount).fill('---').join(' | ') + ' |\n';
     rows.splice(1, 0, separator);
   }
 
@@ -245,13 +263,13 @@ export function markdownToTipTap(markdown: string): JSONContent {
   const lines = markdown.split('\n');
   const nodes: JSONContent[] = [];
 
-  let i = 0;
-  while (i < lines.length) {
-    const line = lines[i];
+  let index = 0;
+  while (index < lines.length) {
+    const line = lines[index];
 
     // Skip empty lines
     if (!line.trim()) {
-      i++;
+      index++;
       continue;
     }
 
@@ -263,14 +281,14 @@ export function markdownToTipTap(markdown: string): JSONContent {
         attrs: { level: headingMatch[1].length },
         content: [{ type: 'text', text: headingMatch[2] }],
       });
-      i++;
+      index++;
       continue;
     }
 
     // Horizontal rule
     if (/^[-*_]{3,}$/.test(line.trim())) {
       nodes.push({ type: 'horizontalRule' });
-      i++;
+      index++;
       continue;
     }
 
@@ -279,11 +297,11 @@ export function markdownToTipTap(markdown: string): JSONContent {
     if (codeBlockMatch) {
       const language = codeBlockMatch[1] || '';
       const codeLines: string[] = [];
-      i++;
+      index++;
 
-      while (i < lines.length && !lines[i].startsWith('```')) {
-        codeLines.push(lines[i]);
-        i++;
+      while (index < lines.length && !lines[index].startsWith('```')) {
+        codeLines.push(lines[index]);
+        index++;
       }
 
       nodes.push({
@@ -291,16 +309,16 @@ export function markdownToTipTap(markdown: string): JSONContent {
         attrs: language ? { language } : {},
         content: [{ type: 'text', text: codeLines.join('\n') }],
       });
-      i++; // Skip closing ```
+      index++; // Skip closing ```
       continue;
     }
 
     // Blockquote
     if (line.startsWith('> ')) {
       const quoteLines: string[] = [];
-      while (i < lines.length && lines[i].startsWith('> ')) {
-        quoteLines.push(lines[i].substring(2));
-        i++;
+      while (index < lines.length && lines[index].startsWith('> ')) {
+        quoteLines.push(lines[index].slice(2));
+        index++;
       }
 
       nodes.push({
@@ -319,8 +337,8 @@ export function markdownToTipTap(markdown: string): JSONContent {
     if (/^[-*+]\s/.test(line)) {
       const listItems: JSONContent[] = [];
 
-      while (i < lines.length && /^[-*+]\s/.test(lines[i])) {
-        const itemText = lines[i].replace(/^[-*+]\s/, '');
+      while (index < lines.length && /^[-*+]\s/.test(lines[index])) {
+        const itemText = lines[index].replace(/^[-*+]\s/, '');
         listItems.push({
           type: 'listItem',
           content: [
@@ -330,7 +348,7 @@ export function markdownToTipTap(markdown: string): JSONContent {
             },
           ],
         });
-        i++;
+        index++;
       }
 
       nodes.push({
@@ -344,8 +362,8 @@ export function markdownToTipTap(markdown: string): JSONContent {
     if (/^\d+\.\s/.test(line)) {
       const listItems: JSONContent[] = [];
 
-      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
-        const itemText = lines[i].replace(/^\d+\.\s/, '');
+      while (index < lines.length && /^\d+\.\s/.test(lines[index])) {
+        const itemText = lines[index].replace(/^\d+\.\s/, '');
         listItems.push({
           type: 'listItem',
           content: [
@@ -355,7 +373,7 @@ export function markdownToTipTap(markdown: string): JSONContent {
             },
           ],
         });
-        i++;
+        index++;
       }
 
       nodes.push({
@@ -369,9 +387,9 @@ export function markdownToTipTap(markdown: string): JSONContent {
     if (/^[-*]\s\[(x|\s)\]\s/i.test(line)) {
       const taskItems: JSONContent[] = [];
 
-      while (i < lines.length && /^[-*]\s\[(x|\s)\]\s/i.test(lines[i])) {
-        const checked = /\[x\]/i.test(lines[i]);
-        const itemText = lines[i].replace(/^[-*]\s\[(x|\s)\]\s/i, '');
+      while (index < lines.length && /^[-*]\s\[(x|\s)\]\s/i.test(lines[index])) {
+        const checked = /\[x\]/i.test(lines[index]);
+        const itemText = lines[index].replace(/^[-*]\s\[(x|\s)\]\s/i, '');
 
         taskItems.push({
           type: 'taskItem',
@@ -383,7 +401,7 @@ export function markdownToTipTap(markdown: string): JSONContent {
             },
           ],
         });
-        i++;
+        index++;
       }
 
       nodes.push({
@@ -408,7 +426,7 @@ export function markdownToTipTap(markdown: string): JSONContent {
             : `https://vimeo.com/${videoId}`,
         },
       });
-      i++;
+      index++;
       continue;
     }
 
@@ -423,15 +441,15 @@ export function markdownToTipTap(markdown: string): JSONContent {
           title: imageMatch[3] || '',
         },
       });
-      i++;
+      index++;
       continue;
     }
 
     // Regular paragraph
     const paragraphLines: string[] = [];
-    while (i < lines.length && lines[i].trim() && !isSpecialLine(lines[i])) {
-      paragraphLines.push(lines[i]);
-      i++;
+    while (index < lines.length && lines[index].trim() && !isSpecialLine(lines[index])) {
+      paragraphLines.push(lines[index]);
+      index++;
     }
 
     if (paragraphLines.length > 0) {
@@ -454,8 +472,8 @@ export function markdownToTipTap(markdown: string): JSONContent {
 function isSpecialLine(line: string): boolean {
   return (
     /^#{1,6}\s/.test(line) ||
-    /^```/.test(line) ||
-    /^> /.test(line) ||
+    line.startsWith('```') ||
+    line.startsWith('> ') ||
     /^[-*+]\s/.test(line) ||
     /^\d+\.\s/.test(line) ||
     /^[-*]\s\[/.test(line) ||
@@ -471,100 +489,100 @@ function isSpecialLine(line: string): boolean {
 function parseInlineContent(text: string): JSONContent[] {
   const nodes: JSONContent[] = [];
   let currentText = '';
-  let i = 0;
+  let index = 0;
 
-  while (i < text.length) {
+  while (index < text.length) {
     // Bold: **text** or __text__
-    if ((text[i] === '*' && text[i + 1] === '*') || (text[i] === '_' && text[i + 1] === '_')) {
+    if ((text[index] === '*' && text[index + 1] === '*') || (text[index] === '_' && text[index + 1] === '_')) {
       if (currentText) {
         nodes.push({ type: 'text', text: currentText });
         currentText = '';
       }
 
-      const delimiter = text.substring(i, i + 2);
-      const endIndex = text.indexOf(delimiter, i + 2);
+      const delimiter = text.substring(index, index + 2);
+      const endIndex = text.indexOf(delimiter, index + 2);
 
       if (endIndex !== -1) {
-        const boldText = text.substring(i + 2, endIndex);
+        const boldText = text.substring(index + 2, endIndex);
         nodes.push({
           type: 'text',
           text: boldText,
           marks: [{ type: 'bold' }],
         });
-        i = endIndex + 2;
+        index = endIndex + 2;
         continue;
       }
     }
 
     // Italic: *text* or _text_
-    if (text[i] === '*' || text[i] === '_') {
+    if (text[index] === '*' || text[index] === '_') {
       if (currentText) {
         nodes.push({ type: 'text', text: currentText });
         currentText = '';
       }
 
-      const delimiter = text[i];
-      const endIndex = text.indexOf(delimiter, i + 1);
+      const delimiter = text[index];
+      const endIndex = text.indexOf(delimiter, index + 1);
 
       if (endIndex !== -1) {
-        const italicText = text.substring(i + 1, endIndex);
+        const italicText = text.substring(index + 1, endIndex);
         nodes.push({
           type: 'text',
           text: italicText,
           marks: [{ type: 'italic' }],
         });
-        i = endIndex + 1;
+        index = endIndex + 1;
         continue;
       }
     }
 
     // Code: `text`
-    if (text[i] === '`') {
+    if (text[index] === '`') {
       if (currentText) {
         nodes.push({ type: 'text', text: currentText });
         currentText = '';
       }
 
-      const endIndex = text.indexOf('`', i + 1);
+      const endIndex = text.indexOf('`', index + 1);
 
       if (endIndex !== -1) {
-        const codeText = text.substring(i + 1, endIndex);
+        const codeText = text.substring(index + 1, endIndex);
         nodes.push({
           type: 'text',
           text: codeText,
           marks: [{ type: 'code' }],
         });
-        i = endIndex + 1;
+        index = endIndex + 1;
         continue;
       }
     }
 
     // Strikethrough: ~~text~~
-    if (text[i] === '~' && text[i + 1] === '~') {
+    if (text[index] === '~' && text[index + 1] === '~') {
       if (currentText) {
         nodes.push({ type: 'text', text: currentText });
         currentText = '';
       }
 
-      const endIndex = text.indexOf('~~', i + 2);
+      const endIndex = text.indexOf('~~', index + 2);
 
       if (endIndex !== -1) {
-        const strikeText = text.substring(i + 2, endIndex);
+        const strikeText = text.substring(index + 2, endIndex);
         nodes.push({
           type: 'text',
           text: strikeText,
           marks: [{ type: 'strike' }],
         });
-        i = endIndex + 2;
+        index = endIndex + 2;
         continue;
       }
     }
 
     // Link: [text](url) or [text](url "title")
-    if (text[i] === '[') {
-      const closeBracket = text.indexOf(']', i);
+    if (text[index] === '[') {
+      const closeBracket = text.indexOf(']', index);
       if (closeBracket !== -1 && text[closeBracket + 1] === '(') {
-        const closeParenMatch = text.substring(closeBracket + 2).match(/^([^\s)]+)(?:\s+"([^"]+)")?\)/);
+        const closeParenMatch = text.slice(Math.max(0, closeBracket + 2)).match(/^([^\s)]+)(?:\s+"([^"]+)")?\)/);
 
         if (closeParenMatch) {
           if (currentText) {
@@ -572,7 +590,7 @@ function parseInlineContent(text: string): JSONContent[] {
             currentText = '';
           }
 
-          const linkText = text.substring(i + 1, closeBracket);
+          const linkText = text.substring(index + 1, closeBracket);
           const href = closeParenMatch[1];
           const title = closeParenMatch[2];
 
@@ -587,14 +605,14 @@ function parseInlineContent(text: string): JSONContent[] {
             ],
           });
 
-          i = closeBracket + 2 + closeParenMatch[0].length;
+          index = closeBracket + 2 + closeParenMatch[0].length;
           continue;
         }
       }
     }
 
-    currentText += text[i];
-    i++;
+    currentText += text[index];
+    index++;
   }
 
   if (currentText) {

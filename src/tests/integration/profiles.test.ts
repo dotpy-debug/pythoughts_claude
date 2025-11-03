@@ -309,7 +309,7 @@ describe('User Profile Integration Tests', () => {
     it('should search profiles by username pattern', async () => {
       const client = getServiceRoleClient();
 
-      const searchPattern = `%${testUsername.substring(0, 10)}%`;
+      const searchPattern = `%${testUsername.slice(0, 10)}%`;
       const { data, error } = await client
         .from('profiles')
         .select('*')
@@ -334,7 +334,7 @@ describe('User Profile Integration Tests', () => {
       const now = new Date();
 
       expect(createdAt.getTime()).toBeLessThanOrEqual(now.getTime());
-      expect(createdAt.getTime()).toBeGreaterThan(now.getTime() - 10000); // Within last 10s
+      expect(createdAt.getTime()).toBeGreaterThan(now.getTime() - 10_000); // Within last 10s
     });
   });
 

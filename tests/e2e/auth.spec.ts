@@ -55,7 +55,7 @@ test.describe('Authentication Flow', () => {
 
     // Wait for error message
     await expect(page.locator('text=/invalid|error/i')).toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
   });
 
@@ -71,7 +71,7 @@ test.describe('Authentication Flow', () => {
 
     // Wait for successful sign in (modal should close)
     await expect(page.locator('[role="dialog"]')).not.toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Verify user is signed in (should see profile or sign out button)

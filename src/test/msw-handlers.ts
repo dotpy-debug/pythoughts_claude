@@ -47,7 +47,7 @@ export const handlers = [
   // Post handlers
   http.get(`${API_URL}/api/posts`, ({ request }) => {
     const url = new URL(request.url);
-    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const limit = Number.parseInt(url.searchParams.get('limit') || '10');
     // cursor could be used for pagination in the future
     // const cursor = url.searchParams.get('cursor');
 

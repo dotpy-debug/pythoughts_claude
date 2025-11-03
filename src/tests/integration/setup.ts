@@ -277,7 +277,7 @@ export async function wait(ms: number): Promise<void> {
  */
 export function generateTestEmail(prefix: string = 'test'): string {
   const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(7);
+  const random = Math.random().toString(36).slice(7);
   return `${prefix}-${timestamp}-${random}@pythoughts-test.com`;
 }
 
@@ -286,7 +286,7 @@ export function generateTestEmail(prefix: string = 'test'): string {
  */
 export function generateTestUsername(prefix: string = 'user'): string {
   const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(7);
+  const random = Math.random().toString(36).slice(7);
   return `${prefix}_${timestamp}_${random}`;
 }
 

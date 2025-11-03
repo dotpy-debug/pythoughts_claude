@@ -112,7 +112,7 @@ export async function checkRateLimit(
       throw getCurrentError || getTtlError;
     }
 
-    const count = currentCount ? parseInt(currentCount, 10) : 0;
+    const count = currentCount ? Number.parseInt(currentCount, 10) : 0;
     const reset = ttl > 0 ? now + ttl : now + limit.duration;
 
     // Check if limit is exceeded
@@ -163,12 +163,12 @@ export async function checkRateLimit(
     };
 
   } catch (error) {
-    const err = new ExternalServiceError(
+    const error_ = new ExternalServiceError(
       'Redis',
       'Rate limit check failed',
       error instanceof Error ? error : undefined
     );
-    ErrorLogger.logExternalService(err, 'rate-limit-check', {
+    ErrorLogger.logExternalService(error_, 'rate-limit-check', {
       limitKey,
       identifier,
     });
@@ -204,12 +204,12 @@ export async function resetRateLimit(
 
     logger.info('Rate limit reset', { limitKey, identifier });
   } catch (error) {
-    const err = new ExternalServiceError(
+    const error_ = new ExternalServiceError(
       'Redis',
       'Rate limit reset failed',
       error instanceof Error ? error : undefined
     );
-    ErrorLogger.logExternalService(err, 'rate-limit-reset', {
+    ErrorLogger.logExternalService(error_, 'rate-limit-reset', {
       limitKey,
       identifier,
     });
@@ -248,7 +248,7 @@ export async function getRateLimitStatus(
       throw getCurrentError || getTtlError;
     }
 
-    const count = currentCount ? parseInt(currentCount, 10) : 0;
+    const count = currentCount ? Number.parseInt(currentCount, 10) : 0;
     const remaining = Math.max(0, limit.points - count);
     const reset = ttl > 0 ? now + ttl : now + limit.duration;
     const isExceeded = count >= limit.points;
@@ -262,12 +262,12 @@ export async function getRateLimitStatus(
     };
 
   } catch (error) {
-    const err = new ExternalServiceError(
+    const error_ = new ExternalServiceError(
       'Redis',
       'Rate limit status check failed',
       error instanceof Error ? error : undefined
     );
-    ErrorLogger.logExternalService(err, 'rate-limit-status', {
+    ErrorLogger.logExternalService(error_, 'rate-limit-status', {
       limitKey,
       identifier,
     });

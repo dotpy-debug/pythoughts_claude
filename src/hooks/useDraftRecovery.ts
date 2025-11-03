@@ -97,8 +97,8 @@ export function useDraftRecovery(
 
     const ageMinutes = Math.floor((Date.now() - draft.timestamp) / (1000 * 60));
     const timeAgo = ageMinutes < 60
-      ? `${ageMinutes} minute${ageMinutes !== 1 ? 's' : ''} ago`
-      : `${Math.floor(ageMinutes / 60)} hour${Math.floor(ageMinutes / 60) !== 1 ? 's' : ''} ago`;
+      ? `${ageMinutes} minute${ageMinutes === 1 ? '' : 's'} ago`
+      : `${Math.floor(ageMinutes / 60)} hour${Math.floor(ageMinutes / 60) === 1 ? '' : 's'} ago`;
 
     return `Found unsaved changes from ${timeAgo}. Would you like to recover them?`;
   }, [loadDraftBackup]);
@@ -131,7 +131,7 @@ export function useDraftRecovery(
         const keys = Object.keys(localStorage);
         const recoveryKeys = keys.filter(key => key.startsWith(STORAGE_KEY_PREFIX));
 
-        recoveryKeys.forEach(key => {
+        for (const key of recoveryKeys) {
           try {
             const stored = localStorage.getItem(key);
             if (stored) {
@@ -143,11 +143,12 @@ export function useDraftRecovery(
                 logger.info('Removed expired draft backup', { key, ageHours });
               }
             }
-          } catch (_error) {
+          } catch (error) {
             // If we can't parse it, remove it
+            logger.warn('Failed to parse draft backup, removing:', { key, error });
             localStorage.removeItem(key);
           }
-        });
+        }
       } catch (error) {
         logger.error('Error cleaning up expired drafts', { errorDetails: error });
       }

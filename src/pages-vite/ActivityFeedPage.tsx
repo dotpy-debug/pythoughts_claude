@@ -23,7 +23,7 @@ export function ActivityFeedPage() {
   const [hasMore, setHasMore] = useState(true);
   const [followingCount, setFollowingCount] = useState(0);
 
-  const loadActivityFeed = useCallback(async (pageNum: number = 0, append: boolean = false) => {
+  const loadActivityFeed = useCallback(async (pageNumber: number = 0, append: boolean = false) => {
     if (!user) return;
 
     try {
@@ -49,7 +49,7 @@ export function ActivityFeedPage() {
       const followingIds = followingData.map(f => f.following_id);
 
       // Build query to get posts from followed users
-      const from = pageNum * POSTS_PER_PAGE;
+      const from = pageNumber * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
 
       let query = supabase
@@ -127,18 +127,18 @@ export function ActivityFeedPage() {
 
         if (!votesError && votesData) {
           const votesMap: Record<string, 1 | -1> = {};
-          votesData.forEach((vote) => {
+          for (const vote of votesData) {
             if (vote.post_id) {
               votesMap[vote.post_id] = vote.vote_type;
             }
-          });
-          setUserVotes(prev => append ? { ...prev, ...votesMap } : votesMap);
+          }
+          setUserVotes(previous => append ? { ...previous, ...votesMap } : votesMap);
         }
       }
 
       // Update posts
       if (append) {
-        setPosts(prev => [...prev, ...postsData]);
+        setPosts(previous => [...previous, ...postsData]);
       } else {
         setPosts(postsData);
       }
@@ -175,8 +175,8 @@ export function ActivityFeedPage() {
         delete newVotes[postId];
         setUserVotes(newVotes);
 
-        setPosts(prevPosts =>
-          prevPosts.map(post =>
+        setPosts(previousPosts =>
+          previousPosts.map(post =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count - voteType }
               : post
@@ -192,8 +192,8 @@ export function ActivityFeedPage() {
 
         setUserVotes({ ...userVotes, [postId]: voteType });
 
-        setPosts(prevPosts =>
-          prevPosts.map(post =>
+        setPosts(previousPosts =>
+          previousPosts.map(post =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count - existingVote + voteType }
               : post
@@ -209,8 +209,8 @@ export function ActivityFeedPage() {
 
         setUserVotes({ ...userVotes, [postId]: voteType });
 
-        setPosts(prevPosts =>
-          prevPosts.map(post =>
+        setPosts(previousPosts =>
+          previousPosts.map(post =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count + voteType }
               : post

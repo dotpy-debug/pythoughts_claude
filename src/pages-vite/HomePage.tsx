@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { Post } from '../lib/supabase';
 
-const PostList = lazy(() => import('../components/posts/PostList').then(mod => ({ default: mod.PostList })));
+const PostList = lazy(() => import('../components/posts/PostList').then(module_ => ({ default: module_.PostList })));
 
 export function HomePage() {
   const navigate = useNavigate();

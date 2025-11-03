@@ -5,7 +5,7 @@
  */
 
 export { ChartCard, ChartGrid } from './ChartCard';
-export type { ChartCardProps, ChartGridProps } from './ChartCard';
+export type { ChartCardProperties, ChartGridProperties } from './ChartCard';
 
 export { AnalyticsExporter } from './AnalyticsExporter';
-export type { AnalyticsExporterProps, ExportOptions } from './AnalyticsExporter';
+export type { ExportOptions } from './AnalyticsExporter';

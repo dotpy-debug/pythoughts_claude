@@ -56,7 +56,7 @@ type PublicationMember = {
   postCount: number;
 };
 
-type PublicationHomepageProps = {
+type PublicationHomepageProperties = {
   slug: string;
 };
 
@@ -125,9 +125,9 @@ const transformPublicationMember = (entry: unknown): PublicationMember | null =>
     id:
       typeof record.id === 'string'
         ? record.id
-        : typeof userRecord.username === 'string'
+        : (typeof userRecord.username === 'string'
           ? userRecord.username
-          : '',
+          : ''),
     role: typeof record.role === 'string' ? record.role : '',
     user: {
       username: typeof userRecord.username === 'string' ? userRecord.username : '',
@@ -139,7 +139,7 @@ const transformPublicationMember = (entry: unknown): PublicationMember | null =>
   };
 };
 
-export function PublicationHomepage({ slug }: PublicationHomepageProps) {
+export function PublicationHomepage({ slug }: PublicationHomepageProperties) {
   const [publication, setPublication] = useState<Publication | null>(null);
   const [posts, setPosts] = useState<PublicationPost[]>([]);
   const [members, setMembers] = useState<PublicationMember[]>([]);
@@ -236,8 +236,8 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
 
         setIsSubscribed(subData?.is_active || false);
       }
-    } catch (err) {
-      logger.error('Failed to load publication', err as Error);
+    } catch (error) {
+      logger.error('Failed to load publication', error as Error);
     } finally {
       setIsLoading(false);
     }
@@ -275,8 +275,8 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
 
         setIsSubscribed(true);
       }
-    } catch (err) {
-      logger.error('Failed to update subscription', err as Error);
+    } catch (error) {
+      logger.error('Failed to update subscription', error as Error);
     }
   };
 

@@ -22,7 +22,7 @@ export function BlogEditorPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [initialPost, setInitialPost] = useState<Partial<BlogPost> | undefined>(
-    undefined
+    
   );
   const [loading, setLoading] = useState(true);
 

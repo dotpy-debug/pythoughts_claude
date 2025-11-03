@@ -184,11 +184,11 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
         to: options.to,
         subject: options.subject,
       });
-      const errorMsg = response.error.message || 'Failed to send email';
+      const errorMessage = response.error.message || 'Failed to send email';
       return {
         success: false,
-        error: errorMsg,
-        errorMessage: errorMsg,
+        error: errorMessage,
+        errorMessage: errorMessage,
       };
     }
 
@@ -209,11 +209,11 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
       to: options.to,
       subject: options.subject,
     });
-    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
-      error: errorMsg,
-      errorMessage: errorMsg,
+      error: errorMessage,
+      errorMessage: errorMessage,
     };
   }
 }
@@ -584,7 +584,7 @@ Visit us at: https://pythoughts.com
  */
 export async function sendPostReplyEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     replierName: string;
     postTitle: string;
@@ -596,13 +596,13 @@ export async function sendPostReplyEmail(
   const { PostReplyEmail } = await import('../emails/PostReplyEmail');
 
   const html = await render(PostReplyEmail({
-    ...params,
+    ...parameters,
     unsubscribeUrl: 'https://pythoughts.com/settings/preferences',
   }));
 
   return sendEmail({
     to,
-    subject: `${params.replierName} replied to your post: ${params.postTitle}`,
+    subject: `${parameters.replierName} replied to your post: ${parameters.postTitle}`,
     html,
     tags: [
       { name: 'category', value: 'notification' },
@@ -616,7 +616,7 @@ export async function sendPostReplyEmail(
  */
 export async function sendCommentReplyEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     replierName: string;
     postTitle: string;
@@ -629,13 +629,13 @@ export async function sendCommentReplyEmail(
   const { CommentReplyEmail } = await import('../emails/CommentReplyEmail');
 
   const html = await render(CommentReplyEmail({
-    ...params,
+    ...parameters,
     unsubscribeUrl: 'https://pythoughts.com/settings/preferences',
   }));
 
   return sendEmail({
     to,
-    subject: `${params.replierName} replied to your comment on ${params.postTitle}`,
+    subject: `${parameters.replierName} replied to your comment on ${parameters.postTitle}`,
     html,
     tags: [
       { name: 'category', value: 'notification' },
@@ -649,7 +649,7 @@ export async function sendCommentReplyEmail(
  */
 export async function sendVoteNotificationEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     postTitle: string;
     voteCount: number;
@@ -661,13 +661,13 @@ export async function sendVoteNotificationEmail(
   const { VoteNotificationEmail } = await import('../emails/VoteNotificationEmail');
 
   const html = await render(VoteNotificationEmail({
-    ...params,
+    ...parameters,
     unsubscribeUrl: 'https://pythoughts.com/settings/preferences',
   }));
 
   return sendEmail({
     to,
-    subject: `Your post "${params.postTitle}" reached ${params.milestone} votes!`,
+    subject: `Your post "${parameters.postTitle}" reached ${parameters.milestone} votes!`,
     html,
     tags: [
       { name: 'category', value: 'notification' },
@@ -681,7 +681,7 @@ export async function sendVoteNotificationEmail(
  */
 export async function sendMentionNotificationEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     mentionerName: string;
     contentType: 'post' | 'comment';
@@ -694,13 +694,13 @@ export async function sendMentionNotificationEmail(
   const { MentionNotificationEmail } = await import('../emails/MentionNotificationEmail');
 
   const html = await render(MentionNotificationEmail({
-    ...params,
+    ...parameters,
     unsubscribeUrl: 'https://pythoughts.com/settings/preferences',
   }));
 
-  const subject = params.contentType === 'post'
-    ? `${params.mentionerName} mentioned you in a post`
-    : `${params.mentionerName} mentioned you in a comment`;
+  const subject = parameters.contentType === 'post'
+    ? `${parameters.mentionerName} mentioned you in a post`
+    : `${parameters.mentionerName} mentioned you in a comment`;
 
   return sendEmail({
     to,
@@ -718,7 +718,7 @@ export async function sendMentionNotificationEmail(
  */
 export async function sendTaskAssignedEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     assignerName: string;
     taskTitle: string;
@@ -732,13 +732,13 @@ export async function sendTaskAssignedEmail(
   const { TaskAssignedEmail } = await import('../emails/TaskAssignedEmail');
 
   const html = await render(TaskAssignedEmail({
-    ...params,
+    ...parameters,
     unsubscribeUrl: 'https://pythoughts.com/settings/preferences',
   }));
 
   return sendEmail({
     to,
-    subject: `New task assigned: ${params.taskTitle}`,
+    subject: `New task assigned: ${parameters.taskTitle}`,
     html,
     tags: [
       { name: 'category', value: 'notification' },
@@ -752,7 +752,7 @@ export async function sendTaskAssignedEmail(
  */
 export async function sendWeeklyDigestEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     weekStart: string;
     weekEnd: string;
@@ -776,13 +776,13 @@ export async function sendWeeklyDigestEmail(
   const { WeeklyDigestEmail } = await import('../emails/WeeklyDigestEmail');
 
   const html = await render(WeeklyDigestEmail({
-    ...params,
+    ...parameters,
     unsubscribeUrl: 'https://pythoughts.com/settings/preferences',
   }));
 
   return sendEmail({
     to,
-    subject: `Your weekly Pythoughts digest for ${params.weekStart} - ${params.weekEnd}`,
+    subject: `Your weekly Pythoughts digest for ${parameters.weekStart} - ${parameters.weekEnd}`,
     html,
     tags: [
       { name: 'category', value: 'digest' },
@@ -796,7 +796,7 @@ export async function sendWeeklyDigestEmail(
  */
 export async function sendPublicationInvitationEmail(
   to: string,
-  params: {
+  parameters: {
     inviterName: string;
     publicationName: string;
     role: 'editor' | 'writer' | 'contributor';
@@ -906,31 +906,31 @@ export async function sendPublicationInvitationEmail(
           </div>
           <div class="content">
             <h1 style="color: #00ff00; margin-top: 0;">You've Been Invited!</h1>
-            <p><strong>${params.inviterName}</strong> has invited you to join:</p>
+            <p><strong>${parameters.inviterName}</strong> has invited you to join:</p>
 
-            <div class="publication-name">${params.publicationName}</div>
+            <div class="publication-name">${parameters.publicationName}</div>
 
-            <p>You've been invited as a <span class="role-badge">${params.role.toUpperCase()}</span></p>
-            <p style="color: #aaa; font-size: 14px;">${roleDescriptions[params.role]}</p>
+            <p>You've been invited as a <span class="role-badge">${parameters.role.toUpperCase()}</span></p>
+            <p style="color: #aaa; font-size: 14px;">${roleDescriptions[parameters.role]}</p>
 
-            ${params.personalMessage ? `
+            ${parameters.personalMessage ? `
               <div class="personal-message">
-                <strong>Personal message from ${params.inviterName}:</strong><br/>
-                "${params.personalMessage}"
+                <strong>Personal message from ${parameters.inviterName}:</strong><br/>
+                "${parameters.personalMessage}"
               </div>
             ` : ''}
 
             <p>Click the button below to accept this invitation and start collaborating:</p>
 
             <div style="text-align: center;">
-              <a href="${params.invitationUrl}" class="button">Accept Invitation</a>
+              <a href="${parameters.invitationUrl}" class="button">Accept Invitation</a>
             </div>
 
             <p class="expiry">⏰ This invitation will expire in 7 days</p>
 
             <p style="color: #666; font-size: 12px; word-break: break-all; margin-top: 30px;">
               Or copy and paste this URL into your browser:<br/>
-              ${params.invitationUrl}
+              ${parameters.invitationUrl}
             </p>
 
             <p style="color: #999; font-size: 14px; margin-top: 30px;">
@@ -951,15 +951,15 @@ PYTHOUGHTS
 
 You've Been Invited!
 
-${params.inviterName} has invited you to join: ${params.publicationName}
+${parameters.inviterName} has invited you to join: ${parameters.publicationName}
 
-Role: ${params.role.toUpperCase()}
-${roleDescriptions[params.role]}
+Role: ${parameters.role.toUpperCase()}
+${roleDescriptions[parameters.role]}
 
-${params.personalMessage ? `Personal message from ${params.inviterName}:\n"${params.personalMessage}"\n\n` : ''}
+${parameters.personalMessage ? `Personal message from ${parameters.inviterName}:\n"${parameters.personalMessage}"\n\n` : ''}
 
 Accept this invitation by visiting:
-${params.invitationUrl}
+${parameters.invitationUrl}
 
 ⏰ This invitation will expire in 7 days
 
@@ -971,7 +971,7 @@ Visit us at: https://pythoughts.com
 
   return sendEmail({
     to,
-    subject: `You're invited to join ${params.publicationName} on Pythoughts`,
+    subject: `You're invited to join ${parameters.publicationName} on Pythoughts`,
     html,
     text,
     tags: [

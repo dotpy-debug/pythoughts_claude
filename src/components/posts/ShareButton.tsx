@@ -2,20 +2,20 @@ import { useState, useRef, useEffect } from 'react';
 import { Share2, Twitter, Facebook, Linkedin, Link as LinkIcon, Check } from 'lucide-react';
 import { Post } from '../../lib/supabase';
 
-type ShareButtonProps = {
+type ShareButtonProperties = {
   post: Post;
   variant?: 'default' | 'compact';
 };
 
-export function ShareButton({ post, variant = 'default' }: ShareButtonProps) {
+export function ShareButton({ post, variant = 'default' }: ShareButtonProperties) {
   const [showMenu, setShowMenu] = useState(false);
   const [copied, setCopied] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const menuReference = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (menuReference.current && !menuReference.current.contains(event.target as Node)) {
         setShowMenu(false);
       }
     };
@@ -24,7 +24,7 @@ export function ShareButton({ post, variant = 'default' }: ShareButtonProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const postUrl = `${window.location.origin}/post/${post.id}`;
+  const postUrl = `${globalThis.location.origin}/post/${post.id}`;
   const postTitle = post.title || 'Check out this post on Pythoughts';
 
   const handleCopyLink = async () => {
@@ -59,7 +59,7 @@ export function ShareButton({ post, variant = 'default' }: ShareButtonProps) {
   };
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative" ref={menuReference}>
       <button
         onClick={() => setShowMenu(!showMenu)}
         className={`flex items-center space-x-1 text-gray-400 hover:text-terminal-blue transition-colors ${

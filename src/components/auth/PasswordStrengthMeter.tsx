@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Check, X } from 'lucide-react';
 
-interface PasswordStrengthMeterProps {
+interface PasswordStrengthMeterProperties {
   password: string;
   showRequirements?: boolean;
 }
@@ -43,8 +43,8 @@ export function calculatePasswordStrength(password: string): {
   return { strength, score, criteria };
 }
 
-export function PasswordStrengthMeter({ password, showRequirements = true }: PasswordStrengthMeterProps) {
-  const { strength, score: _score, criteria } = useMemo(
+export function PasswordStrengthMeter({ password, showRequirements = true }: PasswordStrengthMeterProperties) {
+  const { strength, criteria } = useMemo(
     () => calculatePasswordStrength(password),
     [password]
   );
@@ -109,19 +109,19 @@ export function PasswordStrengthMeter({ password, showRequirements = true }: Pas
 
       {showRequirements && (
         <div className="space-y-1.5 pt-1">
-          {requirements.map((req, index) => (
+          {requirements.map((request, index) => (
             <div
               key={index}
               className={`flex items-center space-x-2 text-xs font-mono transition-colors duration-200 ${
-                req.met ? 'text-terminal-green' : 'text-gray-500'
+                request.met ? 'text-terminal-green' : 'text-gray-500'
               }`}
             >
-              {req.met ? (
+              {request.met ? (
                 <Check size={14} className="flex-shrink-0" />
               ) : (
                 <X size={14} className="flex-shrink-0" />
               )}
-              <span>{req.label}</span>
+              <span>{request.label}</span>
             </div>
           ))}
         </div>

@@ -15,7 +15,7 @@
 import { betterAuth } from 'better-auth';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-import { env, serverEnv } from './env';
+import { env as environment, serverEnv as serverEnvironment } from './env';
 import { logger } from './logger';
 
 /**
@@ -23,11 +23,11 @@ import { logger } from './logger';
  * Uses Supabase PostgreSQL with existing better_auth_* tables
  */
 const getDatabaseConfig = () => {
-  const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY);
+  const supabase = createClient(environment.VITE_SUPABASE_URL, environment.VITE_SUPABASE_ANON_KEY);
 
   return {
     provider: 'postgres' as const,
-    url: env.VITE_SUPABASE_URL,
+    url: environment.VITE_SUPABASE_URL,
     client: supabase,
     schema: {
       // Map Better-Auth tables to our existing schema
@@ -43,12 +43,12 @@ const getDatabaseConfig = () => {
  * Handles OTP verification, password reset, and welcome emails
  */
 const getResendConfig = () => {
-  if (!serverEnv.RESEND_API_KEY) {
+  if (!serverEnvironment.RESEND_API_KEY) {
     logger.warn('Resend API key not configured - email features disabled');
-    return undefined;
+    return;
   }
 
-  const resend = new Resend(serverEnv.RESEND_API_KEY);
+  const resend = new Resend(serverEnvironment.RESEND_API_KEY);
 
   return {
     /**
@@ -163,7 +163,7 @@ const getResendConfig = () => {
      */
     sendPasswordResetEmail: async ({ email, token }: { email: string; token: string }) => {
       try {
-        const resetUrl = `${env.VITE_BETTER_AUTH_URL}/reset-password?token=${token}`;
+        const resetUrl = `${environment.VITE_BETTER_AUTH_URL}/reset-password?token=${token}`;
 
         const { data, error } = await resend.emails.send({
           from: 'Pythoughts <noreply@pythoughts.com>',
@@ -400,8 +400,8 @@ const getResendConfig = () => {
  */
 export const auth = betterAuth({
   // Base configuration
-  secret: serverEnv.BETTER_AUTH_SECRET || 'development-secret-change-in-production',
-  baseURL: env.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
+  secret: serverEnvironment.BETTER_AUTH_SECRET || 'development-secret-change-in-production',
+  baseURL: environment.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
 
   // Database configuration
   database: getDatabaseConfig(),
@@ -457,7 +457,7 @@ export const auth = betterAuth({
   advanced: {
     // Generate secure tokens for email verification
     generateId: () => {
-      return Math.random().toString(36).substring(2, 8).toUpperCase();
+      return Math.random().toString(36).slice(2, 8).toUpperCase();
     },
   },
 });
@@ -521,8 +521,8 @@ export async function getCurrentUser(request: Request) {
 
 // Log initialization status
 logger.info('Better-Auth initialized', {
-  baseURL: env.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
-  emailEnabled: !!serverEnv.RESEND_API_KEY,
+  baseURL: environment.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
+  emailEnabled: !!serverEnvironment.RESEND_API_KEY,
   twoFactorEnabled: true,
   sessionExpiry: '7 days',
 });

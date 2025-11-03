@@ -11,14 +11,14 @@ import { sanitizeInput, sanitizeURL, isValidContentLength } from '../../utils/se
 import { useDraftRecovery } from '../../hooks/useDraftRecovery';
 import { getActiveCategories } from '../../actions/categories';
 
-type DraftEditorProps = {
+type DraftEditorProperties = {
   draftId?: string;
   postType: 'news' | 'blog';
   onClose: () => void;
   onPublish?: () => void;
 };
 
-export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEditorProps) {
+export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEditorProperties) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -35,8 +35,8 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
   const [schedulePublish, setSchedulePublish] = useState(false);
   const [scheduledDateTime, setScheduledDateTime] = useState('');
 
-  const autoSaveTimerRef = useRef<NodeJS.Timeout>();
-  const currentDraftIdRef = useRef<string | undefined>(draftId);
+  const autoSaveTimerReference = useRef<NodeJS.Timeout>();
+  const currentDraftIdReference = useRef<string | undefined>(draftId);
 
   // Draft recovery system
   const {
@@ -132,11 +132,11 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
         scheduled_publish_at: schedulePublish && scheduledDateTime ? new Date(scheduledDateTime).toISOString() : null,
       };
 
-      if (currentDraftIdRef.current) {
+      if (currentDraftIdReference.current) {
         const { error } = await supabase
           .from('post_drafts')
           .update(draftData)
-          .eq('id', currentDraftIdRef.current)
+          .eq('id', currentDraftIdReference.current)
           .eq('author_id', user.id);
 
         if (error) throw error;
@@ -149,7 +149,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
 
         if (error) throw error;
         if (data) {
-          currentDraftIdRef.current = data.id;
+          currentDraftIdReference.current = data.id;
         }
       }
 
@@ -169,11 +169,11 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
 
   useEffect(() => {
     if (content.length > 0 || title.length > 0) {
-      if (autoSaveTimerRef.current) {
-        clearTimeout(autoSaveTimerRef.current);
+      if (autoSaveTimerReference.current) {
+        clearTimeout(autoSaveTimerReference.current);
       }
 
-      autoSaveTimerRef.current = setTimeout(() => {
+      autoSaveTimerReference.current = setTimeout(() => {
         saveDraft(true);
         // Also backup to localStorage
         saveDraftBackup({
@@ -184,12 +184,12 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
           category,
           tags,
         });
-      }, 30000);
+      }, 30_000);
     }
 
     return () => {
-      if (autoSaveTimerRef.current) {
-        clearTimeout(autoSaveTimerRef.current);
+      if (autoSaveTimerReference.current) {
+        clearTimeout(autoSaveTimerReference.current);
       }
     };
   }, [title, content, subtitle, imageUrl, category, tags, saveDraft, saveDraftBackup]);
@@ -225,7 +225,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
         return;
       }
 
-      if (!isValidContentLength(content, 10, 50000)) {
+      if (!isValidContentLength(content, 10, 50_000)) {
         setError('Content must be between 10 and 50,000 characters');
         setPublishing(false);
         return;
@@ -290,7 +290,7 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
 
       if (post && tags.length > 0) {
         for (const tagName of tags) {
-          const slug = tagName.toLowerCase().replace(/\s+/g, '-');
+          const slug = tagName.toLowerCase().replaceAll(/\s+/g, '-');
 
           const { data: existingTag } = await supabase
             .from('tags')
@@ -322,11 +322,11 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
         }
       }
 
-      if (currentDraftIdRef.current) {
+      if (currentDraftIdReference.current) {
         await supabase
           .from('post_drafts')
           .delete()
-          .eq('id', currentDraftIdRef.current)
+          .eq('id', currentDraftIdReference.current)
           .eq('author_id', user.id);
       }
 
@@ -335,8 +335,8 @@ export function DraftEditor({ draftId, postType, onClose, onPublish }: DraftEdit
 
       onPublish?.();
       onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to publish post');
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to publish post');
       setPublishing(false);
     }
   };

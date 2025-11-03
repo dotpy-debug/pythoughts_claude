@@ -17,12 +17,12 @@ import { Settings, Tag, Image as ImageIcon } from 'lucide-react';
 import { ScrollArea } from '../../ui/scroll-area';
 import { Separator } from '../../ui/separator';
 
-interface PostMetaPanelProps {
+interface PostMetaPanelProperties {
   post: Partial<BlogPost>;
   onChange: (post: Partial<BlogPost>) => void;
 }
 
-export function PostMetaPanel({ post, onChange }: PostMetaPanelProps) {
+export function PostMetaPanel({ post, onChange }: PostMetaPanelProperties) {
   const [tagInput, setTagInput] = useState('');
 
   const handleAddTag = () => {

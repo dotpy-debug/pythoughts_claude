@@ -14,7 +14,7 @@ import { ReactNode } from 'react';
 import { Download, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-export interface ChartCardProps {
+export interface ChartCardProperties {
   /**
    * Card title
    */
@@ -93,7 +93,7 @@ export function ChartCard({
   onExport,
   showExport = true,
   height = 300,
-}: ChartCardProps) {
+}: ChartCardProperties) {
   const getTrendIcon = () => {
     if (change === undefined || change === 0) {
       return <Minus size={16} className="text-gray-500" />;
@@ -192,7 +192,7 @@ export function ChartCard({
  *
  * Grid layout for multiple chart cards
  */
-export interface ChartGridProps {
+export interface ChartGridProperties {
   children: ReactNode;
   columns?: 1 | 2 | 3 | 4;
   className?: string;
@@ -202,7 +202,7 @@ export function ChartGrid({
   children,
   columns = 2,
   className,
-}: ChartGridProps) {
+}: ChartGridProperties) {
   const gridCols = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 lg:grid-cols-2',

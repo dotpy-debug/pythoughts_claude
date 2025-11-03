@@ -41,12 +41,12 @@ export type PublicationData = {
   metaDescription?: string;
 };
 
-type PublicationWizardProps = {
+type PublicationWizardProperties = {
   onComplete: (publicationId: string) => void;
   onCancel: () => void;
 };
 
-export function PublicationWizard({ onComplete, onCancel }: PublicationWizardProps) {
+export function PublicationWizard({ onComplete, onCancel }: PublicationWizardProperties) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('basic');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,14 +67,14 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
   });
 
   const handleInputChange = (field: keyof PublicationData, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(previous => ({ ...previous, [field]: value }));
   };
 
   const generateSlug = (name: string): string => {
     return name
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
+      .replaceAll(/[^a-z0-9]+/g, '-')
+      .replaceAll(/^-|-$/g, '');
   };
 
   const handleNameChange = (name: string) => {
@@ -167,9 +167,9 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
       }
 
       onComplete(publication.id);
-    } catch (err) {
-      logger.error('Failed to create publication', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to create publication');
+    } catch (error_) {
+      logger.error('Failed to create publication', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to create publication');
     } finally {
       setIsSubmitting(false);
     }
@@ -491,7 +491,11 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 Previous
               </Button>
             )}
-            {activeTab !== 'social' ? (
+            {activeTab === 'social' ? (
+              <Button onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting ? 'Creating...' : 'Create Publication'}
+              </Button>
+            ) : (
               <Button
                 onClick={() => {
                   const tabs = ['basic', 'branding', 'settings', 'social'];
@@ -503,10 +507,6 @@ export function PublicationWizard({ onComplete, onCancel }: PublicationWizardPro
                 disabled={isSubmitting}
               >
                 Next
-              </Button>
-            ) : (
-              <Button onClick={handleSubmit} disabled={isSubmitting}>
-                {isSubmitting ? 'Creating...' : 'Create Publication'}
               </Button>
             )}
           </div>

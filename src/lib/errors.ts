@@ -30,7 +30,7 @@ export class AppError extends Error {
     this.timestamp = new Date().toISOString();
 
     // Maintain proper stack trace
-    Error.captureStackTrace(this, this.constructor);
+    
   }
 
   /**
@@ -300,11 +300,11 @@ export interface SuccessResponse<T = unknown> {
 /**
  * Error logging utility with proper error levels
  */
-export class ErrorLogger {
+export const ErrorLogger = {
   /**
    * Logs an error with appropriate level and metadata
    */
-  static log(error: Error | AppError, context?: string, metadata?: Record<string, unknown>): void {
+  log(error: Error | AppError, context?: string, metadata?: Record<string, unknown>): void {
     const errorMetadata = {
       context,
       ...metadata,
@@ -337,12 +337,12 @@ export class ErrorLogger {
       // Unknown errors - treat as fatal
       logger.error(error.message, error, errorMetadata);
     }
-  }
+  },
 
   /**
    * Logs a validation error
    */
-  static logValidation(
+  logValidation(
     error: ValidationError,
     context?: string,
     metadata?: Record<string, unknown>
@@ -352,12 +352,12 @@ export class ErrorLogger {
       ...metadata,
       fields: error.fields,
     });
-  }
+  },
 
   /**
    * Logs a database error
    */
-  static logDatabase(
+  logDatabase(
     error: DatabaseError,
     context?: string,
     metadata?: Record<string, unknown>
@@ -368,12 +368,12 @@ export class ErrorLogger {
       table: error.table,
       query: error.query,
     });
-  }
+  },
 
   /**
    * Logs an external service error
    */
-  static logExternalService(
+  logExternalService(
     error: ExternalServiceError,
     context?: string,
     metadata?: Record<string, unknown>
@@ -383,8 +383,8 @@ export class ErrorLogger {
       ...metadata,
       service: error.service,
     });
-  }
-}
+  },
+};
 
 /**
  * Error boundary helper for catching and handling errors in async operations
@@ -401,16 +401,16 @@ export async function withErrorHandling<T>(
   try {
     return await operation();
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(getErrorMessage(error));
+    const error_ = error instanceof Error ? error : new Error(getErrorMessage(error));
 
-    ErrorLogger.log(err, context);
+    ErrorLogger.log(error_, context);
 
     if (options?.onError) {
-      options.onError(err);
+      options.onError(error_);
     }
 
     if (options?.rethrow ?? true) {
-      throw err;
+      throw error_;
     }
 
     return options?.fallbackValue;
@@ -420,17 +420,17 @@ export async function withErrorHandling<T>(
 /**
  * Wraps a function with error handling
  */
-export function withErrorBoundary<TArgs extends unknown[], TReturn>(
-  fn: (...args: TArgs) => Promise<TReturn>,
+export function withErrorBoundary<TArguments extends unknown[], TReturn>(
+  function_: (...arguments_: TArguments) => Promise<TReturn>,
   context: string
-): (...args: TArgs) => Promise<TReturn> {
-  return async (...args: TArgs): Promise<TReturn> => {
+): (...arguments_: TArguments) => Promise<TReturn> {
+  return async (...arguments_: TArguments): Promise<TReturn> => {
     try {
-      return await fn(...args);
+      return await function_(...arguments_);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(getErrorMessage(error));
-      ErrorLogger.log(err, context);
-      throw err;
+      const error_ = error instanceof Error ? error : new Error(getErrorMessage(error));
+      ErrorLogger.log(error_, context);
+      throw error_;
     }
   };
 }
@@ -520,11 +520,11 @@ export function toSuccessResponse<T>(
  * Handles errors in API route handlers or server actions
  */
 export function handleError(error: unknown, context?: string): ErrorResponse {
-  const err = error instanceof Error ? error : new Error(getErrorMessage(error));
+  const error_ = error instanceof Error ? error : new Error(getErrorMessage(error));
 
-  ErrorLogger.log(err, context);
+  ErrorLogger.log(error_, context);
 
-  return toErrorResponse(err);
+  return toErrorResponse(error_);
 }
 
 /**
@@ -553,7 +553,7 @@ export async function withRetry<T>(
   const {
     maxRetries = 3,
     initialDelay = 1000,
-    maxDelay = 10000,
+    maxDelay = 10_000,
     backoffMultiplier = 2,
     shouldRetry = () => true,
     onRetry,

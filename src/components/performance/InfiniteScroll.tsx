@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Loader2 } from 'lucide-react';
 
-interface InfiniteScrollProps {
+interface InfiniteScrollProperties {
   onLoadMore: () => void;
   hasMore: boolean;
   loading: boolean;
@@ -15,7 +15,7 @@ export function InfiniteScroll({
   loading,
   threshold = 0.5,
   children,
-}: InfiniteScrollProps) {
+}: InfiniteScrollProperties) {
   const observerTarget = useRef<HTMLDivElement>(null);
 
   const handleIntersect = useCallback(

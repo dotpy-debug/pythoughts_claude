@@ -10,17 +10,17 @@ const HIGHLIGHT_COLORS: { color: HighlightColor; label: string; className: strin
   { color: 'purple', label: 'Purple', className: 'bg-purple-400 hover:bg-purple-500' },
 ];
 
-interface HighlightToolbarProps {
+interface HighlightToolbarProperties {
   selection: TextSelection;
   onHighlight: (color: HighlightColor, note?: string) => void;
   onClose: () => void;
 }
 
-export function HighlightToolbar({ selection, onHighlight, onClose }: HighlightToolbarProps) {
+export function HighlightToolbar({ selection, onHighlight, onClose }: HighlightToolbarProperties) {
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [note, setNote] = useState('');
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
-  const toolbarRef = useRef<HTMLDivElement>(null);
+  const toolbarReference = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!selection.range) return;
@@ -38,7 +38,7 @@ export function HighlightToolbar({ selection, onHighlight, onClose }: HighlightT
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+      if (toolbarReference.current && !toolbarReference.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -61,7 +61,7 @@ export function HighlightToolbar({ selection, onHighlight, onClose }: HighlightT
 
   return (
     <div
-      ref={toolbarRef}
+      ref={toolbarReference}
       className="fixed z-50 transform -translate-x-1/2"
       style={{ top: `${position.top}px`, left: `${position.left}px` }}
     >

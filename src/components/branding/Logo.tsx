@@ -7,7 +7,7 @@
 
 import PyThoughtsLogo from '../ui/pythoughts-logo';
 
-interface LogoProps {
+interface LogoProperties {
   /**
    * Show the "pythoughts.com" text
    * @default true
@@ -46,7 +46,7 @@ const sizeScaleMap = {
  * <Logo size="md" />
  * ```
  */
-export function Logo({ showText = true, size = 'md', className, ariaLabel }: LogoProps) {
+export function Logo({ showText = true, size = 'md', className, ariaLabel }: LogoProperties) {
   const scaleClass = sizeScaleMap[size];
   const combinedClassName = `${scaleClass} ${className || ''}`.trim();
 

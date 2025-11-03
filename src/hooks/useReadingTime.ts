@@ -13,16 +13,16 @@ export type ReadingTimeTrackerOptions = {
  * Automatically tracks how long a user spends reading a post and how far they scroll
  */
 export function useReadingTime(options: ReadingTimeTrackerOptions) {
-  const { postId, userId: _userId, onMilestone, updateInterval = 5000 } = options;
+  const { postId, onMilestone, updateInterval = 5000 } = options;
 
   const [readTime, setReadTime] = useState(0);
   const [scrollPercentage, setScrollPercentage] = useState(0);
   const [isReading, setIsReading] = useState(false);
 
-  const startTimeRef = useRef<number | null>(null);
-  const lastUpdateRef = useRef<number>(0);
-  const totalReadTimeRef = useRef(0);
-  const milestonesReachedRef = useRef<Set<number>>(new Set());
+  const startTimeReference = useRef<number | null>(null);
+  const lastUpdateReference = useRef<number>(0);
+  const totalReadTimeReference = useRef(0);
+  const milestonesReachedReference = useRef<Set<number>>(new Set());
 
   /**
    * Calculate scroll percentage
@@ -43,8 +43,8 @@ export function useReadingTime(options: ReadingTimeTrackerOptions) {
    * Start tracking reading time
    */
   const startReading = useCallback(() => {
-    if (!startTimeRef.current) {
-      startTimeRef.current = Date.now();
+    if (!startTimeReference.current) {
+      startTimeReference.current = Date.now();
       setIsReading(true);
     }
   }, []);
@@ -53,11 +53,11 @@ export function useReadingTime(options: ReadingTimeTrackerOptions) {
    * Stop tracking reading time
    */
   const stopReading = useCallback(() => {
-    if (startTimeRef.current) {
-      const elapsed = Date.now() - startTimeRef.current;
-      totalReadTimeRef.current += elapsed;
-      setReadTime(totalReadTimeRef.current);
-      startTimeRef.current = null;
+    if (startTimeReference.current) {
+      const elapsed = Date.now() - startTimeReference.current;
+      totalReadTimeReference.current += elapsed;
+      setReadTime(totalReadTimeReference.current);
+      startTimeReference.current = null;
       setIsReading(false);
     }
   }, []);
@@ -69,17 +69,17 @@ export function useReadingTime(options: ReadingTimeTrackerOptions) {
     const now = Date.now();
 
     // Only update if enough time has passed
-    if (now - lastUpdateRef.current < updateInterval) {
+    if (now - lastUpdateReference.current < updateInterval) {
       return;
     }
 
-    const currentReadTime = Math.floor(totalReadTimeRef.current / 1000); // Convert to seconds
+    const currentReadTime = Math.floor(totalReadTimeReference.current / 1000); // Convert to seconds
     const currentScrollPercentage = calculateScrollPercentage();
 
     // Track reading progress
     Analytics.trackReadingProgress(postId, currentScrollPercentage, currentReadTime);
 
-    lastUpdateRef.current = now;
+    lastUpdateReference.current = now;
   }, [postId, updateInterval, calculateScrollPercentage]);
 
   /**
@@ -92,9 +92,9 @@ export function useReadingTime(options: ReadingTimeTrackerOptions) {
       for (const milestone of milestones) {
         if (
           percentage >= milestone &&
-          !milestonesReachedRef.current.has(milestone)
+          !milestonesReachedReference.current.has(milestone)
         ) {
-          milestonesReachedRef.current.add(milestone);
+          milestonesReachedReference.current.add(milestone);
 
           // Call milestone callback
           if (onMilestone) {
@@ -108,7 +108,7 @@ export function useReadingTime(options: ReadingTimeTrackerOptions) {
             properties: {
               post_id: postId,
               milestone,
-              read_time: Math.floor(totalReadTimeRef.current / 1000),
+              read_time: Math.floor(totalReadTimeReference.current / 1000),
             },
             value: milestone,
           });
@@ -166,9 +166,9 @@ export function useReadingTime(options: ReadingTimeTrackerOptions) {
     if (!isReading) return;
 
     const interval = setInterval(() => {
-      if (startTimeRef.current) {
-        const elapsed = Date.now() - startTimeRef.current;
-        const currentTotal = totalReadTimeRef.current + elapsed;
+      if (startTimeReference.current) {
+        const elapsed = Date.now() - startTimeReference.current;
+        const currentTotal = totalReadTimeReference.current + elapsed;
         setReadTime(currentTotal);
         updateAnalytics();
       }
@@ -199,10 +199,10 @@ export function useReadingTime(options: ReadingTimeTrackerOptions) {
  * Automatically tracks a view when the component mounts
  */
 export function usePostView(postId: string, userId?: string) {
-  const hasTrackedRef = useRef(false);
+  const hasTrackedReference = useRef(false);
 
   useEffect(() => {
-    if (hasTrackedRef.current) return;
+    if (hasTrackedReference.current) return;
 
     // Track the post view
     Analytics.trackPostView({
@@ -212,12 +212,12 @@ export function usePostView(postId: string, userId?: string) {
     });
 
     // Track referral if UTM params present
-    const utmParams = Analytics.parseUTMParams();
-    if (Object.keys(utmParams).length > 0) {
-      Analytics.trackReferral(postId, utmParams);
+    const utmParameters = Analytics.parseUTMParams();
+    if (Object.keys(utmParameters).length > 0) {
+      Analytics.trackReferral(postId, utmParameters);
     }
 
-    hasTrackedRef.current = true;
+    hasTrackedReference.current = true;
   }, [postId, userId]);
 }
 

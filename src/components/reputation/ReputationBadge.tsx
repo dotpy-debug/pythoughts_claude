@@ -3,7 +3,7 @@ import { TrendingUp, Award } from 'lucide-react';
 import { getUserReputation, getLevelInfo } from '../../actions/reputation';
 import type { UserReputation } from '../../actions/reputation';
 
-interface ReputationBadgeProps {
+interface ReputationBadgeProperties {
   userId: string;
   variant?: 'compact' | 'full' | 'inline';
   showProgress?: boolean;
@@ -13,7 +13,7 @@ export function ReputationBadge({
   userId,
   variant = 'compact',
   showProgress = false
-}: ReputationBadgeProps) {
+}: ReputationBadgeProperties) {
   const [reputation, setReputation] = useState<UserReputation | null>(null);
   const [loading, setLoading] = useState(true);
 

@@ -5,13 +5,13 @@ import { ShadcnButton } from '../ui/ShadcnButton';
 import { X, Loader2, Upload } from 'lucide-react';
 import { sanitizeInput } from '../../utils/security';
 
-type CreateSeriesModalProps = {
+type CreateSeriesModalProperties = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
 };
 
-export function CreateSeriesModal({ isOpen, onClose, onSuccess }: CreateSeriesModalProps) {
+export function CreateSeriesModal({ isOpen, onClose, onSuccess }: CreateSeriesModalProperties) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,7 +30,7 @@ export function CreateSeriesModal({ isOpen, onClose, onSuccess }: CreateSeriesMo
       setLoading(true);
 
       // Generate slug from name if not provided
-      const slug = formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const slug = formData.slug || formData.name.toLowerCase().replaceAll(/\s+/g, '-').replaceAll(/[^a-z0-9-]/g, '');
 
       // Sanitize inputs
       const sanitizedData = {

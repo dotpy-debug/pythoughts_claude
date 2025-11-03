@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-type TerminalWindowProps = {
+type TerminalWindowProperties = {
   title?: string;
   children: ReactNode;
   className?: string;
@@ -12,7 +12,7 @@ export function TerminalWindow({
   children,
   className = '',
   showTrafficLights = true
-}: TerminalWindowProps) {
+}: TerminalWindowProperties) {
   return (
     <div className={`bg-gray-900 rounded-lg shadow-2xl overflow-hidden ${className}`}>
       <div className="bg-gray-800 px-4 py-3 flex items-center justify-between border-b border-gray-700">

@@ -43,9 +43,9 @@ export function SystemSettings() {
 
         // Initialize edited settings
         const initial: Record<string, unknown> = {};
-        result.settings.forEach((setting) => {
+        for (const setting of result.settings) {
           initial[setting.key] = setting.value;
-        });
+        }
         setEditedSettings(initial);
       }
     } catch (error) {
@@ -88,8 +88,8 @@ export function SystemSettings() {
       ? { ...currentValue as Record<string, unknown>, [field]: value }
       : { [field]: value };
 
-    setEditedSettings((prev) => ({
-      ...prev,
+    setEditedSettings((previous) => ({
+      ...previous,
       [key]: updatedValue,
     }));
   };
@@ -150,7 +150,7 @@ export function SystemSettings() {
                 <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                 <p className="text-gray-400">Loading settings...</p>
               </div>
-            ) : filteredSettings.length === 0 ? (
+            ) : (filteredSettings.length === 0 ? (
               <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 text-center text-gray-400">
                 No settings found for this category
               </div>
@@ -276,7 +276,7 @@ export function SystemSettings() {
                               updateSettingValue(
                                 setting.key,
                                 'limit',
-                                parseInt(e.target.value) || 10
+                                Number.parseInt(e.target.value) || 10
                               )
                             }
                             className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
@@ -293,7 +293,7 @@ export function SystemSettings() {
                               updateSettingValue(
                                 setting.key,
                                 'window',
-                                parseInt(e.target.value) || 3600
+                                Number.parseInt(e.target.value) || 3600
                               )
                             }
                             className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
@@ -331,8 +331,8 @@ export function SystemSettings() {
                           onChange={(e) => {
                             try {
                               const parsed = JSON.parse(e.target.value);
-                              setEditedSettings((prev) => ({
-                                ...prev,
+                              setEditedSettings((previous) => ({
+                                ...previous,
                                 [setting.key]: parsed,
                               }));
                             } catch {
@@ -368,7 +368,7 @@ export function SystemSettings() {
                   </div>
                 </div>
               ))
-            )}
+            ))}
           </div>
         </div>
       </div>

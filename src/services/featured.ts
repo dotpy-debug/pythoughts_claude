@@ -242,11 +242,11 @@ export async function getBlogOfTheDay(): Promise<BlogPost | null> {
 
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const yesterdayString = yesterday.toISOString().split('T')[0];
 
     // Get yesterday's winner to exclude
     const yesterdayWinner = await cacheGet<BlogPost>(
-      FEATURED_CACHE_KEYS.BLOG_OF_THE_DAY(yesterdayStr)
+      FEATURED_CACHE_KEYS.BLOG_OF_THE_DAY(yesterdayString)
     );
 
     // Fetch candidates

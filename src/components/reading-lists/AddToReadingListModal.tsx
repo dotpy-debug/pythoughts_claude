@@ -5,13 +5,13 @@ import { supabase, ReadingList } from '../../lib/supabase';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 
-type AddToReadingListModalProps = {
+type AddToReadingListModalProperties = {
   isOpen: boolean;
   onClose: () => void;
   postId: string;
 };
 
-export function AddToReadingListModal({ isOpen, onClose, postId }: AddToReadingListModalProps) {
+export function AddToReadingListModal({ isOpen, onClose, postId }: AddToReadingListModalProperties) {
   const { user } = useAuth();
   const [readingLists, setReadingLists] = useState<ReadingList[]>([]);
   const [loading, setLoading] = useState(true);
@@ -111,8 +111,8 @@ export function AddToReadingListModal({ isOpen, onClose, postId }: AddToReadingL
           .eq('reading_list_id', listId)
           .eq('post_id', postId);
 
-        setAddedLists((prev) => {
-          const next = new Set(prev);
+        setAddedLists((previous) => {
+          const next = new Set(previous);
           next.delete(listId);
           return next;
         });
@@ -123,7 +123,7 @@ export function AddToReadingListModal({ isOpen, onClose, postId }: AddToReadingL
           post_id: postId,
         });
 
-        setAddedLists((prev) => new Set([...prev, listId]));
+        setAddedLists((previous) => new Set([...previous, listId]));
       }
     } catch (error) {
       console.error('Error toggling reading list:', error);

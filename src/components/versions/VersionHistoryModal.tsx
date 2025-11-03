@@ -7,7 +7,7 @@ import { Button } from '../ui/Button';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { logger } from '../../lib/logger';
 
-interface VersionHistoryModalProps {
+interface VersionHistoryModalProperties {
   isOpen: boolean;
   onClose: () => void;
   postId: string;
@@ -21,7 +21,7 @@ export function VersionHistoryModal({
   postId,
   postAuthorId,
   onVersionRestored,
-}: VersionHistoryModalProps) {
+}: VersionHistoryModalProperties) {
   const { user } = useAuth();
   const [versions, setVersions] = useState<PostVersion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,11 +37,11 @@ export function VersionHistoryModal({
     try {
       const data = await getPostVersions(postId);
       setVersions(data);
-    } catch (err) {
-      if (err instanceof Error) {
-        logger.error('Error loading versions', err, { postId });
+    } catch (error_) {
+      if (error_ instanceof Error) {
+        logger.error('Error loading versions', error_, { postId });
       } else {
-        logger.error('Error loading versions', { errorMessage: String(err), postId });
+        logger.error('Error loading versions', { errorMessage: String(error_), postId });
       }
       setError('Failed to load version history');
     } finally {
@@ -73,11 +73,11 @@ export function VersionHistoryModal({
       } else {
         setError(result.error || 'Failed to restore version');
       }
-    } catch (err) {
-      if (err instanceof Error) {
-        logger.error('Error restoring version', err, { postId, versionNumber });
+    } catch (error_) {
+      if (error_ instanceof Error) {
+        logger.error('Error restoring version', error_, { postId, versionNumber });
       } else {
-        logger.error('Error restoring version', { errorMessage: String(err), postId, versionNumber });
+        logger.error('Error restoring version', { errorMessage: String(error_), postId, versionNumber });
       }
       setError('An unexpected error occurred');
     } finally {
@@ -121,7 +121,7 @@ export function VersionHistoryModal({
             </span>
             {versions.length > 0 && (
               <span className="text-xs text-gray-500 font-mono">
-                ({versions.length} version{versions.length !== 1 ? 's' : ''})
+                ({versions.length} version{versions.length === 1 ? '' : 's'})
               </span>
             )}
           </div>

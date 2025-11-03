@@ -17,7 +17,7 @@ import { BlogCompactCard } from './BlogCompactCard';
 import { FeaturedBlogSkeleton } from './FeaturedBlogSkeleton';
 import { TrendingUp, AlertCircle, RefreshCw } from 'lucide-react';
 
-interface FeaturedBlogSectionProps {
+interface FeaturedBlogSectionProperties {
   maxBlogs?: number;
   showEngagement?: boolean;
   autoRefresh?: boolean;
@@ -29,7 +29,7 @@ export const FeaturedBlogSection = memo(function FeaturedBlogSection({
   showEngagement = true,
   autoRefresh = true,
   category,
-}: FeaturedBlogSectionProps) {
+}: FeaturedBlogSectionProperties) {
   const { blogs, loading, error, refresh } = useFeaturedBlogs({
     limit: maxBlogs,
     autoRefresh,

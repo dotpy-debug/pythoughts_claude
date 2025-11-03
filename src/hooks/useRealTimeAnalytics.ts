@@ -52,9 +52,8 @@ export function useRealTimeAnalytics(
   options: RealTimeAnalyticsOptions = {}
 ) {
   const {
-    refreshInterval = 30000,
+    refreshInterval = 30_000,
     enableRealtime = true,
-    metric: _metric = 'all',
   } = options;
 
   const [metrics, setMetrics] = useState<Record<string, LiveMetric>>({
@@ -66,9 +65,9 @@ export function useRealTimeAnalytics(
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const channelRef = useRef<RealtimeChannel | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const previousValuesRef = useRef<Record<string, number>>({});
+  const channelReference = useRef<RealtimeChannel | null>(null);
+  const intervalReference = useRef<NodeJS.Timeout | null>(null);
+  const previousValuesReference = useRef<Record<string, number>>({});
 
   // Fetch current metrics
   const fetchMetrics = useCallback(async () => {
@@ -119,36 +118,36 @@ export function useRealTimeAnalytics(
       const newMetrics: Record<string, LiveMetric> = {
         views: {
           value: totalViews,
-          change: previousValuesRef.current.views
-            ? totalViews - previousValuesRef.current.views
+          change: previousValuesReference.current.views
+            ? totalViews - previousValuesReference.current.views
             : 0,
           lastUpdated: new Date(),
         },
         reads: {
           value: totalReads,
-          change: previousValuesRef.current.reads
-            ? totalReads - previousValuesRef.current.reads
+          change: previousValuesReference.current.reads
+            ? totalReads - previousValuesReference.current.reads
             : 0,
           lastUpdated: new Date(),
         },
         votes: {
           value: totalVotes,
-          change: previousValuesRef.current.votes
-            ? totalVotes - previousValuesRef.current.votes
+          change: previousValuesReference.current.votes
+            ? totalVotes - previousValuesReference.current.votes
             : 0,
           lastUpdated: new Date(),
         },
         comments: {
           value: totalComments,
-          change: previousValuesRef.current.comments
-            ? totalComments - previousValuesRef.current.comments
+          change: previousValuesReference.current.comments
+            ? totalComments - previousValuesReference.current.comments
             : 0,
           lastUpdated: new Date(),
         },
       };
 
       // Update previous values
-      previousValuesRef.current = {
+      previousValuesReference.current = {
         views: totalViews,
         reads: totalReads,
         votes: totalVotes,
@@ -156,9 +155,9 @@ export function useRealTimeAnalytics(
       };
 
       setMetrics(newMetrics);
-    } catch (err) {
-      console.error('Error fetching real-time metrics:', err);
-      setError(err instanceof Error ? err : new Error('Unknown error'));
+    } catch (error_) {
+      console.error('Error fetching real-time metrics:', error_);
+      setError(error_ instanceof Error ? error_ : new Error('Unknown error'));
     } finally {
       setLoading(false);
     }
@@ -210,7 +209,7 @@ export function useRealTimeAnalytics(
       )
       .subscribe();
 
-    channelRef.current = channel;
+    channelReference.current = channel;
 
     return () => {
       channel.unsubscribe();
@@ -224,12 +223,12 @@ export function useRealTimeAnalytics(
 
     // Setup interval
     if (refreshInterval > 0) {
-      intervalRef.current = setInterval(fetchMetrics, refreshInterval);
+      intervalReference.current = setInterval(fetchMetrics, refreshInterval);
     }
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+      if (intervalReference.current) {
+        clearInterval(intervalReference.current);
       }
     };
   }, [fetchMetrics, refreshInterval]);
@@ -248,7 +247,7 @@ export function useRealTimeAnalytics(
 export function useLivePostViews(postId: string) {
   const [viewCount, setViewCount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const channelRef = useRef<RealtimeChannel | null>(null);
+  const channelReference = useRef<RealtimeChannel | null>(null);
 
   useEffect(() => {
     // Fetch initial count
@@ -261,8 +260,8 @@ export function useLivePostViews(postId: string) {
 
         if (error) throw error;
         setViewCount(count || 0);
-      } catch (err) {
-        console.error('Error fetching view count:', err);
+      } catch (error) {
+        console.error('Error fetching view count:', error);
       } finally {
         setLoading(false);
       }
@@ -282,12 +281,12 @@ export function useLivePostViews(postId: string) {
           filter: `post_id=eq.${postId}`,
         },
         () => {
-          setViewCount((prev) => prev + 1);
+          setViewCount((previous) => previous + 1);
         }
       )
       .subscribe();
 
-    channelRef.current = channel;
+    channelReference.current = channel;
 
     return () => {
       channel.unsubscribe();
@@ -307,35 +306,35 @@ export function useSessionAnalytics() {
     eventsTriggered: 0,
   });
 
-  const sessionStartRef = useRef(Date.now());
-  const pagesViewedRef = useRef(new Set<string>());
-  const eventsRef = useRef(0);
+  const sessionStartReference = useRef(Date.now());
+  const pagesViewedReference = useRef(new Set<string>());
+  const eventsReference = useRef(0);
 
   useEffect(() => {
     // Track page views
     const trackPageView = () => {
-      pagesViewedRef.current.add(window.location.pathname);
+      pagesViewedReference.current.add(globalThis.location.pathname);
       updateSessionData();
     };
 
     // Track events
     const trackEvent = () => {
-      eventsRef.current++;
+      eventsReference.current++;
       updateSessionData();
     };
 
     // Update session data
     const updateSessionData = () => {
       setSessionData({
-        duration: Math.floor((Date.now() - sessionStartRef.current) / 1000),
-        pagesViewed: pagesViewedRef.current.size,
-        eventsTriggered: eventsRef.current,
+        duration: Math.floor((Date.now() - sessionStartReference.current) / 1000),
+        pagesViewed: pagesViewedReference.current.size,
+        eventsTriggered: eventsReference.current,
       });
     };
 
     // Setup listeners
-    window.addEventListener('popstate', trackPageView);
-    window.addEventListener('click', trackEvent);
+    globalThis.addEventListener('popstate', trackPageView);
+    globalThis.addEventListener('click', trackEvent);
 
     // Update duration every second
     const interval = setInterval(updateSessionData, 1000);
@@ -344,8 +343,8 @@ export function useSessionAnalytics() {
     trackPageView();
 
     return () => {
-      window.removeEventListener('popstate', trackPageView);
-      window.removeEventListener('click', trackEvent);
+      globalThis.removeEventListener('popstate', trackPageView);
+      globalThis.removeEventListener('click', trackEvent);
       clearInterval(interval);
     };
   }, []);
@@ -359,7 +358,7 @@ export function useSessionAnalytics() {
 export function useScrollDepth(onScrollMilestone?: (depth: number) => void) {
   const [scrollDepth, setScrollDepth] = useState(0);
   const [maxScrollDepth, setMaxScrollDepth] = useState(0);
-  const milestonesRef = useRef(new Set<number>());
+  const milestonesReference = useRef(new Set<number>());
 
   useEffect(() => {
     const handleScroll = () => {
@@ -372,19 +371,19 @@ export function useScrollDepth(onScrollMilestone?: (depth: number) => void) {
       );
 
       setScrollDepth(depth);
-      setMaxScrollDepth((prev) => Math.max(prev, depth));
+      setMaxScrollDepth((previous) => Math.max(previous, depth));
 
       // Track milestones (25%, 50%, 75%, 100%)
       const milestones = [25, 50, 75, 100];
-      milestones.forEach((milestone) => {
+      for (const milestone of milestones) {
         if (
           depth >= milestone &&
-          !milestonesRef.current.has(milestone)
+          !milestonesReference.current.has(milestone)
         ) {
-          milestonesRef.current.add(milestone);
+          milestonesReference.current.add(milestone);
           onScrollMilestone?.(milestone);
         }
-      });
+      }
     };
 
     window.addEventListener('scroll', handleScroll);

@@ -294,7 +294,7 @@ export function EnhancedAnalyticsPage() {
   const topPostsData = {
     labels: topPosts.map((post) =>
       post.title.length > 30
-        ? post.title.substring(0, 30) + '...'
+        ? post.title.slice(0, 30) + '...'
         : post.title
     ),
     datasets: [

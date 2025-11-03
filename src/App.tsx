@@ -13,41 +13,41 @@ import { useScheduledPostsPublisher } from './hooks/useScheduledPostsPublisher';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load page components (from pages-vite - original Vite routes)
-const LandingPage = lazy(() => import('./pages-vite/LandingPage').then(mod => ({ default: mod.LandingPage })));
-const HomePage = lazy(() => import('./pages-vite/HomePage').then(mod => ({ default: mod.HomePage })));
-const BlogsPage = lazy(() => import('./pages-vite/BlogsPage').then(mod => ({ default: mod.BlogsPage })));
-const TasksPage = lazy(() => import('./pages-vite/TasksPage').then(mod => ({ default: mod.TasksPage })));
-const PostDetailPage = lazy(() => import('./pages-vite/PostDetailPage').then(mod => ({ default: mod.PostDetailPage })));
-const ProfilePage = lazy(() => import('./pages-vite/ProfilePage').then(mod => ({ default: mod.ProfilePage })));
-const UserProfilePage = lazy(() => import('./pages-vite/UserProfilePage').then(mod => ({ default: mod.UserProfilePage })));
-const FollowersPage = lazy(() => import('./pages-vite/FollowersPage').then(mod => ({ default: mod.FollowersPage })));
-const FollowingPage = lazy(() => import('./pages-vite/FollowingPage').then(mod => ({ default: mod.FollowingPage })));
-const SettingsPage = lazy(() => import('./pages-vite/SettingsPage').then(mod => ({ default: mod.SettingsPage })));
-const DraftsPage = lazy(() => import('./pages-vite/DraftsPage').then(mod => ({ default: mod.DraftsPage })));
-const BookmarksPage = lazy(() => import('./pages-vite/BookmarksPage').then(mod => ({ default: mod.BookmarksPage })));
-const ReadingListsPage = lazy(() => import('./pages-vite/ReadingListsPage').then(mod => ({ default: mod.ReadingListsPage })));
-const ExplorePage = lazy(() => import('./pages-vite/ExplorePage').then(mod => ({ default: mod.ExplorePage })));
-const ActivityFeedPage = lazy(() => import('./pages-vite/ActivityFeedPage').then(mod => ({ default: mod.ActivityFeedPage })));
-const AnalyticsPage = lazy(() => import('./pages-vite/AnalyticsPage').then(mod => ({ default: mod.AnalyticsPage })));
-const TrendingPage = lazy(() => import('./pages-vite/TrendingPage').then(mod => ({ default: mod.TrendingPage })));
-const SearchResultsPage = lazy(() => import('./pages-vite/SearchResultsPage').then(mod => ({ default: mod.SearchResultsPage })));
-const PublicationsPage = lazy(() => import('./pages-vite/PublicationsPage').then(mod => ({ default: mod.PublicationsPage })));
-const PublicationDetailPage = lazy(() => import('./pages-vite/PublicationDetailPage').then(mod => ({ default: mod.PublicationDetailPage })));
-const PublicationSettingsPage = lazy(() => import('./pages-vite/PublicationSettingsPage').then(mod => ({ default: mod.PublicationSettingsPage })));
-const PublicationInvite = lazy(() => import('./pages-vite/PublicationInvite').then(mod => ({ default: mod.PublicationInvite })));
-const SeriesPage = lazy(() => import('./pages-vite/SeriesPage').then(mod => ({ default: mod.SeriesPage })));
-const SeriesDetailPage = lazy(() => import('./pages-vite/SeriesDetailPage').then(mod => ({ default: mod.SeriesDetailPage })));
-const SeriesEditPage = lazy(() => import('./pages-vite/SeriesEditPage').then(mod => ({ default: mod.SeriesEditPage })));
-const ModerationPage = lazy(() => import('./pages-vite/ModerationPage').then(mod => ({ default: mod.ModerationPage })));
-const NotFoundPage = lazy(() => import('./pages-vite/NotFoundPage').then(mod => ({ default: mod.NotFoundPage })));
-const BlogPostPage = lazy(() => import('./pages-vite/BlogPostPage').then(mod => ({ default: mod.BlogPostPage })));
-const BlogEditorPage = lazy(() => import('./pages-vite/BlogEditorPage').then(mod => ({ default: mod.BlogEditorPage })));
+const LandingPage = lazy(() => import('./pages-vite/LandingPage').then(module_ => ({ default: module_.LandingPage })));
+const HomePage = lazy(() => import('./pages-vite/HomePage').then(module_ => ({ default: module_.HomePage })));
+const BlogsPage = lazy(() => import('./pages-vite/BlogsPage').then(module_ => ({ default: module_.BlogsPage })));
+const TasksPage = lazy(() => import('./pages-vite/TasksPage').then(module_ => ({ default: module_.TasksPage })));
+const PostDetailPage = lazy(() => import('./pages-vite/PostDetailPage').then(module_ => ({ default: module_.PostDetailPage })));
+const ProfilePage = lazy(() => import('./pages-vite/ProfilePage').then(module_ => ({ default: module_.ProfilePage })));
+const UserProfilePage = lazy(() => import('./pages-vite/UserProfilePage').then(module_ => ({ default: module_.UserProfilePage })));
+const FollowersPage = lazy(() => import('./pages-vite/FollowersPage').then(module_ => ({ default: module_.FollowersPage })));
+const FollowingPage = lazy(() => import('./pages-vite/FollowingPage').then(module_ => ({ default: module_.FollowingPage })));
+const SettingsPage = lazy(() => import('./pages-vite/SettingsPage').then(module_ => ({ default: module_.SettingsPage })));
+const DraftsPage = lazy(() => import('./pages-vite/DraftsPage').then(module_ => ({ default: module_.DraftsPage })));
+const BookmarksPage = lazy(() => import('./pages-vite/BookmarksPage').then(module_ => ({ default: module_.BookmarksPage })));
+const ReadingListsPage = lazy(() => import('./pages-vite/ReadingListsPage').then(module_ => ({ default: module_.ReadingListsPage })));
+const ExplorePage = lazy(() => import('./pages-vite/ExplorePage').then(module_ => ({ default: module_.ExplorePage })));
+const ActivityFeedPage = lazy(() => import('./pages-vite/ActivityFeedPage').then(module_ => ({ default: module_.ActivityFeedPage })));
+const AnalyticsPage = lazy(() => import('./pages-vite/AnalyticsPage').then(module_ => ({ default: module_.AnalyticsPage })));
+const TrendingPage = lazy(() => import('./pages-vite/TrendingPage').then(module_ => ({ default: module_.TrendingPage })));
+const SearchResultsPage = lazy(() => import('./pages-vite/SearchResultsPage').then(module_ => ({ default: module_.SearchResultsPage })));
+const PublicationsPage = lazy(() => import('./pages-vite/PublicationsPage').then(module_ => ({ default: module_.PublicationsPage })));
+const PublicationDetailPage = lazy(() => import('./pages-vite/PublicationDetailPage').then(module_ => ({ default: module_.PublicationDetailPage })));
+const PublicationSettingsPage = lazy(() => import('./pages-vite/PublicationSettingsPage').then(module_ => ({ default: module_.PublicationSettingsPage })));
+const PublicationInvite = lazy(() => import('./pages-vite/PublicationInvite').then(module_ => ({ default: module_.PublicationInvite })));
+const SeriesPage = lazy(() => import('./pages-vite/SeriesPage').then(module_ => ({ default: module_.SeriesPage })));
+const SeriesDetailPage = lazy(() => import('./pages-vite/SeriesDetailPage').then(module_ => ({ default: module_.SeriesDetailPage })));
+const SeriesEditPage = lazy(() => import('./pages-vite/SeriesEditPage').then(module_ => ({ default: module_.SeriesEditPage })));
+const ModerationPage = lazy(() => import('./pages-vite/ModerationPage').then(module_ => ({ default: module_.ModerationPage })));
+const NotFoundPage = lazy(() => import('./pages-vite/NotFoundPage').then(module_ => ({ default: module_.NotFoundPage })));
+const BlogPostPage = lazy(() => import('./pages-vite/BlogPostPage').then(module_ => ({ default: module_.BlogPostPage })));
+const BlogEditorPage = lazy(() => import('./pages-vite/BlogEditorPage').then(module_ => ({ default: module_.BlogEditorPage })));
 
-const CreatePostModal = lazy(() => import('./components/posts/CreatePostModal').then(mod => ({ default: mod.CreatePostModal })));
-const CreateTaskModal = lazy(() => import('./components/tasks/CreateTaskModal').then(mod => ({ default: mod.CreateTaskModal })));
+const CreatePostModal = lazy(() => import('./components/posts/CreatePostModal').then(module_ => ({ default: module_.CreatePostModal })));
+const CreateTaskModal = lazy(() => import('./components/tasks/CreateTaskModal').then(module_ => ({ default: module_.CreateTaskModal })));
 
 // Lazy load animation components (non-critical decorative elements)
-const FloatingBubbles = lazy(() => import('./components/animations/FloatingBubbles').then(mod => ({ default: mod.FloatingBubbles })));
+const FloatingBubbles = lazy(() => import('./components/animations/FloatingBubbles').then(module_ => ({ default: module_.FloatingBubbles })));
 
 function AppContent() {
   const { user } = useAuth();
@@ -55,7 +55,7 @@ function AppContent() {
   const [createPostModalOpen, setCreatePostModalOpen] = useState(false);
   const [createTaskModalOpen, setCreateTaskModalOpen] = useState(false);
 
-  const currentTab = location.pathname === '/blogs' ? 'blogs' : location.pathname === '/tasks' ? 'tasks' : 'newsfeed';
+  const currentTab = location.pathname === '/blogs' ? 'blogs' : (location.pathname === '/tasks' ? 'tasks' : 'newsfeed');
   const isLandingPage = !user && location.pathname === '/';
 
   const handleCreatePost = () => {
@@ -108,7 +108,7 @@ function AppContent() {
       key: 'h',
       ctrl: true,
       action: () => {
-        window.location.href = '/';
+        globalThis.location.href = '/';
       },
       description: 'Go to home',
     },
@@ -116,7 +116,7 @@ function AppContent() {
       key: 'b',
       ctrl: true,
       action: () => {
-        if (user) window.location.href = '/bookmarks';
+        if (user) globalThis.location.href = '/bookmarks';
       },
       description: 'Go to bookmarks',
     },
@@ -124,7 +124,7 @@ function AppContent() {
       key: 'p',
       ctrl: true,
       action: () => {
-        if (user) window.location.href = '/profile';
+        if (user) globalThis.location.href = '/profile';
       },
       description: 'Go to profile',
     },

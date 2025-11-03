@@ -18,12 +18,12 @@ import { Loader2 } from 'lucide-react';
 
 type AdminRole = 'moderator' | 'editor' | 'admin' | 'super_admin';
 
-interface AdminRouteProps {
+interface AdminRouteProperties {
   children: ReactNode;
   requiredRole?: AdminRole;
 }
 
-export function AdminRoute({ children, requiredRole = 'moderator' }: AdminRouteProps) {
+export function AdminRoute({ children, requiredRole = 'moderator' }: AdminRouteProperties) {
   const { loading, isAdmin, isSuperAdmin, isModerator, isEditor, profile } = useAuth();
 
   // Show loading state while checking authentication
@@ -46,16 +46,21 @@ export function AdminRoute({ children, requiredRole = 'moderator' }: AdminRouteP
   // Check specific role requirements
   const hasRequiredRole = (() => {
     switch (requiredRole) {
-      case 'super_admin':
+      case 'super_admin': {
         return isSuperAdmin;
-      case 'admin':
+      }
+      case 'admin': {
         return profile?.role === 'admin' || isSuperAdmin;
-      case 'editor':
+      }
+      case 'editor': {
         return isEditor;
-      case 'moderator':
+      }
+      case 'moderator': {
         return isModerator;
-      default:
+      }
+      default: {
         return false;
+      }
     }
   })();
 
@@ -74,7 +79,7 @@ export function AdminRoute({ children, requiredRole = 'moderator' }: AdminRouteP
             </p>
           </div>
           <button
-            onClick={() => window.history.back()}
+            onClick={() => globalThis.history.back()}
             className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg transition-colors"
           >
             Go Back
@@ -96,15 +101,20 @@ export function useRequireRole(requiredRole: AdminRole): boolean {
   if (!isAdmin) return false;
 
   switch (requiredRole) {
-    case 'super_admin':
+    case 'super_admin': {
       return isSuperAdmin;
-    case 'admin':
+    }
+    case 'admin': {
       return profile?.role === 'admin' || isSuperAdmin;
-    case 'editor':
+    }
+    case 'editor': {
       return isEditor;
-    case 'moderator':
+    }
+    case 'moderator': {
       return isModerator;
-    default:
+    }
+    default: {
       return false;
+    }
   }
 }

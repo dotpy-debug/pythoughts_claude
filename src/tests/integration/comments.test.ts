@@ -523,7 +523,7 @@ describe('Comments System Integration Tests', () => {
   describe('Edge Cases', () => {
     it('should handle very long comment content', async () => {
       const client = getServiceRoleClient();
-      const longContent = 'A'.repeat(10000);
+      const longContent = 'A'.repeat(10_000);
 
       const { data, error } = await client
         .from('comments')
@@ -537,7 +537,7 @@ describe('Comments System Integration Tests', () => {
         .single();
 
       expect(error).toBeNull();
-      expect(data!.content.length).toBe(10000);
+      expect(data!.content.length).toBe(10_000);
 
       testCommentId = data!.id!;
     });

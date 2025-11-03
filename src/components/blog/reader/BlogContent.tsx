@@ -11,7 +11,7 @@
 import { memo } from 'react';
 import './blog-prose.css';
 
-interface BlogContentProps {
+interface BlogContentProperties {
   html: string;
   className?: string;
 }
@@ -19,7 +19,7 @@ interface BlogContentProps {
 export const BlogContent = memo(function BlogContent({
   html,
   className,
-}: BlogContentProps) {
+}: BlogContentProperties) {
   return (
     <article
       className={`

@@ -20,13 +20,13 @@ import { KanbanColumn } from './KanbanColumn';
 import { KanbanTaskCard } from './KanbanTaskCard';
 import { logger } from '../../lib/logger';
 
-interface KanbanBoardProps {
+interface KanbanBoardProperties {
   filters?: Omit<TaskFilters, 'status'>;
   onTaskClick?: (task: TaskWithDetails) => void;
   onCreateTask?: (status: string) => void;
 }
 
-export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardProps) {
+export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardProperties) {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Record<string, TaskWithDetails[]>>({
     todo: [],
@@ -94,15 +94,15 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
       return;
     }
 
-    setTasks(prev => {
-      const activeItems = [...prev[activeContainer]];
-      const overItems = [...prev[overContainer]];
+    setTasks(previous => {
+      const activeItems = [...previous[activeContainer]];
+      const overItems = [...previous[overContainer]];
 
       const activeIndex = activeItems.findIndex(item => item.id === active.id);
       const overIndex = overItems.findIndex(item => item.id === over.id);
 
       let newIndex: number;
-      if (over.id in prev) {
+      if (over.id in previous) {
         newIndex = overItems.length;
       } else {
         const isBelowLastItem = over && overIndex === overItems.length - 1;
@@ -111,7 +111,7 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
       }
 
       return {
-        ...prev,
+        ...previous,
         [activeContainer]: activeItems.filter(item => item.id !== active.id),
         [overContainer]: [
           ...overItems.slice(0, newIndex),
@@ -142,9 +142,9 @@ export function KanbanBoard({ filters, onTaskClick, onCreateTask }: KanbanBoardP
     const overIndex = tasks[overContainer].findIndex(item => item.id === over.id);
 
     if (activeIndex !== overIndex && activeContainer === overContainer) {
-      setTasks(prev => ({
-        ...prev,
-        [activeContainer]: arrayMove(prev[activeContainer], activeIndex, overIndex),
+      setTasks(previous => ({
+        ...previous,
+        [activeContainer]: arrayMove(previous[activeContainer], activeIndex, overIndex),
       }));
     }
 

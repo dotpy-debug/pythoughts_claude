@@ -9,7 +9,7 @@ test.describe('Trending Algorithm Validation', () => {
     // Look for trending section
     await expect(
       page.locator('text=/trending|popular|hot/i').first()
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 10_000 });
 
     // Verify trending posts are displayed
     await expect(
@@ -23,7 +23,7 @@ test.describe('Trending Algorithm Validation', () => {
 
     // Wait for trending posts to load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Get all post cards
@@ -155,7 +155,7 @@ test.describe('Trending Algorithm Validation', () => {
     const trendingPosts = page.locator('[data-trending="true"], .trending-post');
 
     // At least one trending post should be visible
-    await expect(trendingPosts.first()).toBeVisible({ timeout: 10000 });
+    await expect(trendingPosts.first()).toBeVisible({ timeout: 10_000 });
   });
 
   test('should calculate trending score based on multiple factors', async ({
@@ -188,10 +188,10 @@ test.describe('Trending Algorithm Validation', () => {
     await page.click('button:has-text("👍"), button[aria-label*="like" i]');
 
     // Add multiple comments
-    for (let i = 0; i < 3; i++) {
+    for (let index = 0; index < 3; index++) {
       await page.fill(
         'textarea[placeholder*="comment" i]',
-        `Comment ${i + 1}`
+        `Comment ${index + 1}`
       );
       await page.click('button:has-text("comment"), button[type="submit"]');
       await page.waitForTimeout(500);
@@ -206,7 +206,7 @@ test.describe('Trending Algorithm Validation', () => {
 
     // Post should appear in trending
     await expect(page.locator(`text=${postTitle}`)).toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
   });
 
@@ -229,7 +229,7 @@ test.describe('Trending Algorithm Validation', () => {
     // Trending posts should load again
     await expect(
       page.locator('[data-testid="post-card"], article').first()
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 10_000 });
 
     // Content should be fresh (may or may not be same post)
     const postsCount = await page
@@ -243,7 +243,7 @@ test.describe('Trending Algorithm Validation', () => {
 
     // Wait for initial load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Measure load time
@@ -271,7 +271,7 @@ test.describe('Trending Algorithm Validation', () => {
     // Should show empty state
     await expect(
       page.locator('text=/no posts|no trending|empty/i')
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 10_000 });
   });
 });
 

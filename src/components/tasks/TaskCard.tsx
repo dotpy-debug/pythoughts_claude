@@ -4,7 +4,7 @@ import { Task } from '../../lib/supabase';
 import { Badge } from '../ui/Badge';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 
-interface TaskCardProps {
+interface TaskCardProperties {
   task: Task;
   onClick: () => void;
 }
@@ -23,7 +23,7 @@ const statusColors: Record<Task['status'], 'default' | 'primary' | 'success' | '
   archived: 'purple',
 };
 
-export const TaskCard = memo(function TaskCard({ task, onClick }: TaskCardProps) {
+export const TaskCard = memo(function TaskCard({ task, onClick }: TaskCardProperties) {
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed';
 
   return (

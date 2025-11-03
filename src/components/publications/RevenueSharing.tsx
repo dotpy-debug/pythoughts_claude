@@ -45,11 +45,11 @@ type RevenueShare = {
   };
 };
 
-type RevenueSharingProps = {
+type RevenueSharingProperties = {
   publicationId: string;
 };
 
-export function RevenueSharing({ publicationId }: RevenueSharingProps) {
+export function RevenueSharing({ publicationId }: RevenueSharingProperties) {
   const [shares, setShares] = useState<RevenueShare[]>([]);
   const [members, setMembers] = useState<Array<{ id: string; role: string; username: string }>>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -108,8 +108,8 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
           },
         }))
       );
-    } catch (err) {
-      logger.error('Failed to load revenue shares', err as Error);
+    } catch (error_) {
+      logger.error('Failed to load revenue shares', error_ as Error);
     } finally {
       setIsLoading(false);
     }
@@ -145,13 +145,13 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
           role: item.role,
           username: (typeof item.user === 'object' && !Array.isArray(item.user))
             ? item.user.username
-            : Array.isArray(item.user) && item.user[0]
+            : (Array.isArray(item.user) && item.user[0]
             ? item.user[0].username
-            : 'Unknown',
+            : 'Unknown'),
         }))
       );
-    } catch (err) {
-      logger.error('Failed to load members', err as Error);
+    } catch (error_) {
+      logger.error('Failed to load members', error_ as Error);
     }
   }, [publicationId]);
 
@@ -166,7 +166,7 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
       return;
     }
 
-    const percentage = parseFloat(sharePercentage);
+    const percentage = Number.parseFloat(sharePercentage);
     if (isNaN(percentage) || percentage < 0 || percentage > 100) {
       setError('Share percentage must be between 0 and 100');
       return;
@@ -181,8 +181,8 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
         member_id: selectedMember,
         share_percentage: percentage,
         share_type: shareType,
-        min_views: parseInt(minViews) || 0,
-        min_reads: parseInt(minReads) || 0,
+        min_views: Number.parseInt(minViews) || 0,
+        min_reads: Number.parseInt(minReads) || 0,
         custom_formula: shareType === 'custom' ? customFormula.trim() || null : null,
         is_active: isActive,
       });
@@ -205,9 +205,9 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
 
       // Reload shares
       loadRevenueShares();
-    } catch (err) {
-      logger.error('Failed to add revenue share', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to add revenue share');
+    } catch (error_) {
+      logger.error('Failed to add revenue share', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to add revenue share');
     } finally {
       setIsSaving(false);
     }
@@ -225,13 +225,13 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
       }
 
       // Update local state
-      setShares((prev) =>
-        prev.map((share) =>
+      setShares((previous) =>
+        previous.map((share) =>
           share.id === shareId ? { ...share, isActive: !currentStatus } : share
         )
       );
-    } catch (err) {
-      logger.error('Failed to toggle revenue share status', err as Error);
+    } catch (error_) {
+      logger.error('Failed to toggle revenue share status', error_ as Error);
     }
   };
 
@@ -251,9 +251,9 @@ export function RevenueSharing({ publicationId }: RevenueSharingProps) {
       }
 
       // Update local state
-      setShares((prev) => prev.filter((share) => share.id !== shareId));
-    } catch (err) {
-      logger.error('Failed to delete revenue share', err as Error);
+      setShares((previous) => previous.filter((share) => share.id !== shareId));
+    } catch (error_) {
+      logger.error('Failed to delete revenue share', error_ as Error);
     }
   };
 

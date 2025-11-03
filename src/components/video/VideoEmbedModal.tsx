@@ -19,7 +19,7 @@ import {
   type VideoData,
 } from '../../lib/video-utils';
 
-interface VideoEmbedModalProps {
+interface VideoEmbedModalProperties {
   /**
    * Whether the modal is open
    */
@@ -80,7 +80,7 @@ export function VideoEmbedModal({
   onClose,
   initialUrl = '',
   className,
-}: VideoEmbedModalProps) {
+}: VideoEmbedModalProperties) {
   const [url, setUrl] = useState(initialUrl);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
   const [error, setError] = useState<string>('');
@@ -118,7 +118,7 @@ export function VideoEmbedModal({
   };
 
   const handleOptionChange = (key: keyof VideoPlayerOptions, value: unknown) => {
-    setOptions((prev) => ({ ...prev, [key]: value }));
+    setOptions((previous) => ({ ...previous, [key]: value }));
   };
 
   const handleEmbed = () => {
@@ -326,7 +326,7 @@ export function VideoEmbedModal({
                   <input
                     type="number"
                     value={options.width}
-                    onChange={(e) => handleOptionChange('width', parseInt(e.target.value, 10))}
+                    onChange={(e) => handleOptionChange('width', Number.parseInt(e.target.value, 10))}
                     min={320}
                     max={1920}
                     className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded text-gray-100 font-mono text-sm focus:outline-none focus:border-terminal-green"
@@ -340,7 +340,7 @@ export function VideoEmbedModal({
                   <input
                     type="number"
                     value={options.height}
-                    onChange={(e) => handleOptionChange('height', parseInt(e.target.value, 10))}
+                    onChange={(e) => handleOptionChange('height', Number.parseInt(e.target.value, 10))}
                     min={180}
                     max={1080}
                     className="w-full px-3 py-1.5 bg-gray-800 border border-gray-700 rounded text-gray-100 font-mono text-sm focus:outline-none focus:border-terminal-green"

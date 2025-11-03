@@ -52,7 +52,7 @@ export interface GalleryImage {
   filename?: string;
 }
 
-interface ImageGalleryProps {
+interface ImageGalleryProperties {
   /**
    * Array of images to display
    */
@@ -121,7 +121,7 @@ export function ImageGallery({
   showDownload = true,
   showNavigation = true,
   className,
-}: ImageGalleryProps) {
+}: ImageGalleryProperties) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [rotation, setRotation] = useState(0);
 
@@ -136,20 +136,20 @@ export function ImageGallery({
   // Navigate to previous image
   const goToPrevious = useCallback(() => {
     if (hasMultipleImages) {
-      setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+      setCurrentIndex((previous) => (previous === 0 ? images.length - 1 : previous - 1));
     }
   }, [hasMultipleImages, images.length]);
 
   // Navigate to next image
   const goToNext = useCallback(() => {
     if (hasMultipleImages) {
-      setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+      setCurrentIndex((previous) => (previous === images.length - 1 ? 0 : previous + 1));
     }
   }, [hasMultipleImages, images.length]);
 
   // Rotate image 90 degrees clockwise
   const handleRotate = () => {
-    setRotation((prev) => (prev + 90) % 360);
+    setRotation((previous) => (previous + 90) % 360);
   };
 
   // Download current image
@@ -157,14 +157,14 @@ export function ImageGallery({
     try {
       const response = await fetch(currentImage.url);
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const url = globalThis.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = currentImage.filename || `image-${currentIndex + 1}.jpg`;
-      document.body.appendChild(link);
+      document.body.append(link);
       link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      link.remove();
+      globalThis.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error downloading image:', error);
     }
@@ -172,9 +172,9 @@ export function ImageGallery({
 
   // Request fullscreen
   const handleFullscreen = () => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
     }
   };
 
@@ -184,33 +184,33 @@ export function ImageGallery({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
-        case 'Escape':
+        case 'Escape': {
           onClose();
           break;
-        case 'ArrowLeft':
+        }
+        case 'ArrowLeft': {
           e.preventDefault();
           goToPrevious();
           break;
-        case 'ArrowRight':
+        }
+        case 'ArrowRight': {
           e.preventDefault();
           goToNext();
           break;
-        default:
+        }
+        default: {
           break;
+        }
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => globalThis.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, goToPrevious, goToNext]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
 
     return () => {
       document.body.style.overflow = 'unset';

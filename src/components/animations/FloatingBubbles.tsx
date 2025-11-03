@@ -13,8 +13,8 @@ export function FloatingBubbles() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   useEffect(() => {
-    const newBubbles: Bubble[] = Array.from({ length: 20 }, (_, i) => ({
-      id: i,
+    const newBubbles: Bubble[] = Array.from({ length: 20 }, (_, index) => ({
+      id: index,
       x: Math.random() * 100,
       y: Math.random() * 100,
       size: Math.random() * 60 + 20,

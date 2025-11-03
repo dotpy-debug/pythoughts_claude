@@ -5,7 +5,7 @@ import { Eye, Code, Loader2, Columns, Bold, Italic, Heading1, Heading2, Link2, L
 // Lazy load the markdown editor to reduce initial bundle size
 const MDEditor = lazy(() => import('@uiw/react-md-editor'));
 
-type MarkdownEditorProps = {
+type MarkdownEditorProperties = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -13,7 +13,7 @@ type MarkdownEditorProps = {
 
 type ViewMode = 'edit' | 'preview' | 'split';
 
-export function MarkdownEditor({ value, onChange, placeholder = 'Write your blog post in markdown...' }: MarkdownEditorProps) {
+export function MarkdownEditor({ value, onChange, placeholder = 'Write your blog post in markdown...' }: MarkdownEditorProperties) {
   const [viewMode, setViewMode] = useState<ViewMode>('split');
 
   const insertMarkdown = (before: string, after: string = '', placeholderText: string = '') => {
@@ -163,8 +163,8 @@ export function MarkdownEditor({ value, onChange, placeholder = 'Write your blog
         }>
           <MDEditor
             value={value}
-            onChange={(val) => onChange(val || '')}
-            preview={viewMode === 'preview' ? 'preview' : viewMode === 'split' ? 'live' : 'edit'}
+            onChange={(value_) => onChange(value_ || '')}
+            preview={viewMode === 'preview' ? 'preview' : (viewMode === 'split' ? 'live' : 'edit')}
             height={500}
             visibleDragbar={false}
             className="!bg-gray-800 !border-gray-700"

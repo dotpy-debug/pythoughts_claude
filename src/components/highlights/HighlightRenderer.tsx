@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Highlight } from '../../lib/supabase';
 import { StickyNote, Edit2, Trash2 } from 'lucide-react';
 
-interface HighlightRendererProps {
+interface HighlightRendererProperties {
   highlights: Highlight[];
   content: string;
   onUpdateHighlight?: (highlightId: string, note: string) => void;
@@ -22,7 +22,7 @@ export function HighlightRenderer({
   content,
   onUpdateHighlight,
   onDeleteHighlight,
-}: HighlightRendererProps) {
+}: HighlightRendererProperties) {
   const [activeHighlight, setActiveHighlight] = useState<string | null>(null);
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [noteValue, setNoteValue] = useState('');
@@ -38,7 +38,7 @@ export function HighlightRenderer({
   const segments: Array<{ text: string; highlight?: Highlight }> = [];
   let currentIndex = 0;
 
-  sortedHighlights.forEach((highlight) => {
+  for (const highlight of sortedHighlights) {
     // Add text before highlight
     if (currentIndex < highlight.start_offset) {
       segments.push({
@@ -53,12 +53,12 @@ export function HighlightRenderer({
     });
 
     currentIndex = highlight.end_offset;
-  });
+  }
 
   // Add remaining text
   if (currentIndex < content.length) {
     segments.push({
-      text: content.substring(currentIndex),
+      text: content.slice(Math.max(0, currentIndex)),
     });
   }
 
@@ -171,7 +171,7 @@ export function HighlightRenderer({
                         </button>
                       </div>
                     </div>
-                  ) : highlight.note ? (
+                  ) : (highlight.note ? (
                     <div className="bg-gray-800 rounded p-2 mt-2">
                       <div className="flex items-start space-x-2">
                         <StickyNote size={14} className="text-terminal-green mt-0.5 flex-shrink-0" />
@@ -180,7 +180,7 @@ export function HighlightRenderer({
                     </div>
                   ) : (
                     <p className="text-xs text-gray-500 italic font-mono">No note added</p>
-                  )}
+                  ))}
 
                   {/* Arrow pointing to highlighted text */}
                   <div className="absolute bottom-full left-4 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-gray-700"></div>

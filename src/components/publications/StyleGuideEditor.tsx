@@ -22,12 +22,12 @@ type StyleGuide = {
   resources: Array<{ title: string; url: string }>;
 };
 
-type StyleGuideEditorProps = {
+type StyleGuideEditorProperties = {
   publicationId: string;
   onSaved?: () => void;
 };
 
-export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorProps) {
+export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorProperties) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,8 +78,8 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
           resources: data.resources || [],
         });
       }
-    } catch (err) {
-      logger.error('Failed to load style guide', err as Error);
+    } catch (error_) {
+      logger.error('Failed to load style guide', error_ as Error);
       setError('Failed to load style guide');
     } finally {
       setIsLoading(false);
@@ -119,9 +119,9 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
       if (onSaved) {
         onSaved();
       }
-    } catch (err) {
-      logger.error('Failed to save style guide', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to save style guide');
+    } catch (error_) {
+      logger.error('Failed to save style guide', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to save style guide');
     } finally {
       setIsSaving(false);
     }
@@ -129,44 +129,44 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
 
   const handleAddSection = () => {
     if (newSection.trim()) {
-      setStyleGuide((prev) => ({
-        ...prev,
-        requiredSections: [...prev.requiredSections, newSection.trim()],
+      setStyleGuide((previous) => ({
+        ...previous,
+        requiredSections: [...previous.requiredSections, newSection.trim()],
       }));
       setNewSection('');
     }
   };
 
   const handleRemoveSection = (index: number) => {
-    setStyleGuide((prev) => ({
-      ...prev,
-      requiredSections: prev.requiredSections.filter((_, i) => i !== index),
+    setStyleGuide((previous) => ({
+      ...previous,
+      requiredSections: previous.requiredSections.filter((_, index_) => index_ !== index),
     }));
   };
 
   const handleAddTopic = () => {
     if (newTopic.trim()) {
-      setStyleGuide((prev) => ({
-        ...prev,
-        prohibitedTopics: [...prev.prohibitedTopics, newTopic.trim()],
+      setStyleGuide((previous) => ({
+        ...previous,
+        prohibitedTopics: [...previous.prohibitedTopics, newTopic.trim()],
       }));
       setNewTopic('');
     }
   };
 
   const handleRemoveTopic = (index: number) => {
-    setStyleGuide((prev) => ({
-      ...prev,
-      prohibitedTopics: prev.prohibitedTopics.filter((_, i) => i !== index),
+    setStyleGuide((previous) => ({
+      ...previous,
+      prohibitedTopics: previous.prohibitedTopics.filter((_, index_) => index_ !== index),
     }));
   };
 
   const handleAddResource = () => {
     if (newResourceTitle.trim() && newResourceUrl.trim()) {
-      setStyleGuide((prev) => ({
-        ...prev,
+      setStyleGuide((previous) => ({
+        ...previous,
         resources: [
-          ...prev.resources,
+          ...previous.resources,
           { title: newResourceTitle.trim(), url: newResourceUrl.trim() },
         ],
       }));
@@ -176,9 +176,9 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
   };
 
   const handleRemoveResource = (index: number) => {
-    setStyleGuide((prev) => ({
-      ...prev,
-      resources: prev.resources.filter((_, i) => i !== index),
+    setStyleGuide((previous) => ({
+      ...previous,
+      resources: previous.resources.filter((_, index_) => index_ !== index),
     }));
   };
 
@@ -207,7 +207,7 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
               id="tone"
               value={styleGuide.toneAndVoice}
               onChange={(e) =>
-                setStyleGuide((prev) => ({ ...prev, toneAndVoice: e.target.value }))
+                setStyleGuide((previous) => ({ ...previous, toneAndVoice: e.target.value }))
               }
               placeholder="Describe the desired tone and voice for articles (e.g., professional yet approachable, conversational, authoritative)..."
               rows={4}
@@ -222,7 +222,7 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
               id="formatting"
               value={styleGuide.formattingRules}
               onChange={(e) =>
-                setStyleGuide((prev) => ({ ...prev, formattingRules: e.target.value }))
+                setStyleGuide((previous) => ({ ...previous, formattingRules: e.target.value }))
               }
               placeholder="Specify formatting preferences (e.g., headings style, list formatting, code blocks, image captions)..."
               rows={4}
@@ -237,7 +237,7 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
               id="content"
               value={styleGuide.contentGuidelines}
               onChange={(e) =>
-                setStyleGuide((prev) => ({ ...prev, contentGuidelines: e.target.value }))
+                setStyleGuide((previous) => ({ ...previous, contentGuidelines: e.target.value }))
               }
               placeholder="General content expectations (e.g., originality requirements, citation standards, fact-checking)..."
               rows={4}
@@ -255,9 +255,9 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
                 min={0}
                 value={styleGuide.wordCountMin || ''}
                 onChange={(e) =>
-                  setStyleGuide((prev) => ({
-                    ...prev,
-                    wordCountMin: e.target.value ? parseInt(e.target.value) : null,
+                  setStyleGuide((previous) => ({
+                    ...previous,
+                    wordCountMin: e.target.value ? Number.parseInt(e.target.value) : null,
                   }))
                 }
                 placeholder="e.g., 500"
@@ -272,9 +272,9 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
                 min={0}
                 value={styleGuide.wordCountMax || ''}
                 onChange={(e) =>
-                  setStyleGuide((prev) => ({
-                    ...prev,
-                    wordCountMax: e.target.value ? parseInt(e.target.value) : null,
+                  setStyleGuide((previous) => ({
+                    ...previous,
+                    wordCountMax: e.target.value ? Number.parseInt(e.target.value) : null,
                   }))
                 }
                 placeholder="e.g., 3000"
@@ -356,7 +356,7 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
               id="seo"
               value={styleGuide.seoGuidelines}
               onChange={(e) =>
-                setStyleGuide((prev) => ({ ...prev, seoGuidelines: e.target.value }))
+                setStyleGuide((previous) => ({ ...previous, seoGuidelines: e.target.value }))
               }
               placeholder="SEO best practices for your publication (e.g., meta descriptions, heading structure, internal linking)..."
               rows={3}
@@ -371,7 +371,7 @@ export function StyleGuideEditor({ publicationId, onSaved }: StyleGuideEditorPro
               id="keywords"
               value={styleGuide.keywordStrategy}
               onChange={(e) =>
-                setStyleGuide((prev) => ({ ...prev, keywordStrategy: e.target.value }))
+                setStyleGuide((previous) => ({ ...previous, keywordStrategy: e.target.value }))
               }
               placeholder="How to approach keyword research and usage..."
               rows={3}

@@ -30,7 +30,7 @@ const REACTION_TYPES = {
 
 type ReactionType = keyof typeof REACTION_TYPES;
 
-interface CommentReactionsProps {
+interface CommentReactionsProperties {
   commentId: string;
   reactionCounts?: Record<string, number>;
   className?: string;
@@ -51,7 +51,7 @@ export function CommentReactions({
   commentId,
   reactionCounts = {},
   className,
-}: CommentReactionsProps) {
+}: CommentReactionsProperties) {
   const { user } = useAuth();
   const [showPicker, setShowPicker] = useState(false);
   const [userReactions, setUserReactions] = useState<Set<ReactionType>>(new Set());
@@ -106,8 +106,8 @@ export function CommentReactions({
 
         if (error) throw error;
 
-        setUserReactions((prev) => {
-          const newSet = new Set(prev);
+        setUserReactions((previous) => {
+          const newSet = new Set(previous);
           newSet.delete(reactionType);
           return newSet;
         });
@@ -121,7 +121,7 @@ export function CommentReactions({
 
         if (error) throw error;
 
-        setUserReactions((prev) => new Set([...prev, reactionType]));
+        setUserReactions((previous) => new Set([...previous, reactionType]));
       }
 
       setShowPicker(false);

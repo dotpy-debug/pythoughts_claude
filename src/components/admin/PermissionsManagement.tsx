@@ -136,7 +136,7 @@ export function PermissionsManagement() {
   const handleDeleteRole = async (roleId: string) => {
     if (!profile) return;
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       'Are you sure you want to delete this role? Users with this role will be downgraded to regular users.'
     );
     if (!confirmed) return;
@@ -154,11 +154,11 @@ export function PermissionsManagement() {
   };
 
   const togglePermission = (key: string) => {
-    setRoleForm((prev) => ({
-      ...prev,
+    setRoleForm((previous) => ({
+      ...previous,
       permissions: {
-        ...prev.permissions,
-        [key]: !prev.permissions[key],
+        ...previous.permissions,
+        [key]: !previous.permissions[key],
       },
     }));
   };

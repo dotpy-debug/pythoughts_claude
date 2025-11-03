@@ -21,17 +21,15 @@ interface BlogPost {
   };
 }
 
-interface BlogsListViewProps {
+interface BlogsListViewProperties {
   posts: BlogPost[];
 }
 
-export function BlogsListView({ posts }: BlogsListViewProps) {
+export function BlogsListView({ posts }: BlogsListViewProperties) {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   // Get all unique tags
-  const allTags = Array.from(
-    new Set(posts.flatMap((post) => post.tags || []))
-  ).sort();
+  const allTags = [...new Set(posts.flatMap((post) => post.tags || []))].sort();
 
   // Filter posts by selected tag
   const filteredPosts = selectedTag

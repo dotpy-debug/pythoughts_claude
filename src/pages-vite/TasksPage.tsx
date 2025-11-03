@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 
-const TaskList = lazy(() => import('../components/tasks/TaskList').then(mod => ({ default: mod.TaskList })));
+const TaskList = lazy(() => import('../components/tasks/TaskList').then(module_ => ({ default: module_.TaskList })));
 
 export function TasksPage() {
   return (

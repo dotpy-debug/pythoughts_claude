@@ -1,4 +1,4 @@
-import { env } from './env';
+import { env as environment } from './env';
 import { logger } from './logger';
 
 export interface PexelsPhoto {
@@ -49,7 +49,7 @@ export class PexelsService {
   private rateLimitReset = Date.now();
 
   constructor() {
-    this.apiKey = env.VITE_PEXELS_API_KEY;
+    this.apiKey = environment.VITE_PEXELS_API_KEY;
   }
 
   private checkApiKey(): boolean {
@@ -75,11 +75,11 @@ export class PexelsService {
     const reset = headers.get('X-Ratelimit-Reset');
 
     if (remaining) {
-      this.rateLimitRemaining = parseInt(remaining, 10);
+      this.rateLimitRemaining = Number.parseInt(remaining, 10);
     }
 
     if (reset) {
-      this.rateLimitReset = parseInt(reset, 10) * 1000;
+      this.rateLimitReset = Number.parseInt(reset, 10) * 1000;
     }
   }
 

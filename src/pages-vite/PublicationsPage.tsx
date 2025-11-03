@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Publication } from '../lib/supabase';
 import { ShadcnButton } from '../components/ui/ShadcnButton';
 
-const CreatePublicationModal = lazy(() => import('../components/publications/CreatePublicationModal').then(mod => ({ default: mod.CreatePublicationModal })));
+const CreatePublicationModal = lazy(() => import('../components/publications/CreatePublicationModal').then(module_ => ({ default: module_.CreatePublicationModal })));
 
 export function PublicationsPage() {
   const { user } = useAuth();
@@ -127,7 +127,7 @@ export function PublicationsPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="animate-spin text-terminal-green" size={48} />
         </div>
-      ) : displayedPublications.length === 0 ? (
+      ) : (displayedPublications.length === 0 ? (
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
             <BookOpen size={48} className="text-gray-600 mx-auto" />
@@ -203,7 +203,7 @@ export function PublicationsPage() {
             </div>
           ))}
         </div>
-      )}
+      ))}
 
       <Suspense fallback={null}>
         <CreatePublicationModal

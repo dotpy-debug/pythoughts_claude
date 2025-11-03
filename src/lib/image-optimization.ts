@@ -89,13 +89,13 @@ export async function loadImage(source: File | Blob | string): Promise<HTMLImage
   return new Promise((resolve, reject) => {
     const img = new Image();
 
-    img.onload = () => {
+    img.addEventListener('load', () => {
       // Revoke object URL if source was a Blob or File to free memory
       if (typeof source !== 'string') {
         URL.revokeObjectURL(img.src);
       }
       resolve(img);
-    };
+    });
 
     img.onerror = () => {
       if (typeof source !== 'string') {
@@ -104,11 +104,7 @@ export async function loadImage(source: File | Blob | string): Promise<HTMLImage
       reject(new Error('Failed to load image'));
     };
 
-    if (typeof source === 'string') {
-      img.src = source;
-    } else {
-      img.src = URL.createObjectURL(source);
-    }
+    img.src = typeof source === 'string' ? source : URL.createObjectURL(source);
   });
 }
 
@@ -166,7 +162,8 @@ export async function optimizeImage(
     maxHeight,
     format = 'jpeg',
     quality = 0.85,
-    stripExif: _stripExif = true,
+    // stripExif option is reserved for future EXIF data removal implementation
+    // stripExif = true,
   } = options;
 
   // Load original image
@@ -185,18 +182,18 @@ export async function optimizeImage(
   canvas.width = width;
   canvas.height = height;
 
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
+  const context = canvas.getContext('2d');
+  if (!context) {
     throw new Error('Failed to get canvas context');
   }
 
   // Draw image with high quality
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(img, 0, 0, width, height);
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+  context.drawImage(img, 0, 0, width, height);
 
   // Convert to blob
-  const mimeType = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+  const mimeType = format === 'jpeg' ? 'image/jpeg' : (format === 'webp' ? 'image/webp' : 'image/png');
   const blob = await canvasToBlob(canvas, mimeType, quality);
 
   return {
@@ -257,13 +254,13 @@ export async function generateBlurPlaceholder(
   canvas.width = width;
   canvas.height = height;
 
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
+  const context = canvas.getContext('2d');
+  if (!context) {
     throw new Error('Failed to get canvas context');
   }
 
   // Draw tiny image
-  ctx.drawImage(img, 0, 0, width, height);
+  context.drawImage(img, 0, 0, width, height);
 
   // Convert to base64 data URL with low quality
   return canvas.toDataURL('image/jpeg', 0.1);
@@ -356,12 +353,12 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
   if (bytes === 0) return '0 Bytes';
 
   const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
+  const dm = Math.max(decimals, 0);
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
 
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const index = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+  return `${Number.parseFloat((bytes / Math.pow(k, index)).toFixed(dm))} ${sizes[index]}`;
 }
 
 /**

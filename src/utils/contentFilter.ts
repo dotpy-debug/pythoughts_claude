@@ -26,7 +26,7 @@ export function containsProfanity(content: string): boolean {
 
   return profanityList.some(word => {
     // Check for exact word matches (with word boundaries)
-    const wordRegex = new RegExp(`\\b${word}\\b`, 'i');
+    const wordRegex = new RegExp(String.raw`\b${word}\b`, 'i');
     return wordRegex.test(normalizedContent);
   });
 }
@@ -37,10 +37,10 @@ export function containsProfanity(content: string): boolean {
 export function filterProfanity(content: string): string {
   let filtered = content;
 
-  profanityList.forEach(word => {
-    const wordRegex = new RegExp(`\\b${word}\\b`, 'gi');
+  for (const word of profanityList) {
+    const wordRegex = new RegExp(String.raw`\b${word}\b`, 'gi');
     filtered = filtered.replace(wordRegex, (match) => '*'.repeat(match.length));
-  });
+  }
 
   return filtered;
 }
@@ -52,13 +52,13 @@ export function getProfanitySeverity(content: string): number {
   const normalizedContent = content.toLowerCase();
   let severity = 0;
 
-  profanityList.forEach(word => {
-    const wordRegex = new RegExp(`\\b${word}\\b`, 'gi');
+  for (const word of profanityList) {
+    const wordRegex = new RegExp(String.raw`\b${word}\b`, 'gi');
     const matches = normalizedContent.match(wordRegex);
     if (matches) {
       severity += matches.length;
     }
-  });
+  }
 
   return Math.min(severity, 10);
 }
@@ -188,7 +188,7 @@ export function hasSuspiciousPatterns(content: string): { suspicious: boolean; p
   }
 
   // Check for base64 encoded content
-  if (/^[A-Za-z0-9+/]{50,}={0,2}$/.test(content.replace(/\s/g, ''))) {
+  if (/^[A-Za-z0-9+/]{50,}={0,2}$/.test(content.replaceAll(/\s/g, ''))) {
     patterns.push('Possible base64 encoded content');
   }
 

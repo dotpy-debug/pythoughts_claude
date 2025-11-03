@@ -3,7 +3,7 @@ import { supabase, Post } from '../../lib/supabase';
 import { BlogCard } from './BlogCard';
 import { Loader2, ChevronDown } from 'lucide-react';
 
-type BlogGridProps = {
+type BlogGridProperties = {
   onBlogClick: (post: Post) => void;
 };
 
@@ -12,7 +12,7 @@ const categories = ['All', 'Tech', 'Product', 'Design', 'Engineering', 'Culture'
 // Pagination configuration (smaller for grid layout)
 const BLOGS_PER_PAGE = 30;
 
-export function BlogGrid({ onBlogClick }: BlogGridProps) {
+export function BlogGrid({ onBlogClick }: BlogGridProperties) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -20,7 +20,7 @@ export function BlogGrid({ onBlogClick }: BlogGridProps) {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
-  const loadBlogs = useCallback(async (pageNum: number = 0, append: boolean = false) => {
+  const loadBlogs = useCallback(async (pageNumber: number = 0, append: boolean = false) => {
     if (append) {
       setLoadingMore(true);
     } else {
@@ -29,7 +29,7 @@ export function BlogGrid({ onBlogClick }: BlogGridProps) {
 
     try {
       // Calculate range for pagination
-      const from = pageNum * BLOGS_PER_PAGE;
+      const from = pageNumber * BLOGS_PER_PAGE;
       const to = from + BLOGS_PER_PAGE - 1;
 
       // Build optimized query with explicit fields
@@ -92,7 +92,7 @@ export function BlogGrid({ onBlogClick }: BlogGridProps) {
 
       // Update posts (append or replace)
       if (append) {
-        setPosts(prev => [...prev, ...blogsData]);
+        setPosts(previous => [...previous, ...blogsData]);
       } else {
         setPosts(blogsData);
       }

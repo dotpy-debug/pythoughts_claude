@@ -9,7 +9,7 @@ import type { ReactNode } from 'react';
 /**
  * Base component props
  */
-export interface BaseComponentProps {
+export interface BaseComponentProperties {
   className?: string;
   children?: ReactNode;
 }
@@ -66,7 +66,7 @@ export interface Toast {
 /**
  * Modal props
  */
-export interface ModalProps extends BaseComponentProps {
+export interface ModalProperties extends BaseComponentProperties {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
@@ -261,7 +261,7 @@ export interface InfiniteScrollState<T> {
 /**
  * Virtualized list props
  */
-export interface VirtualizedListProps<T> {
+export interface VirtualizedListProperties<T> {
   items: T[];
   itemHeight: number;
   renderItem: (item: T, index: number) => ReactNode;

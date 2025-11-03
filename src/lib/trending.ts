@@ -2,9 +2,9 @@ import { supabase, Post } from './supabase';
 import { logger } from './logger';
 
 // Import cache functions dynamically to avoid bundling Redis in the client
-const getCacheUtils = async () => {
+const getCacheUtilities = async () => {
   // Only import Redis on server-side or when actually needed
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     const { cacheGet, cacheSet } = await import('./redis');
     return { cacheGet, cacheSet };
   }
@@ -48,7 +48,7 @@ const getCacheUtils = async () => {
 
 // Trending algorithm constants
 export const TRENDING_CONSTANTS = {
-  COMMENT_WEIGHT: 2.0,
+  COMMENT_WEIGHT: 2,
   REACTION_WEIGHT: 0.5,
   GRAVITY: 12, // hours
   DECAY_EXPONENT: 1.8,
@@ -123,7 +123,7 @@ export async function getTrendingPosts(
   limit: number = TRENDING_CONSTANTS.MAX_TRENDING_POSTS
 ): Promise<Post[]> {
   const cacheKey = `trending:posts:limit:${limit}`;
-  const { cacheGet, cacheSet } = await getCacheUtils();
+  const { cacheGet, cacheSet } = await getCacheUtilities();
 
   // Step 1: Try cache first
   const cached = await cacheGet<Post[]>(cacheKey);
@@ -183,7 +183,7 @@ export async function getTrendingPostsByCategory(
   limit: number = 10
 ): Promise<Post[]> {
   const cacheKey = `trending:posts:category:${category}:limit:${limit}`;
-  const { cacheGet, cacheSet } = await getCacheUtils();
+  const { cacheGet, cacheSet } = await getCacheUtilities();
 
   const cached = await cacheGet<Post[]>(cacheKey);
   if (cached) {
@@ -251,8 +251,8 @@ export async function updatePostTrendingScore(postId: string): Promise<void> {
     // Invalidate all trending caches
     await invalidateTrendingCache();
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Failed to update trending score', errorObj, {
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to update trending score', errorObject, {
       postId,
     });
   }
@@ -283,8 +283,8 @@ export async function batchUpdateTrendingScores(
 
     await invalidateTrendingCache();
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Batch trending update failed', errorObj, {
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Batch trending update failed', errorObject, {
       postIdsCount: postIds?.length,
     });
   }
@@ -307,8 +307,8 @@ export async function invalidateTrendingCache(): Promise<void> {
       });
     }
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Trending cache invalidation error', errorObj);
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Trending cache invalidation error', errorObject);
   }
 }
 
@@ -321,7 +321,7 @@ export async function getTrendingStats(): Promise<{
   averageScore: number;
 }> {
   const cacheKey = 'trending:stats';
-  const { cacheGet, cacheSet } = await getCacheUtils();
+  const { cacheGet, cacheSet } = await getCacheUtilities();
 
   const cached = await cacheGet<{
     totalTrendingPosts: number;

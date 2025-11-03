@@ -5,8 +5,7 @@
  * throughout the codebase.
  */
 
-import * as fs from 'fs';
-import * as _path from 'path';
+import * as fs from 'node:fs';
 import { glob } from 'glob';
 
 interface Replacement {
@@ -146,7 +145,7 @@ async function main() {
       totalModified++;
       totalChanges += changes.length;
       console.log(`✅ ${file}`);
-      changes.forEach((change) => console.log(`   - ${change}`));
+      for (const change of changes) console.log(`   - ${change}`);
     }
   }
 

@@ -26,7 +26,7 @@ export interface BreadcrumbItem {
   isCurrentPage?: boolean;
 }
 
-interface BreadcrumbProps {
+interface BreadcrumbProperties {
   /**
    * Array of breadcrumb items
    */
@@ -57,7 +57,7 @@ interface BreadcrumbProps {
  * />
  * ```
  */
-export function Breadcrumb({ items, showHome = true, className = '' }: BreadcrumbProps) {
+export function Breadcrumb({ items, showHome = true, className = '' }: BreadcrumbProperties) {
   // Generate BreadcrumbList structured data for SEO
   useEffect(() => {
     const breadcrumbList = {
@@ -90,7 +90,7 @@ export function Breadcrumb({ items, showHome = true, className = '' }: Breadcrum
       script = document.createElement('script');
       script.id = scriptId;
       script.type = 'application/ld+json';
-      document.head.appendChild(script);
+      document.head.append(script);
     }
     script.textContent = JSON.stringify(breadcrumbList);
 
@@ -172,12 +172,12 @@ export function generateBreadcrumbsFromPath(
   const breadcrumbs: BreadcrumbItem[] = [];
 
   let currentPath = '';
-  for (let i = 0; i < segments.length; i++) {
-    currentPath += `/${segments[i]}`;
-    const isLast = i === segments.length - 1;
+  for (let index = 0; index < segments.length; index++) {
+    currentPath += `/${segments[index]}`;
+    const isLast = index === segments.length - 1;
 
     breadcrumbs.push({
-      label: labelMap[currentPath] || segments[i],
+      label: labelMap[currentPath] || segments[index],
       href: currentPath,
       isCurrentPage: isLast,
     });

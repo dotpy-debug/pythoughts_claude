@@ -13,7 +13,7 @@
 
 import { createAuthClient } from 'better-auth/client';
 import { useState, useEffect, useCallback } from 'react';
-import { env } from './env';
+import { env as environment } from './env';
 import type { User, Session } from './auth';
 import { logger } from './logger';
 
@@ -22,7 +22,7 @@ import { logger } from './logger';
  * Use this for all client-side authentication operations
  */
 export const authClient = createAuthClient({
-  baseURL: env.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
+  baseURL: environment.VITE_BETTER_AUTH_URL || 'http://localhost:5173',
   fetchOptions: {
     credentials: 'include', // Include cookies in requests
   },
@@ -42,7 +42,7 @@ export interface AuthState {
 /**
  * Sign up parameters
  */
-export interface SignUpParams {
+export interface SignUpParameters {
   email: string;
   password: string;
   username: string;
@@ -51,7 +51,7 @@ export interface SignUpParams {
 /**
  * Sign in parameters
  */
-export interface SignInParams {
+export interface SignInParameters {
   email: string;
   password: string;
 }
@@ -59,14 +59,14 @@ export interface SignInParams {
 /**
  * Password reset parameters
  */
-export interface ResetPasswordParams {
+export interface ResetPasswordParameters {
   email: string;
 }
 
 /**
  * Verify email parameters
  */
-export interface VerifyEmailParams {
+export interface VerifyEmailParameters {
   email: string;
   code: string;
 }
@@ -74,7 +74,7 @@ export interface VerifyEmailParams {
 /**
  * Update profile parameters
  */
-export interface UpdateProfileParams {
+export interface UpdateProfileParameters {
   username?: string;
   bio?: string;
   avatar_url?: string;
@@ -178,7 +178,7 @@ export function useAuthActions() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const signUp = useCallback(async ({ email, password, username }: SignUpParams) => {
+  const signUp = useCallback(async ({ email, password, username }: SignUpParameters) => {
     setIsLoading(true);
     setError(null);
 
@@ -194,8 +194,8 @@ export function useAuthActions() {
       }
 
       return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Sign up failed');
+    } catch (error_) {
+      const error = error_ instanceof Error ? error_ : new Error('Sign up failed');
       setError(error);
       throw error;
     } finally {
@@ -203,7 +203,7 @@ export function useAuthActions() {
     }
   }, []);
 
-  const signIn = useCallback(async ({ email, password }: SignInParams) => {
+  const signIn = useCallback(async ({ email, password }: SignInParameters) => {
     setIsLoading(true);
     setError(null);
 
@@ -218,8 +218,8 @@ export function useAuthActions() {
       }
 
       return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Sign in failed');
+    } catch (error_) {
+      const error = error_ instanceof Error ? error_ : new Error('Sign in failed');
       setError(error);
       throw error;
     } finally {
@@ -234,9 +234,9 @@ export function useAuthActions() {
     try {
       await authClient.signOut();
       // Force page reload to clear all state
-      window.location.href = '/';
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Sign out failed');
+      globalThis.location.href = '/';
+    } catch (error_) {
+      const error = error_ instanceof Error ? error_ : new Error('Sign out failed');
       setError(error);
       throw error;
     } finally {
@@ -244,7 +244,7 @@ export function useAuthActions() {
     }
   }, []);
 
-  const verifyEmail = useCallback(async ({ code }: VerifyEmailParams) => {
+  const verifyEmail = useCallback(async ({ code }: VerifyEmailParameters) => {
     setIsLoading(true);
     setError(null);
 
@@ -262,8 +262,8 @@ export function useAuthActions() {
       }
 
       return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Email verification failed');
+    } catch (error_) {
+      const error = error_ instanceof Error ? error_ : new Error('Email verification failed');
       setError(error);
       throw error;
     } finally {
@@ -271,7 +271,7 @@ export function useAuthActions() {
     }
   }, []);
 
-  const resetPassword = useCallback(async ({ email }: ResetPasswordParams) => {
+  const resetPassword = useCallback(async ({ email }: ResetPasswordParameters) => {
     setIsLoading(true);
     setError(null);
 
@@ -285,8 +285,8 @@ export function useAuthActions() {
       }
 
       return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Password reset request failed');
+    } catch (error_) {
+      const error = error_ instanceof Error ? error_ : new Error('Password reset request failed');
       setError(error);
       throw error;
     } finally {
@@ -294,7 +294,7 @@ export function useAuthActions() {
     }
   }, []);
 
-  const updateProfile = useCallback(async (params: UpdateProfileParams) => {
+  const updateProfile = useCallback(async (parameters: UpdateProfileParameters) => {
     setIsLoading(true);
     setError(null);
 
@@ -303,12 +303,12 @@ export function useAuthActions() {
       // We need to map our custom fields to the supported fields
       const updateData: { name?: string; image?: string } = {};
 
-      if (params.username) {
-        updateData.name = params.username;
+      if (parameters.username) {
+        updateData.name = parameters.username;
       }
 
-      if (params.avatar_url) {
-        updateData.image = params.avatar_url;
+      if (parameters.avatar_url) {
+        updateData.image = parameters.avatar_url;
       }
 
       const result = await authClient.updateUser(updateData);
@@ -318,8 +318,8 @@ export function useAuthActions() {
       }
 
       return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Profile update failed');
+    } catch (error_) {
+      const error = error_ instanceof Error ? error_ : new Error('Profile update failed');
       setError(error);
       throw error;
     } finally {
@@ -343,7 +343,7 @@ export function useAuthActions() {
  * Helper function to sign up a new user
  * Non-hook version for use outside React components
  */
-export async function signUp({ email, password, username }: SignUpParams) {
+export async function signUp({ email, password, username }: SignUpParameters) {
   const result = await authClient.signUp.email({
     email,
     password,
@@ -361,7 +361,7 @@ export async function signUp({ email, password, username }: SignUpParams) {
  * Helper function to sign in a user
  * Non-hook version for use outside React components
  */
-export async function signIn({ email, password }: SignInParams) {
+export async function signIn({ email, password }: SignInParameters) {
   const result = await authClient.signIn.email({
     email,
     password,
@@ -380,14 +380,14 @@ export async function signIn({ email, password }: SignInParams) {
  */
 export async function signOut() {
   await authClient.signOut();
-  window.location.href = '/';
+  globalThis.location.href = '/';
 }
 
 /**
  * Helper function to verify email with OTP
  * Non-hook version for use outside React components
  */
-export async function verifyEmail({ code }: VerifyEmailParams) {
+export async function verifyEmail({ code }: VerifyEmailParameters) {
   // Better-Auth verifyEmail expects query parameter with token, not email + code
   const result = await authClient.verifyEmail({
     query: {
@@ -406,7 +406,7 @@ export async function verifyEmail({ code }: VerifyEmailParams) {
  * Helper function to request password reset
  * Non-hook version for use outside React components
  */
-export async function resetPassword({ email }: ResetPasswordParams) {
+export async function resetPassword({ email }: ResetPasswordParameters) {
   const result = await authClient.forgetPassword({
     email,
   });
@@ -535,7 +535,7 @@ export async function requireAuth(redirectTo: string = '/login'): Promise<boolea
   const authenticated = await isAuthenticated();
 
   if (!authenticated) {
-    window.location.href = redirectTo;
+    globalThis.location.href = redirectTo;
     return false;
   }
 
@@ -545,4 +545,5 @@ export async function requireAuth(redirectTo: string = '/login'): Promise<boolea
 /**
  * Export auth client for advanced usage
  */
-export { authClient as default };
+export default authClient;
+

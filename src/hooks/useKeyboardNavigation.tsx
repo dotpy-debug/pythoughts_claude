@@ -26,7 +26,7 @@ export type KeyboardShortcut = {
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      shortcuts.forEach((shortcut) => {
+      for (const shortcut of shortcuts) {
         const keyMatches = event.key.toLowerCase() === shortcut.key.toLowerCase();
         const ctrlMatches = shortcut.ctrl ? event.ctrlKey || event.metaKey : !event.ctrlKey && !event.metaKey;
         const shiftMatches = shortcut.shift ? event.shiftKey : !event.shiftKey;
@@ -38,7 +38,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
           }
           shortcut.action();
         }
-      });
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -54,18 +54,18 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
  * return <div ref={modalRef}>...</div>;
  */
 export function useFocusTrap(isActive: boolean) {
-  const ref = useRef<HTMLDivElement>(null);
+  const reference = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isActive || !ref.current) return;
+    if (!isActive || !reference.current) return;
 
-    const container = ref.current;
+    const container = reference.current;
     const focusableElements = container.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
 
     const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+    const lastElement = focusableElements.at(-1);
 
     // Focus first element
     firstElement?.focus();
@@ -92,7 +92,7 @@ export function useFocusTrap(isActive: boolean) {
     return () => container.removeEventListener('keydown', handleTab);
   }, [isActive]);
 
-  return ref;
+  return reference;
 }
 
 /**
@@ -106,38 +106,40 @@ export function useArrowKeyNavigation(itemCount: number, options: {
   loop?: boolean;
 } = {}) {
   const { onSelect, loop = true } = options;
-  const focusedIndexRef = useRef(0);
+  const focusedIndexReference = useRef(0);
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    const currentIndex = focusedIndexRef.current;
+    const currentIndex = focusedIndexReference.current;
 
     switch (event.key) {
       case 'ArrowDown': {
         event.preventDefault();
         const nextIndex = currentIndex + 1;
-        focusedIndexRef.current = loop
+        focusedIndexReference.current = loop
           ? nextIndex % itemCount
           : Math.min(nextIndex, itemCount - 1);
         break;
       }
       case 'ArrowUp': {
         event.preventDefault();
-        const prevIndex = currentIndex - 1;
-        focusedIndexRef.current = loop
-          ? (prevIndex + itemCount) % itemCount
-          : Math.max(prevIndex, 0);
+        const previousIndex = currentIndex - 1;
+        focusedIndexReference.current = loop
+          ? (previousIndex + itemCount) % itemCount
+          : Math.max(previousIndex, 0);
         break;
       }
 
-      case 'Enter':
+      case 'Enter': {
         event.preventDefault();
         onSelect?.(currentIndex);
         break;
+      }
 
-      case 'Escape':
+      case 'Escape': {
         event.preventDefault();
-        focusedIndexRef.current = 0;
+        focusedIndexReference.current = 0;
         break;
+      }
     }
   }, [itemCount, loop, onSelect]);
 
@@ -147,9 +149,9 @@ export function useArrowKeyNavigation(itemCount: number, options: {
   }, [handleKeyDown]);
 
   return {
-    focusedIndex: focusedIndexRef.current,
+    focusedIndex: focusedIndexReference.current,
     setFocusedIndex: (index: number) => {
-      focusedIndexRef.current = index;
+      focusedIndexReference.current = index;
     },
   };
 }
@@ -217,11 +219,11 @@ export function useScreenReaderAnnouncement() {
     announcement.className = 'sr-only';
     announcement.textContent = message;
 
-    document.body.appendChild(announcement);
+    document.body.append(announcement);
 
     // Remove after announcement
     setTimeout(() => {
-      document.body.removeChild(announcement);
+      announcement.remove();
     }, 1000);
   }, []);
 
@@ -263,7 +265,7 @@ export const GLOBAL_SHORTCUTS: KeyboardShortcut[] = [
     key: 'h',
     ctrl: true,
     action: () => {
-      window.location.href = '/';
+      globalThis.location.href = '/';
     },
     description: 'Go to home',
   },
@@ -271,7 +273,7 @@ export const GLOBAL_SHORTCUTS: KeyboardShortcut[] = [
     key: 'b',
     ctrl: true,
     action: () => {
-      window.location.href = '/bookmarks';
+      globalThis.location.href = '/bookmarks';
     },
     description: 'Go to bookmarks',
   },
@@ -279,7 +281,7 @@ export const GLOBAL_SHORTCUTS: KeyboardShortcut[] = [
     key: 'p',
     ctrl: true,
     action: () => {
-      window.location.href = '/profile';
+      globalThis.location.href = '/profile';
     },
     description: 'Go to profile',
   },

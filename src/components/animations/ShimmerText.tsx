@@ -1,9 +1,9 @@
-type ShimmerTextProps = {
+type ShimmerTextProperties = {
   text: string;
   className?: string;
 };
 
-export function ShimmerText({ text, className = '' }: ShimmerTextProps) {
+export function ShimmerText({ text, className = '' }: ShimmerTextProperties) {
   return (
     <span className={`relative inline-block ${className}`}>
       <span className="relative z-10 bg-gradient-to-r from-terminal-green via-terminal-blue to-terminal-purple bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">

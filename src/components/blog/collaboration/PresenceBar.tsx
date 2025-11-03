@@ -15,7 +15,7 @@ interface PresenceUser {
   color: string;
 }
 
-interface PresenceBarProps {
+interface PresenceBarProperties {
   provider: HocuspocusProvider | null;
 }
 
@@ -24,7 +24,7 @@ interface PresenceBarProps {
  *
  * Monitors provider awareness state and displays active users
  */
-export function PresenceBar({ provider }: PresenceBarProps) {
+export function PresenceBar({ provider }: PresenceBarProperties) {
   const [users, setUsers] = useState<PresenceUser[]>([]);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function PresenceBar({ provider }: PresenceBarProps) {
     // Function to update user list from awareness
     const updateUsers = () => {
       const awareness = provider.awareness;
-      const states = Array.from(awareness?.getStates().values() || []);
+      const states = [...awareness?.getStates().values() || []];
 
       const activeUsers: PresenceUser[] = states
         .filter((state: { user?: { id?: string; name?: string; color?: string } }) => state.user && state.user.id)

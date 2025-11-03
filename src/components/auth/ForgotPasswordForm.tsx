@@ -4,11 +4,11 @@ import { Button } from '../ui/Button';
 import { supabase } from '../../lib/supabase';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 
-interface ForgotPasswordFormProps {
+interface ForgotPasswordFormProperties {
   onBack: () => void;
 }
 
-export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
+export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProperties) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,7 +21,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${globalThis.location.origin}/reset-password`,
       });
 
       if (error) {
@@ -29,8 +29,10 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
       } else {
         setSuccess(true);
       }
-    } catch (_err) {
-      setError('An unexpected error occurred. Please try again.');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+      setError(errorMessage);
+      console.error('Password reset error:', error);
     } finally {
       setLoading(false);
     }

@@ -57,7 +57,7 @@ const database = new Database({
       .from('collaboration_documents')
       .upsert({
         document_id: documentName,
-        content: Array.from(state), // Convert Uint8Array to array for JSON storage
+        content: [...state], // Convert Uint8Array to array for JSON storage
         updated_at: new Date().toISOString(),
       });
 
@@ -73,7 +73,7 @@ const database = new Database({
  */
 const server = Server.configure({
   // Port for WebSocket connections
-  port: process.env.COLLABORATION_PORT ? parseInt(process.env.COLLABORATION_PORT) : 1234,
+  port: process.env.COLLABORATION_PORT ? Number.parseInt(process.env.COLLABORATION_PORT) : 1234,
 
   // Extensions
   extensions: [
@@ -182,8 +182,8 @@ function generateUserColor(userId: string): string {
   ];
 
   // Use userId to deterministically select a color
-  const hash = userId.split('').reduce((acc, char) => {
-    return char.charCodeAt(0) + ((acc << 5) - acc);
+  const hash = userId.split('').reduce((accumulator, char) => {
+    return char.charCodeAt(0) + ((accumulator << 5) - accumulator);
   }, 0);
 
   return colors[Math.abs(hash) % colors.length];

@@ -12,11 +12,11 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-type ThemeProviderProps = {
+type ThemeProviderProperties = {
   children: ReactNode;
 };
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
+export function ThemeProvider({ children }: ThemeProviderProperties) {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('theme');
     return (saved as Theme) || 'dark';
@@ -31,20 +31,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const root = document.documentElement;
 
     // Apply theme
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    root.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('theme', theme);
 
     // Apply font size
-    root.setAttribute('data-font-size', fontSize);
+    root.dataset.fontSize = fontSize;
     localStorage.setItem('fontSize', fontSize);
   }, [theme, fontSize]);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    setTheme(previous => previous === 'dark' ? 'light' : 'dark');
   };
 
   const setFontSize = (size: FontSize) => {

@@ -48,7 +48,7 @@ export class Analytics {
    * Generate a unique session ID
    */
   private static generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   }
 
   /**
@@ -64,22 +64,22 @@ export class Analytics {
   /**
    * Track a post view
    */
-  static async trackPostView(params: PostViewParams): Promise<void> {
+  static async trackPostView(parameters: PostViewParams): Promise<void> {
     try {
       const { error } = await supabase.rpc('track_post_view', {
-        p_post_id: params.postId,
-        p_user_id: params.userId || null,
-        p_session_id: params.sessionId || this.getSessionId(),
-        p_referrer: params.referrer || document.referrer || null,
-        p_user_agent: params.userAgent || navigator.userAgent,
-        p_device_type: params.deviceType || this.detectDeviceType(),
+        p_post_id: parameters.postId,
+        p_user_id: parameters.userId || null,
+        p_session_id: parameters.sessionId || this.getSessionId(),
+        p_referrer: parameters.referrer || document.referrer || null,
+        p_user_agent: parameters.userAgent || navigator.userAgent,
+        p_device_type: parameters.deviceType || this.detectDeviceType(),
       });
 
       if (error) {
         logger.error('Failed to track post view', error);
       }
 
-      logger.debug('Post view tracked', { postId: params.postId });
+      logger.debug('Post view tracked', { postId: parameters.postId });
     } catch (error) {
       logger.error('Post view tracking error', error as Error);
     }
@@ -112,22 +112,22 @@ export class Analytics {
   /**
    * Track a conversion event
    */
-  static async trackConversion(params: ConversionEventParams): Promise<void> {
+  static async trackConversion(parameters: ConversionEventParams): Promise<void> {
     try {
       const { error } = await supabase.from('conversion_events').insert({
-        conversion_type: params.type,
-        user_id: params.userId || this.userId,
-        session_id: params.sessionId || this.getSessionId(),
-        source_post_id: params.sourcePostId || null,
-        conversion_value: params.value || null,
-        metadata: params.metadata || {},
+        conversion_type: parameters.type,
+        user_id: parameters.userId || this.userId,
+        session_id: parameters.sessionId || this.getSessionId(),
+        source_post_id: parameters.sourcePostId || null,
+        conversion_value: parameters.value || null,
+        metadata: parameters.metadata || {},
       });
 
       if (error) {
         logger.error('Failed to track conversion', error);
       }
 
-      logger.debug('Conversion tracked', { type: params.type });
+      logger.debug('Conversion tracked', { type: parameters.type });
     } catch (error) {
       logger.error('Conversion tracking error', error as Error);
     }
@@ -178,7 +178,7 @@ export class Analytics {
   /**
    * Track referral source
    */
-  static async trackReferral(postId: string, utmParams?: {
+  static async trackReferral(postId: string, utmParameters?: {
     source?: string;
     medium?: string;
     campaign?: string;
@@ -187,14 +187,14 @@ export class Analytics {
   }): Promise<void> {
     try {
       const referrer = document.referrer;
-      const referrerUrl = new URL(referrer || window.location.href);
+      const referrerUrl = new URL(referrer || globalThis.location.href);
       const referrerDomain = referrerUrl.hostname;
 
       // Determine referrer type
       let referrerType: 'direct' | 'search' | 'social' | 'external' | 'internal' = 'direct';
 
       if (referrer) {
-        if (referrerDomain === window.location.hostname) {
+        if (referrerDomain === globalThis.location.hostname) {
           referrerType = 'internal';
         } else if (this.isSearchEngine(referrerDomain)) {
           referrerType = 'search';
@@ -210,11 +210,11 @@ export class Analytics {
         referrer_url: referrer || null,
         referrer_domain: referrerDomain,
         referrer_type: referrerType,
-        utm_source: utmParams?.source || null,
-        utm_medium: utmParams?.medium || null,
-        utm_campaign: utmParams?.campaign || null,
-        utm_content: utmParams?.content || null,
-        utm_term: utmParams?.term || null,
+        utm_source: utmParameters?.source || null,
+        utm_medium: utmParameters?.medium || null,
+        utm_campaign: utmParameters?.campaign || null,
+        utm_content: utmParameters?.content || null,
+        utm_term: utmParameters?.term || null,
         date: new Date().toISOString().split('T')[0],
       });
 
@@ -267,13 +267,13 @@ export class Analytics {
     content?: string;
     term?: string;
   } {
-    const params = new URLSearchParams(window.location.search);
+    const parameters = new URLSearchParams(globalThis.location.search);
     return {
-      source: params.get('utm_source') || undefined,
-      medium: params.get('utm_medium') || undefined,
-      campaign: params.get('utm_campaign') || undefined,
-      content: params.get('utm_content') || undefined,
-      term: params.get('utm_term') || undefined,
+      source: parameters.get('utm_source') || undefined,
+      medium: parameters.get('utm_medium') || undefined,
+      campaign: parameters.get('utm_campaign') || undefined,
+      content: parameters.get('utm_content') || undefined,
+      term: parameters.get('utm_term') || undefined,
     };
   }
 
@@ -287,7 +287,7 @@ export class Analytics {
       properties: {
         page,
         referrer: document.referrer,
-        url: window.location.href,
+        url: globalThis.location.href,
       },
     });
   }
@@ -333,7 +333,7 @@ export function useAnalytics() {
 /**
  * Initialize analytics on app load
  */
-if (typeof window !== 'undefined') {
+if (globalThis.window !== undefined) {
   Analytics.init();
 }
 

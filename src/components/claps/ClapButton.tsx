@@ -3,11 +3,11 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Hand } from 'lucide-react';
 
-type ClapButtonProps = {
+type ClapButtonProperties = {
   postId: string;
 };
 
-export function ClapButton({ postId }: ClapButtonProps) {
+export function ClapButton({ postId }: ClapButtonProperties) {
   const { user } = useAuth();
   const [totalClaps, setTotalClaps] = useState(0);
   const [userClaps, setUserClaps] = useState(0);
@@ -74,19 +74,15 @@ export function ClapButton({ postId }: ClapButtonProps) {
     try {
       const newCount = userClaps + 1;
 
-      if (userClaps === 0) {
-        await supabase.from('claps').insert({
+      await (userClaps === 0 ? supabase.from('claps').insert({
           user_id: user.id,
           post_id: postId,
           clap_count: 1,
-        });
-      } else {
-        await supabase
+        }) : supabase
           .from('claps')
           .update({ clap_count: newCount })
           .eq('user_id', user.id)
-          .eq('post_id', postId);
-      }
+          .eq('post_id', postId));
 
       setUserClaps(newCount);
       setTotalClaps(totalClaps + 1);

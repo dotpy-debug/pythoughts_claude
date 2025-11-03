@@ -79,8 +79,8 @@ export function PostDetailSkeleton() {
 
               <div className="w-full h-64 bg-gray-800 rounded mb-6"></div>
 
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="mb-2">
+              {Array.from({length: 5}).map((_, index) => (
+                <div key={index} className="mb-2">
                   <div className="w-full h-4 bg-gray-800 rounded"></div>
                 </div>
               ))}
@@ -220,8 +220,8 @@ export function TrendingTopicsSkeleton() {
       </div>
 
       <div className="space-y-3">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex items-start space-x-3">
+        {Array.from({length: 5}).map((_, index) => (
+          <div key={index} className="flex items-start space-x-3">
             <div className="w-8 h-8 bg-gray-800 rounded-full"></div>
             <div className="flex-1 space-y-2">
               <div className="w-3/4 h-4 bg-gray-800 rounded"></div>

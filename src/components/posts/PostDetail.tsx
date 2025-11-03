@@ -20,16 +20,16 @@ import { sanitizeURL } from '../../utils/security';
 // Lazy load the entire markdown renderer bundle
 const MarkdownRenderer = lazy(() => import('./MarkdownRenderer'));
 
-type PostDetailProps = {
+type PostDetailProperties = {
   post: Post;
   userVote?: 1 | -1 | null;
   onVote: (postId: string, voteType: 1 | -1) => void;
   onBack: () => void;
 };
 
-export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) {
+export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProperties) {
   const { user } = useAuth();
-  const contentRef = useRef<HTMLDivElement>(null);
+  const contentReference = useRef<HTMLDivElement>(null);
   const [showHighlightsModal, setShowHighlightsModal] = useState(false);
   const [showVersionHistory, setShowVersionHistory] = useState(false);
   const { highlights, updateHighlight, deleteHighlight } = useTextHighlight(post.id);
@@ -53,7 +53,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
 
   return (
     <div className="max-w-4xl mx-auto">
-      {post.post_type === 'blog' && <ReadingProgressBar postId={post.id} contentRef={contentRef} />}
+      {post.post_type === 'blog' && <ReadingProgressBar postId={post.id} contentRef={contentReference} />}
 
       <button
         onClick={onBack}
@@ -86,7 +86,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
               </button>
               <span
                 className={`font-bold text-lg font-mono ${
-                  userVote === 1 ? 'text-terminal-green' : userVote === -1 ? 'text-terminal-pink' : 'text-gray-400'
+                  userVote === 1 ? 'text-terminal-green' : (userVote === -1 ? 'text-terminal-pink' : 'text-gray-400')
                 }`}
               >
                 {post.vote_count}
@@ -176,7 +176,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
               )}
 
               <TextHighlighter postId={post.id} content={post.content} enabled={post.post_type === 'blog'}>
-                <div ref={contentRef} className="prose prose-invert max-w-none mb-6 text-gray-300 text-base leading-relaxed font-mono">
+                <div ref={contentReference} className="prose prose-invert max-w-none mb-6 text-gray-300 text-base leading-relaxed font-mono">
                   <Suspense fallback={
                     <div className="animate-pulse space-y-2">
                       <div className="h-4 bg-gray-800 rounded w-full"></div>
@@ -254,7 +254,7 @@ export function PostDetail({ post, userVote, onVote, onBack }: PostDetailProps) 
         postAuthorId={post.author_id}
         onVersionRestored={() => {
           // Optionally reload the page or refetch the post
-          window.location.reload();
+          globalThis.location.reload();
         }}
       />
     </div>

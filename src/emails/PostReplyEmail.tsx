@@ -17,7 +17,7 @@ import {
   Hr,
 } from '@react-email/components';
 
-export interface PostReplyEmailProps {
+export interface PostReplyEmailProperties {
   /**
    * Recipient's username
    */
@@ -56,7 +56,7 @@ export function PostReplyEmail({
   replyContent = 'Great post!',
   postUrl = 'https://pythoughts.com',
   unsubscribeUrl = 'https://pythoughts.com/settings/preferences',
-}: PostReplyEmailProps) {
+}: PostReplyEmailProperties) {
   return (
     <Html>
       <Head />

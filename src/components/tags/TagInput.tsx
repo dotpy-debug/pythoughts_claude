@@ -2,19 +2,19 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase, Tag } from '../../lib/supabase';
 import { X, Plus } from 'lucide-react';
 
-type TagInputProps = {
+type TagInputProperties = {
   selectedTags: Tag[];
   onTagsChange: (tags: Tag[]) => void;
   maxTags?: number;
 };
 
-export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputProps) {
+export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputProperties) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const inputReference = useRef<HTMLInputElement>(null);
+  const suggestionsReference = useRef<HTMLDivElement>(null);
 
   // Fetch tag suggestions based on input
   useEffect(() => {
@@ -55,10 +55,10 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
+        suggestionsReference.current &&
+        !suggestionsReference.current.contains(event.target as Node) &&
+        inputReference.current &&
+        !inputReference.current.contains(event.target as Node)
       ) {
         setShowSuggestions(false);
       }
@@ -69,7 +69,7 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
   }, []);
 
   const createTag = (tagName: string): Tag => {
-    const slug = tagName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const slug = tagName.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-').replaceAll(/^-|-$/g, '');
     return {
       id: '',
       name: tagName,
@@ -109,7 +109,7 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
       }
     } else if (e.key === 'Backspace' && !input && selectedTags.length > 0) {
       // Remove last tag when backspace is pressed on empty input
-      handleRemoveTag(selectedTags[selectedTags.length - 1]);
+      handleRemoveTag(selectedTags.at(-1));
     }
   };
 
@@ -136,7 +136,7 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
         {selectedTags.length < maxTags && (
           <div className="relative flex-1 min-w-[120px]">
             <input
-              ref={inputRef}
+              ref={inputReference}
               type="text"
               value={input}
               onChange={(e) => {
@@ -152,7 +152,7 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
             {/* Suggestions dropdown */}
             {showSuggestions && (input.length >= 2 || suggestions.length > 0) && (
               <div
-                ref={suggestionsRef}
+                ref={suggestionsReference}
                 className="absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden z-50 max-h-[200px] overflow-y-auto"
               >
                 {loading ? (

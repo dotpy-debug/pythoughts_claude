@@ -103,7 +103,7 @@ export function UserManagement() {
   const handleRoleChange = async (newRole: string) => {
     if (!profile || !selectedUser) return;
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       `Change ${selectedUser.username}'s role to ${newRole}?`
     );
 
@@ -151,7 +151,7 @@ export function UserManagement() {
   const handleUnsuspend = async () => {
     if (!profile || !selectedUser) return;
 
-    const confirmed = window.confirm(`Remove suspension for ${selectedUser.username}?`);
+    const confirmed = globalThis.confirm(`Remove suspension for ${selectedUser.username}?`);
     if (!confirmed) return;
 
     const result = await unsuspendUser({
@@ -170,10 +170,10 @@ export function UserManagement() {
   const handleBan = async () => {
     if (!profile || !selectedUser) return;
 
-    const reason = window.prompt('Enter ban reason:');
+    const reason = globalThis.prompt('Enter ban reason:');
     if (!reason) return;
 
-    const confirmed = window.confirm(`Permanently ban ${selectedUser.username}?`);
+    const confirmed = globalThis.confirm(`Permanently ban ${selectedUser.username}?`);
     if (!confirmed) return;
 
     const result = await banUser({
@@ -193,7 +193,7 @@ export function UserManagement() {
   const handleUnban = async () => {
     if (!profile || !selectedUser) return;
 
-    const confirmed = window.confirm(`Remove ban for ${selectedUser.username}?`);
+    const confirmed = globalThis.confirm(`Remove ban for ${selectedUser.username}?`);
     if (!confirmed) return;
 
     const result = await unbanUser({
@@ -226,16 +226,21 @@ export function UserManagement() {
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
-      case 'super_admin':
+      case 'super_admin': {
         return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'admin':
+      }
+      case 'admin': {
         return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'moderator':
+      }
+      case 'moderator': {
         return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      case 'editor':
+      }
+      case 'editor': {
         return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      default:
+      }
+      default: {
         return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      }
     }
   };
 
@@ -281,7 +286,7 @@ export function UserManagement() {
                   <option value="super_admin">Super Admin</option>
                 </select>
                 <select
-                  value={suspendedFilter === undefined ? '' : suspendedFilter ? 'true' : 'false'}
+                  value={suspendedFilter === undefined ? '' : (suspendedFilter ? 'true' : 'false')}
                   onChange={(e) =>
                     setSuspendedFilter(
                       e.target.value === '' ? undefined : e.target.value === 'true'
@@ -303,7 +308,7 @@ export function UserManagement() {
                   <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                   <p className="text-gray-400">Loading users...</p>
                 </div>
-              ) : users.length === 0 ? (
+              ) : (users.length === 0 ? (
                 <div className="p-8 text-center text-gray-400">No users found</div>
               ) : (
                 <div className="divide-y divide-gray-800">
@@ -354,7 +359,7 @@ export function UserManagement() {
                     </button>
                   ))}
                 </div>
-              )}
+              ))}
             </div>
 
             {/* Pagination */}
@@ -417,7 +422,7 @@ export function UserManagement() {
                         <span className="px-3 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded text-sm">
                           Banned
                         </span>
-                      ) : selectedUser.is_suspended ? (
+                      ) : (selectedUser.is_suspended ? (
                         <span className="px-3 py-1 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded text-sm">
                           Suspended
                         </span>
@@ -425,7 +430,7 @@ export function UserManagement() {
                         <span className="px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/30 rounded text-sm">
                           Active
                         </span>
-                      )}
+                      ))}
                     </div>
                   </div>
 
@@ -476,37 +481,37 @@ export function UserManagement() {
 
                   {/* Actions */}
                   <div className="pt-4 border-t border-gray-800 space-y-2">
-                    {!selectedUser.is_suspended ? (
-                      <button
-                        onClick={() => setShowSuspendDialog(true)}
-                        className="w-full px-4 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 rounded-lg transition-colors"
-                      >
-                        Suspend User
-                      </button>
-                    ) : (
+                    {selectedUser.is_suspended ? (
                       <button
                         onClick={handleUnsuspend}
                         className="w-full px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg transition-colors"
                       >
                         Remove Suspension
                       </button>
+                    ) : (
+                      <button
+                        onClick={() => setShowSuspendDialog(true)}
+                        className="w-full px-4 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 border border-orange-500/30 rounded-lg transition-colors"
+                      >
+                        Suspend User
+                      </button>
                     )}
 
-                    {!selectedUser.is_banned ? (
-                      <button
-                        onClick={handleBan}
-                        disabled={profile?.role !== 'admin' && profile?.role !== 'super_admin'}
-                        className="w-full px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Ban User
-                      </button>
-                    ) : (
+                    {selectedUser.is_banned ? (
                       <button
                         onClick={handleUnban}
                         disabled={profile?.role !== 'admin' && profile?.role !== 'super_admin'}
                         className="w-full px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Unban User
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleBan}
+                        disabled={profile?.role !== 'admin' && profile?.role !== 'super_admin'}
+                        className="w-full px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Ban User
                       </button>
                     )}
                   </div>
@@ -580,7 +585,7 @@ export function UserManagement() {
                   <input
                     type="number"
                     value={suspendDays}
-                    onChange={(e) => setSuspendDays(parseInt(e.target.value) || 7)}
+                    onChange={(e) => setSuspendDays(Number.parseInt(e.target.value) || 7)}
                     min="1"
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                   />

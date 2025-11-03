@@ -17,7 +17,7 @@ import { Clock, Eye, Heart, MessageCircle, User } from 'lucide-react';
 import { BlogPost } from '../../types/blog';
 import { LazyImage } from '../performance/LazyImage';
 
-interface BlogCompactCardProps {
+interface BlogCompactCardProperties {
   blog: BlogPost;
   showEngagement?: boolean;
 }
@@ -25,15 +25,15 @@ interface BlogCompactCardProps {
 export const BlogCompactCard = memo(function BlogCompactCard({
   blog,
   showEngagement = true,
-}: BlogCompactCardProps) {
+}: BlogCompactCardProperties) {
   // Calculate reading time if not available
   const readingTime = blog.reading_time_minutes || Math.ceil(blog.word_count / 200) || 5;
 
   // Format large numbers
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
+  const formatNumber = (number_: number): string => {
+    if (number_ >= 1_000_000) return `${(number_ / 1_000_000).toFixed(1)}M`;
+    if (number_ >= 1000) return `${(number_ / 1000).toFixed(1)}K`;
+    return number_.toString();
   };
 
   // Get engagement data
@@ -171,8 +171,8 @@ function formatDistanceToNow(date: Date): string {
 
   if (diffInSeconds < 60) return 'now';
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d`;
-  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)}mo`;
-  return `${Math.floor(diffInSeconds / 31536000)}y`;
+  if (diffInSeconds < 86_400) return `${Math.floor(diffInSeconds / 3600)}h`;
+  if (diffInSeconds < 2_592_000) return `${Math.floor(diffInSeconds / 86_400)}d`;
+  if (diffInSeconds < 31_536_000) return `${Math.floor(diffInSeconds / 2_592_000)}mo`;
+  return `${Math.floor(diffInSeconds / 31_536_000)}y`;
 }

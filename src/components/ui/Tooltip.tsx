@@ -18,9 +18,9 @@ const TooltipTrigger = TooltipPrimitive.Trigger;
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
+>(({ className, sideOffset = 4, ...properties }, reference) => (
   <TooltipPrimitive.Content
-    ref={ref}
+    ref={reference}
     sideOffset={sideOffset}
     className={cn(
       'z-50 overflow-hidden rounded-md',
@@ -35,12 +35,12 @@ const TooltipContent = React.forwardRef<
       'data-[side=top]:slide-in-from-bottom-2',
       className
     )}
-    {...props}
+    {...properties}
   />
 ));
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
-interface TooltipProps {
+interface TooltipProperties {
   /**
    * The content to display in the tooltip
    */
@@ -98,7 +98,7 @@ export function Tooltip({
   delayDuration = 500,
   className,
   disabled = false,
-}: TooltipProps) {
+}: TooltipProperties) {
   if (disabled) {
     return <>{children}</>;
   }

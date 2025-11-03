@@ -74,12 +74,12 @@ export async function getEngagementTimeSeries(
     const dataByDate: Map<string, TimeSeriesData> = new Map();
 
     // Initialize all dates
-    for (let i = 0; i < days; i++) {
+    for (let index = 0; index < days; index++) {
       const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      dataByDate.set(dateStr, {
-        date: dateStr,
+      date.setDate(date.getDate() - index);
+      const dateString = date.toISOString().split('T')[0];
+      dataByDate.set(dateString, {
+        date: dateString,
         views: 0,
         votes: 0,
         comments: 0,
@@ -89,37 +89,37 @@ export async function getEngagementTimeSeries(
 
     // Aggregate views
     if (!viewsError && views) {
-      views.forEach(view => {
-        const dateStr = view.created_at.split('T')[0];
-        const data = dataByDate.get(dateStr);
+      for (const view of views) {
+        const dateString = view.created_at.split('T')[0];
+        const data = dataByDate.get(dateString);
         if (data) data.views++;
-      });
+      }
     }
 
     // Aggregate votes
     if (!votesError && votes) {
-      votes.forEach(vote => {
-        const dateStr = vote.created_at.split('T')[0];
-        const data = dataByDate.get(dateStr);
+      for (const vote of votes) {
+        const dateString = vote.created_at.split('T')[0];
+        const data = dataByDate.get(dateString);
         if (data) data.votes++;
-      });
+      }
     }
 
     // Aggregate comments
     if (!commentsError && comments) {
-      comments.forEach(comment => {
-        const dateStr = comment.created_at.split('T')[0];
-        const data = dataByDate.get(dateStr);
+      for (const comment of comments) {
+        const dateString = comment.created_at.split('T')[0];
+        const data = dataByDate.get(dateString);
         if (data) data.comments++;
-      });
+      }
     }
 
     // Calculate engagement score (views * 0.1 + votes * 2 + comments * 1.5)
-    dataByDate.forEach(data => {
+    for (const data of dataByDate) {
       data.engagement = data.views * 0.1 + data.votes * 2 + data.comments * 1.5;
-    });
+    }
 
-    return Array.from(dataByDate.values())
+    return [...dataByDate.values()]
       .sort((a, b) => a.date.localeCompare(b.date));
   } catch (error) {
     logger.error('Error fetching engagement time series', { errorDetails: error, userId });
@@ -156,7 +156,7 @@ export async function getTrafficSources(userId: string): Promise<TrafficSource[]
     const sourceCounts: Map<string, number> = new Map();
     const total = views.length;
 
-    views.forEach(view => {
+    for (const view of views) {
       const referrer = view.referrer || 'Direct';
 
       let source = 'Direct';
@@ -178,9 +178,9 @@ export async function getTrafficSources(userId: string): Promise<TrafficSource[]
       }
 
       sourceCounts.set(source, (sourceCounts.get(source) || 0) + 1);
-    });
+    }
 
-    return Array.from(sourceCounts.entries())
+    return [...sourceCounts.entries()]
       .map(([source, count]) => ({
         source,
         count,
@@ -220,13 +220,13 @@ export async function getTopReferrers(userId: string, limit: number = 10): Promi
 
     const referrerCounts: Map<string, number> = new Map();
 
-    views.forEach(view => {
+    for (const view of views) {
       if (view.referrer) {
         referrerCounts.set(view.referrer, (referrerCounts.get(view.referrer) || 0) + 1);
       }
-    });
+    }
 
-    return Array.from(referrerCounts.entries())
+    return [...referrerCounts.entries()]
       .map(([referrer, count]) => ({ referrer, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, limit);

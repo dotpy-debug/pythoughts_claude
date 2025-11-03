@@ -6,9 +6,9 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -99,11 +99,11 @@ async function fetchBlogPosts(): Promise<BlogPost[]> {
  */
 function generateBlogHTML(post: BlogPost): string {
   const escapeHtml = (text: string) => text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('\'', '&#039;');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -256,8 +256,12 @@ async function prerenderBlogs() {
 
     try {
       await fs.mkdir(blogDir, { recursive: true });
-    } catch (_err) {
+    } catch (error) {
       // Directory might already exist, continue
+      // Log only if it's not an "already exists" error
+      if (error instanceof Error && !error.message.includes('EEXIST')) {
+        console.warn('Warning: Failed to create blog directory:', error.message);
+      }
     }
 
     // Generate HTML for each blog post
@@ -281,8 +285,8 @@ async function prerenderBlogs() {
 
         console.log(`  ✓ ${post.slug}`);
         successCount++;
-      } catch (err) {
-        console.error(`  ✗ ${post.slug}: ${err instanceof Error ? err.message : String(err)}`);
+      } catch (error) {
+        console.error(`  ✗ ${post.slug}: ${error instanceof Error ? error.message : String(error)}`);
         errorCount++;
       }
     }
@@ -308,8 +312,8 @@ async function prerenderBlogs() {
     console.log(`📁 Output: ${blogDir}`);
     console.log('='.repeat(60) + '\n');
 
-  } catch (err) {
-    console.error('\n❌ Pre-rendering failed:', err);
+  } catch (error) {
+    console.error('\n❌ Pre-rendering failed:', error);
     process.exit(1);
   }
 }

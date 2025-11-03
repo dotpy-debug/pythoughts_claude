@@ -52,9 +52,9 @@ export function useFeaturedBlogs(
   const [error, setError] = useState<Error | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const mountedRef = useRef<boolean>(true);
+  const refreshIntervalReference = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerReference = useRef<AbortController | null>(null);
+  const mountedReference = useRef<boolean>(true);
 
   /**
    * Fetch featured blogs from the API
@@ -62,11 +62,11 @@ export function useFeaturedBlogs(
   const fetchFeaturedBlogs = useCallback(
     async (showLoading = true) => {
       // Cancel previous request if still pending
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (abortControllerReference.current) {
+        abortControllerReference.current.abort();
       }
 
-      abortControllerRef.current = new AbortController();
+      abortControllerReference.current = new AbortController();
 
       try {
         if (showLoading) {
@@ -82,7 +82,7 @@ export function useFeaturedBlogs(
           minEngagement,
         });
 
-        if (mountedRef.current) {
+        if (mountedReference.current) {
           setBlogs(fetchedBlogs);
           setLastRefreshed(new Date());
           setError(null);
@@ -93,9 +93,9 @@ export function useFeaturedBlogs(
           limit,
           category,
         });
-      } catch (err) {
-        if (mountedRef.current && err !== 'AbortError') {
-          const error = err instanceof Error ? err : new Error('Failed to fetch featured blogs');
+      } catch (error_) {
+        if (mountedReference.current && error_ !== 'AbortError') {
+          const error = error_ instanceof Error ? error_ : new Error('Failed to fetch featured blogs');
           setError(error);
           logger.error('Error fetching featured blogs', error, {
             limit,
@@ -103,7 +103,7 @@ export function useFeaturedBlogs(
           });
         }
       } finally {
-        if (mountedRef.current) {
+        if (mountedReference.current) {
           setLoading(false);
         }
       }
@@ -122,14 +122,14 @@ export function useFeaturedBlogs(
    * Initial load and auto-refresh setup
    */
   useEffect(() => {
-    mountedRef.current = true;
+    mountedReference.current = true;
 
     // Initial fetch
     fetchFeaturedBlogs();
 
     // Set up auto-refresh if enabled
     if (autoRefresh) {
-      refreshIntervalRef.current = setInterval(() => {
+      refreshIntervalReference.current = setInterval(() => {
         fetchFeaturedBlogs(false);
       }, refreshInterval);
 
@@ -140,14 +140,14 @@ export function useFeaturedBlogs(
 
     // Cleanup
     return () => {
-      mountedRef.current = false;
+      mountedReference.current = false;
 
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
+      if (refreshIntervalReference.current) {
+        clearInterval(refreshIntervalReference.current);
       }
 
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (abortControllerReference.current) {
+        abortControllerReference.current.abort();
       }
     };
   }, [fetchFeaturedBlogs, autoRefresh, refreshInterval]);

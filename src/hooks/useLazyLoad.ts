@@ -101,13 +101,13 @@ export function useLazyLoad(options: LazyLoadOptions = {}): {
 
   const [_isVisible, setIsVisible] = useState(disabled);
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
-  const ref = useRef<HTMLElement>(null);
+  const reference = useRef<HTMLElement>(null);
   const hasEntered = useRef(false);
 
   useEffect(() => {
     if (disabled) return;
 
-    const element = ref.current;
+    const element = reference.current;
     if (!element) return;
 
     const observer = new IntersectionObserver(
@@ -135,7 +135,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}): {
         }
       },
       {
-        rootMargin: preload ? `${parseInt(rootMargin) * 2}px` : rootMargin,
+        rootMargin: preload ? `${Number.parseInt(rootMargin) * 2}px` : rootMargin,
         threshold,
       }
     );
@@ -147,7 +147,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}): {
     };
   }, [rootMargin, threshold, onEnter, onExit, preload, disabled]);
 
-  return { ref, isVisible: _isVisible, entry };
+  return { ref: reference, isVisible: _isVisible, entry };
 }
 
 /**
@@ -176,7 +176,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}): {
  * ```
  */
 export function useLazyLoadImage(
-  src: string,
+  source: string,
   options: LazyLoadOptions & {
     placeholder?: string;
     onLoad?: () => void;
@@ -190,35 +190,35 @@ export function useLazyLoadImage(
 } {
   const { placeholder, onLoad, onError, ...lazyOptions } = options;
 
-  const [imageSrc, setImageSrc] = useState(placeholder || '');
+  const [imageSource, setImageSource] = useState(placeholder || '');
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const { ref, isVisible: _isVisible } = useLazyLoad({
+  const { ref } = useLazyLoad({
     ...lazyOptions,
     onEnter: () => {
       // Start loading image
       const img = new Image();
 
-      img.onload = () => {
-        setImageSrc(src);
+      img.addEventListener('load', () => {
+        setImageSource(source);
         setIsLoaded(true);
         if (onLoad) {
           onLoad();
         }
-        logger.debug('Lazy load: image loaded', { src });
-      };
+        logger.debug('Lazy load: image loaded', { src: source });
+      });
 
       img.onerror = () => {
         setIsError(true);
-        const error = new Error(`Failed to load image: ${src}`);
+        const error = new Error(`Failed to load image: ${source}`);
         if (onError) {
           onError(error);
         }
-        logger.error('Lazy load: image failed', { src, error });
+        logger.error('Lazy load: image failed', { src: source, error });
       };
 
-      img.src = src;
+      img.src = source;
 
       if (lazyOptions.onEnter) {
         lazyOptions.onEnter();
@@ -229,12 +229,12 @@ export function useLazyLoadImage(
   // If disabled, load immediately
   useEffect(() => {
     if (options.disabled) {
-      setImageSrc(src);
+      setImageSource(source);
       setIsLoaded(true);
     }
-  }, [options.disabled, src]);
+  }, [options.disabled, source]);
 
-  return { ref, imageSrc, isLoaded, isError };
+  return { ref, imageSrc: imageSource, isLoaded, isError };
 }
 
 /**
@@ -276,10 +276,10 @@ export function usePreloadImages(
 
     let loadedCount = 0;
 
-    urls.forEach((url) => {
+    for (const url of urls) {
       const img = new Image();
 
-      img.onload = () => {
+      img.addEventListener('load', () => {
         loadedCount++;
         setLoaded(loadedCount);
 
@@ -287,7 +287,7 @@ export function usePreloadImages(
           onComplete();
           logger.info('Preload: all images loaded', { count: urls.length });
         }
-      };
+      });
 
       img.onerror = () => {
         loadedCount++;
@@ -307,7 +307,7 @@ export function usePreloadImages(
       }
 
       img.src = url;
-    });
+    }
   }, [urls, priority, onComplete, onError]);
 
   return {
@@ -371,7 +371,7 @@ export function useLazyLoadList<T>(
 
     // Simulate async loading
     setTimeout(() => {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage((previous) => previous + 1);
       setIsLoading(false);
       logger.debug('Lazy load: loaded more items', {
         page: currentPage + 1,
@@ -426,7 +426,7 @@ export function useLinkPrefetch(
 } {
   const { strategy = 'visible', priority = 0 } = options;
 
-  const ref = useRef<HTMLAnchorElement>(null);
+  const reference = useRef<HTMLAnchorElement>(null);
   const hasPrefetched = useRef(false);
 
   const prefetch = useCallback(() => {
@@ -444,7 +444,7 @@ export function useLinkPrefetch(
       linkWithPriority.fetchPriority = 'high';
     }
 
-    document.head.appendChild(link);
+    document.head.append(link);
 
     logger.debug('Link prefetch: started', { href, strategy });
   }, [href, priority, strategy]);
@@ -468,7 +468,7 @@ export function useLinkPrefetch(
     }
   }, [strategy, prefetch]);
 
-  return { ref, onMouseEnter };
+  return { ref: reference, onMouseEnter };
 }
 
 export default useLazyLoad;

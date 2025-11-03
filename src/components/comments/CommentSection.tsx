@@ -8,14 +8,14 @@ import { sanitizeInput, isValidContentLength } from '../../utils/security';
 import { checkContentSafety } from '../../utils/contentFilter';
 import { autoFlagContent } from '../../utils/autoFlag';
 
-type CommentSectionProps = {
+type CommentSectionProperties = {
   postId: string;
   postAuthorId?: string;
 };
 
 type SortType = 'best' | 'newest' | 'oldest';
 
-export function CommentSection({ postId, postAuthorId }: CommentSectionProps) {
+export function CommentSection({ postId, postAuthorId }: CommentSectionProperties) {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, 1 | -1>>({});
@@ -70,11 +70,11 @@ export function CommentSection({ postId, postAuthorId }: CommentSectionProps) {
 
         if (!votesError && votesData) {
           const votesMap: Record<string, 1 | -1> = {};
-          votesData.forEach((vote) => {
+          for (const vote of votesData) {
             if (vote.comment_id) {
               votesMap[vote.comment_id] = vote.vote_type;
             }
-          });
+          }
           setUserVotes(votesMap);
         }
       }
@@ -83,17 +83,17 @@ export function CommentSection({ postId, postAuthorId }: CommentSectionProps) {
         const commentMap: Record<string, Comment> = {};
         const rootComments: Comment[] = [];
 
-        flatComments.forEach((comment) => {
+        for (const comment of flatComments) {
           commentMap[comment.id] = { ...comment, replies: [] };
-        });
+        }
 
-        flatComments.forEach((comment) => {
+        for (const comment of flatComments) {
           if (comment.parent_comment_id && commentMap[comment.parent_comment_id]) {
             commentMap[comment.parent_comment_id].replies!.push(commentMap[comment.id]);
           } else {
             rootComments.push(commentMap[comment.id]);
           }
-        });
+        }
 
         return rootComments;
       };
@@ -102,11 +102,11 @@ export function CommentSection({ postId, postAuthorId }: CommentSectionProps) {
         const sorted = [...commentsToSort];
 
         // Sort replies recursively
-        sorted.forEach(comment => {
+        for (const comment of sorted) {
           if (comment.replies && comment.replies.length > 0) {
             comment.replies = sortComments(comment.replies);
           }
-        });
+        }
 
         // Apply sorting based on sortBy state
         sorted.sort((a, b) => {
@@ -116,17 +116,21 @@ export function CommentSection({ postId, postAuthorId }: CommentSectionProps) {
 
           // Then sort by selected method
           switch (sortBy) {
-            case 'best':
+            case 'best': {
               // Best: Sort by vote_count descending
               return b.vote_count - a.vote_count;
-            case 'newest':
+            }
+            case 'newest': {
               // Newest: Sort by created_at descending
               return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-            case 'oldest':
+            }
+            case 'oldest': {
               // Oldest: Sort by created_at ascending
               return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-            default:
+            }
+            default: {
               return 0;
+            }
           }
         });
 

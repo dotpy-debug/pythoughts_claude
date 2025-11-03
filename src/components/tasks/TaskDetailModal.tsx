@@ -8,14 +8,14 @@ import { Input } from '../ui/Input';
 import { Calendar, User, Tag, Clock, CheckCircle } from 'lucide-react';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 
-interface TaskDetailModalProps {
+interface TaskDetailModalProperties {
   task: Task;
   isOpen: boolean;
   onClose: () => void;
   onUpdate?: () => void;
 }
 
-export function TaskDetailModal({ task, isOpen, onClose, onUpdate }: TaskDetailModalProps) {
+export function TaskDetailModal({ task, isOpen, onClose, onUpdate }: TaskDetailModalProperties) {
   const { user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -191,12 +191,12 @@ export function TaskDetailModal({ task, isOpen, onClose, onUpdate }: TaskDetailM
                 className="flex-1"
               />
             </div>
-          ) : task.due_date ? (
+          ) : (task.due_date ? (
             <div className={`flex items-center space-x-3 text-sm font-mono ${isOverdue ? 'text-red-400 font-medium' : 'text-gray-400'}`}>
               <Calendar size={18} />
               <span>Due {new Date(task.due_date).toLocaleDateString()}</span>
             </div>
-          ) : null}
+          ) : null)}
 
           {task.completed_at && (
             <div className="flex items-center space-x-3 text-sm text-terminal-green font-mono">

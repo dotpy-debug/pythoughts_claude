@@ -5,13 +5,13 @@ import { ShadcnButton } from '../ui/ShadcnButton';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 
-interface PexelsSearchModalProps {
+interface PexelsSearchModalProperties {
   isOpen: boolean;
   onClose: () => void;
   onImageSelect: (imageUrl: string, photographer: string, photographerUrl: string) => void;
 }
 
-export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSearchModalProps) {
+export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSearchModalProperties) {
   const [query, setQuery] = useState('');
   const [photos, setPhotos] = useState<PexelsPhoto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,9 +26,9 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
     }
   }, [isOpen]);
 
-  const searchPhotos = async (searchQuery: string = query, pageNum: number = 1) => {
+  const searchPhotos = async (searchQuery: string = query, pageNumber: number = 1) => {
     if (!searchQuery.trim()) {
-      loadCuratedPhotos(pageNum);
+      loadCuratedPhotos(pageNumber);
       return;
     }
 
@@ -36,38 +36,38 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
     setError('');
 
     try {
-      const result = await pexels.searchPhotos(searchQuery, pageNum, 20);
+      const result = await pexels.searchPhotos(searchQuery, pageNumber, 20);
       if (result) {
         setPhotos(result.photos);
         setTotalResults(result.total_results);
-        setPage(pageNum);
+        setPage(pageNumber);
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to search photos';
-      const errorObj = err instanceof Error ? err : new Error(errorMessage);
+    } catch (error_) {
+      const errorMessage = error_ instanceof Error ? error_.message : 'Failed to search photos';
+      const errorObject = error_ instanceof Error ? error_ : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Pexels search failed', errorObj, { query: searchQuery });
+      logger.error('Pexels search failed', errorObject, { query: searchQuery });
     } finally {
       setLoading(false);
     }
   };
 
-  const loadCuratedPhotos = useCallback(async (pageNum: number = 1) => {
+  const loadCuratedPhotos = useCallback(async (pageNumber: number = 1) => {
     setLoading(true);
     setError('');
 
     try {
-      const result = await pexels.getCuratedPhotos(pageNum, 20);
+      const result = await pexels.getCuratedPhotos(pageNumber, 20);
       if (result) {
         setPhotos(result.photos);
         setTotalResults(1000);
-        setPage(pageNum);
+        setPage(pageNumber);
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load curated photos';
-      const errorObj = err instanceof Error ? err : new Error(errorMessage);
+    } catch (error_) {
+      const errorMessage = error_ instanceof Error ? error_.message : 'Failed to load curated photos';
+      const errorObject = error_ instanceof Error ? error_ : new Error(errorMessage);
       setError(errorMessage);
-      logger.error('Pexels curated load failed', errorObj);
+      logger.error('Pexels curated load failed', errorObject);
     } finally {
       setLoading(false);
     }
@@ -97,9 +97,9 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
           search_query: query || 'curated',
         });
       }
-    } catch (err) {
+    } catch (error_) {
       logger.warn('Failed to cache Pexels image', {
-        errorMessage: err instanceof Error ? err.message : String(err),
+        errorMessage: error_ instanceof Error ? error_.message : String(error_),
         photoId: photo.id,
       });
     }
@@ -121,9 +121,9 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
     searchPhotos(query, nextPage);
   };
 
-  const handlePrevPage = () => {
-    const prevPage = Math.max(1, page - 1);
-    searchPhotos(query, prevPage);
+  const handlePreviousPage = () => {
+    const previousPage = Math.max(1, page - 1);
+    searchPhotos(query, previousPage);
   };
 
   useEffect(() => {
@@ -181,7 +181,7 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
             <div className="flex items-center justify-center h-64">
               <Loader2 className="animate-spin text-blue-500" size={48} />
             </div>
-          ) : photos.length === 0 ? (
+          ) : (photos.length === 0 ? (
             <div className="flex items-center justify-center h-64 text-gray-400">
               <p>No photos found. Try a different search term.</p>
             </div>
@@ -217,7 +217,7 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
 
         {totalResults > 20 && (
@@ -229,7 +229,7 @@ export function PexelsSearchModal({ isOpen, onClose, onImageSelect }: PexelsSear
               <ShadcnButton
                 variant="ghost"
                 size="sm"
-                onClick={handlePrevPage}
+                onClick={handlePreviousPage}
                 disabled={page === 1 || loading}
               >
                 <ChevronLeft size={16} />

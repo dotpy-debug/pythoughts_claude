@@ -17,7 +17,7 @@ import {
   Hr,
 } from '@react-email/components';
 
-export interface CommentReplyEmailProps {
+export interface CommentReplyEmailProperties {
   recipientName: string;
   replierName: string;
   postTitle: string;
@@ -35,7 +35,7 @@ export function CommentReplyEmail({
   replyContent = 'Reply content',
   postUrl = 'https://pythoughts.com',
   unsubscribeUrl = 'https://pythoughts.com/settings/preferences',
-}: CommentReplyEmailProps) {
+}: CommentReplyEmailProperties) {
   return (
     <Html>
       <Head />

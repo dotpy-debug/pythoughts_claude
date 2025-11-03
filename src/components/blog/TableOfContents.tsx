@@ -2,19 +2,19 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronRight, List } from 'lucide-react';
 import { TocItem, scrollToHeading, flattenToc } from '../../utils/toc-generator';
 
-interface TableOfContentsProps {
+interface TableOfContentsProperties {
   items: TocItem[];
   className?: string;
   onItemClick?: (id: string) => void;
 }
 
-export function TableOfContents({ items, className = '', onItemClick }: TableOfContentsProps) {
+export function TableOfContents({ items, className = '', onItemClick }: TableOfContentsProperties) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState<number>(0);
-  const tocRef = useRef<HTMLElement>(null);
-  const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const tocReference = useRef<HTMLElement>(null);
+  const itemReferences = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   // Get flattened list of all TOC items for keyboard navigation
   const flatItems = useCallback(() => flattenToc(items), [items])();
@@ -28,22 +28,22 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
     };
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
+      for (const entry of entries) {
         if (entry.isIntersecting) {
           setActiveId(entry.target.id);
         }
-      });
+      }
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
 
     // Observe all headings
-    flatItems.forEach((item) => {
+    for (const item of flatItems) {
       const element = document.getElementById(item.id);
       if (element) {
         observer.observe(element);
       }
-    });
+    }
 
     return () => {
       observer.disconnect();
@@ -64,34 +64,39 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only handle keyboard navigation when TOC is focused
-      if (!tocRef.current?.contains(document.activeElement)) {
+      if (!tocReference.current?.contains(document.activeElement)) {
         return;
       }
 
       switch (e.key) {
-        case 'ArrowDown':
+        case 'ArrowDown': {
           e.preventDefault();
-          setFocusedIndex((prev) => Math.min(prev + 1, flatItems.length - 1));
+          setFocusedIndex((previous) => Math.min(previous + 1, flatItems.length - 1));
           break;
-        case 'ArrowUp':
+        }
+        case 'ArrowUp': {
           e.preventDefault();
-          setFocusedIndex((prev) => Math.max(prev - 1, 0));
+          setFocusedIndex((previous) => Math.max(previous - 1, 0));
           break;
-        case 'Home':
+        }
+        case 'Home': {
           e.preventDefault();
           setFocusedIndex(0);
           break;
-        case 'End':
+        }
+        case 'End': {
           e.preventDefault();
           setFocusedIndex(flatItems.length - 1);
           break;
-        case 'Enter':
+        }
+        case 'Enter': {
           e.preventDefault();
           if (flatItems[focusedIndex]) {
             handleItemClick(flatItems[focusedIndex].id);
           }
           break;
-        case 'ArrowRight':
+        }
+        case 'ArrowRight': {
           e.preventDefault();
           // Expand collapsed section if current item has children
           if (flatItems[focusedIndex]?.children.length > 0) {
@@ -100,7 +105,8 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
             setCollapsedSections(newCollapsed);
           }
           break;
-        case 'ArrowLeft':
+        }
+        case 'ArrowLeft': {
           e.preventDefault();
           // Collapse section if current item has children
           if (flatItems[focusedIndex]?.children.length > 0) {
@@ -109,6 +115,7 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
             setCollapsedSections(newCollapsed);
           }
           break;
+        }
       }
     };
 
@@ -119,8 +126,8 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
   // Auto-scroll focused item into view within TOC container (keyboard navigation)
   useEffect(() => {
     const focusedItem = flatItems[focusedIndex];
-    if (focusedItem && itemRefs.current.has(focusedItem.id)) {
-      const button = itemRefs.current.get(focusedItem.id);
+    if (focusedItem && itemReferences.current.has(focusedItem.id)) {
+      const button = itemReferences.current.get(focusedItem.id);
       button?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       button?.focus();
     }
@@ -128,8 +135,8 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
 
   // Auto-scroll active item into view within TOC container (page scrolling)
   useEffect(() => {
-    if (activeId && itemRefs.current.has(activeId)) {
-      const button = itemRefs.current.get(activeId);
+    if (activeId && itemReferences.current.has(activeId)) {
+      const button = itemReferences.current.get(activeId);
       // Only scroll if user is not currently using keyboard navigation
       if (document.activeElement !== button) {
         button?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -174,21 +181,21 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
             </button>
           )}
           <button
-            ref={(el) => {
-              if (el) {
-                itemRefs.current.set(item.id, el);
+            ref={(element) => {
+              if (element) {
+                itemReferences.current.set(item.id, element);
               } else {
-                itemRefs.current.delete(item.id);
+                itemReferences.current.delete(item.id);
               }
             }}
             onClick={() => handleItemClick(item.id)}
             className={`flex-1 text-left py-1.5 px-2 rounded transition-colors text-sm ${
               isActive
                 ? 'bg-blue-600/20 text-blue-400 font-medium'
-                : isFocused
+                : (isFocused
                 ? 'bg-gray-700 text-gray-100 ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-900'
-                : 'text-gray-300 hover:bg-gray-700 hover:text-gray-100'
-            } ${!hasChildren ? 'ml-5' : ''}`}
+                : 'text-gray-300 hover:bg-gray-700 hover:text-gray-100')
+            } ${hasChildren ? '' : 'ml-5'}`}
             type="button"
             aria-current={isActive ? 'location' : undefined}
           >
@@ -229,7 +236,7 @@ export function TableOfContents({ items, className = '', onItemClick }: TableOfC
         onClick={() => setIsMobileOpen(false)}
       >
         <aside
-          ref={tocRef}
+          ref={tocReference}
           className={`${
             isMobileOpen
               ? 'fixed right-0 top-0 bottom-0 w-80 bg-gray-900 shadow-2xl'

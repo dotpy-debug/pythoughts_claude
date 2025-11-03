@@ -20,7 +20,7 @@ export function middleware(request: NextRequest) {
     frame-ancestors 'self';
     upgrade-insecure-requests;
   `
-    .replace(/\s{2,}/g, ' ')
+    .replaceAll(/\s{2,}/g, ' ')
     .trim();
 
   const requestHeaders = new Headers(request.headers);

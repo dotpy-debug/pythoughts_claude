@@ -4,7 +4,7 @@ import { Button } from '../ui/Button';
 import { uploadFile, STORAGE_BUCKETS } from '../../lib/storage';
 import { logger } from '../../lib/logger';
 
-interface ImageUploadProps {
+interface ImageUploadProperties {
   currentImageUrl?: string;
   onImageChange: (url: string) => void;
   maxSizeMB?: number;
@@ -16,12 +16,12 @@ export function ImageUpload({
   onImageChange,
   maxSizeMB = 5,
   aspectRatio,
-}: ImageUploadProps) {
+}: ImageUploadProperties) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [preview, setPreview] = useState(currentImageUrl || '');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputReference = useRef<HTMLInputElement>(null);
 
   const validateImage = (file: File): string | null => {
     // Check file type
@@ -91,12 +91,12 @@ export function ImageUpload({
         url: result.url,
       });
 
-    } catch (err) {
+    } catch (error_) {
       const errorMessage = 'Failed to upload image. Please try again.';
       setError(errorMessage);
       setPreview('');
-      if (err instanceof Error) {
-        logger.error('Image upload error', err, { fileName: file.name });
+      if (error_ instanceof Error) {
+        logger.error('Image upload error', error_, { fileName: file.name });
       } else {
         logger.error('Image upload error', {
           errorMessage: 'Unknown error',
@@ -146,8 +146,8 @@ export function ImageUpload({
   const handleRemove = () => {
     setPreview('');
     onImageChange('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    if (fileInputReference.current) {
+      fileInputReference.current.value = '';
     }
   };
 
@@ -194,10 +194,10 @@ export function ImageUpload({
               ? 'border-terminal-green bg-terminal-green/10'
               : 'border-gray-700 hover:border-gray-600'
           } ${uploading ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => fileInputReference.current?.click()}
         >
           <input
-            ref={fileInputRef}
+            ref={fileInputReference}
             type="file"
             accept="image/*"
             onChange={handleFileInputChange}

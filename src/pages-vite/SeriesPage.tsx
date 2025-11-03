@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Series } from '../lib/supabase';
 import { ShadcnButton } from '../components/ui/ShadcnButton';
 
-const CreateSeriesModal = lazy(() => import('../components/series/CreateSeriesModal').then(mod => ({ default: mod.CreateSeriesModal })));
+const CreateSeriesModal = lazy(() => import('../components/series/CreateSeriesModal').then(module_ => ({ default: module_.CreateSeriesModal })));
 
 export function SeriesPage() {
   const { user } = useAuth();
@@ -121,7 +121,7 @@ export function SeriesPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="animate-spin text-terminal-green" size={48} />
         </div>
-      ) : displayedSeries.length === 0 ? (
+      ) : (displayedSeries.length === 0 ? (
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
             <List size={48} className="text-gray-600 mx-auto" />
@@ -173,7 +173,7 @@ export function SeriesPage() {
             </div>
           ))}
         </div>
-      )}
+      ))}
 
       <Suspense fallback={null}>
         <CreateSeriesModal

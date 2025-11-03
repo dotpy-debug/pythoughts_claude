@@ -16,15 +16,15 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
         // Check for updates periodically
         setInterval(() => {
           registration.update();
-        }, 60000); // Check every minute
+        }, 60_000); // Check every minute
       })
-      .catch((err) => {
-        logger.error('Service Worker registration failed', { errorMessage: err instanceof Error ? err.message : String(err) });
+      .catch((error) => {
+        logger.error('Service Worker registration failed', { errorMessage: error instanceof Error ? error.message : String(error) });
       });
   });
 }
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.querySelector('#root')!).render(
   <StrictMode>
     <AuthProvider>
       <App />

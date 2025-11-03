@@ -5,29 +5,29 @@
  * with proper error handling and graceful degradation
  */
 
-import { spawn } from 'child_process';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { spawn } from 'node:child_process';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, '..');
 
 const colors = {
-  reset: '\x1b[0m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
+  reset: '\u001B[0m',
+  green: '\u001B[32m',
+  yellow: '\u001B[33m',
+  red: '\u001B[31m',
+  blue: '\u001B[34m',
+  cyan: '\u001B[36m',
 };
 
 /**
  * Run a command and return exit code
  */
-function runCommand(command: string, args: string[]): Promise<number> {
+function runCommand(command: string, arguments_: string[]): Promise<number> {
   return new Promise((resolve) => {
-    const child = spawn(command, args, {
+    const child = spawn(command, arguments_, {
       cwd: projectRoot,
       stdio: 'inherit',
       shell: true,
@@ -57,11 +57,11 @@ async function main() {
 
   const migrationExitCode = await runCommand('tsx', ['scripts/migrate-database.ts']);
 
-  if (migrationExitCode !== 0) {
+  if (migrationExitCode === 0) {
+    console.log(`${colors.green}✓${colors.reset} Migrations completed successfully\n`);
+  } else {
     console.log(`\n${colors.yellow}⚠ Warning:${colors.reset} Migrations failed or were skipped`);
     console.log(`${colors.yellow}           The app will start anyway (development mode)${colors.reset}\n`);
-  } else {
-    console.log(`${colors.green}✓${colors.reset} Migrations completed successfully\n`);
   }
 
   // Step 2: Start Next.js server

@@ -18,7 +18,7 @@ import { Clock, Eye, Heart, MessageCircle, User, ArrowRight } from 'lucide-react
 import { BlogPost } from '../../types/blog';
 import { LazyImage } from '../performance/LazyImage';
 
-interface BlogHeroCardProps {
+interface BlogHeroCardProperties {
   blog: BlogPost;
   priority?: boolean; // Preload image
   showEngagement?: boolean;
@@ -28,15 +28,15 @@ export const BlogHeroCard = memo(function BlogHeroCard({
   blog,
   priority = false,
   showEngagement = true,
-}: BlogHeroCardProps) {
+}: BlogHeroCardProperties) {
   // Calculate reading time if not available
   const readingTime = blog.reading_time_minutes || Math.ceil(blog.word_count / 200) || 5;
 
   // Format large numbers (e.g., 1.2K, 5.3M)
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
+  const formatNumber = (number_: number): string => {
+    if (number_ >= 1_000_000) return `${(number_ / 1_000_000).toFixed(1)}M`;
+    if (number_ >= 1000) return `${(number_ / 1000).toFixed(1)}K`;
+    return number_.toString();
   };
 
   // Get view count from blog data (would need to be added to BlogPost type)
@@ -209,10 +209,10 @@ function formatDistanceToNow(date: Date): string {
 
   if (diffInSeconds < 60) return 'just now';
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)}mo ago`;
-  return `${Math.floor(diffInSeconds / 31536000)}y ago`;
+  if (diffInSeconds < 86_400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  if (diffInSeconds < 2_592_000) return `${Math.floor(diffInSeconds / 86_400)}d ago`;
+  if (diffInSeconds < 31_536_000) return `${Math.floor(diffInSeconds / 2_592_000)}mo ago`;
+  return `${Math.floor(diffInSeconds / 31_536_000)}y ago`;
 }
 
 /**

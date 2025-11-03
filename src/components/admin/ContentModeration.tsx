@@ -64,7 +64,8 @@ export function ContentModeration() {
 
     setLoading(true);
     try {
-      if (activeTab === 'reports') {
+      switch (activeTab) {
+      case 'reports': {
         const result = await getContentReports({
           currentUserId: profile.id,
           status: reportStatus as "pending" | "reviewing" | "resolved" | "dismissed" | undefined,
@@ -74,7 +75,10 @@ export function ContentModeration() {
           setReports(result.reports);
           setReportsTotal(result.total);
         }
-      } else if (activeTab === 'posts') {
+      
+      break;
+      }
+      case 'posts': {
         const result = await getPostsForModeration({
           currentUserId: profile.id,
           filter: postFilter as "all" | "published" | "flagged" | "drafts" | undefined,
@@ -85,7 +89,10 @@ export function ContentModeration() {
           setPosts(result.posts);
           setPostsTotal(result.total);
         }
-      } else if (activeTab === 'comments') {
+      
+      break;
+      }
+      case 'comments': {
         const result = await getCommentsForModeration({
           currentUserId: profile.id,
           page,
@@ -94,6 +101,10 @@ export function ContentModeration() {
           setComments(result.comments);
           setCommentsTotal(result.total);
         }
+      
+      break;
+      }
+      // No default
       }
     } catch (error) {
       console.error('Error loading moderation data:', error);
@@ -130,10 +141,10 @@ export function ContentModeration() {
   const handleDeletePost = async (postId: string) => {
     if (!profile) return;
 
-    const reason = window.prompt('Enter reason for deletion:');
+    const reason = globalThis.prompt('Enter reason for deletion:');
     if (!reason) return;
 
-    const confirmed = window.confirm('Are you sure you want to delete this post?');
+    const confirmed = globalThis.confirm('Are you sure you want to delete this post?');
     if (!confirmed) return;
 
     const result = await deletePost({
@@ -164,10 +175,10 @@ export function ContentModeration() {
   const handleDeleteComment = async (commentId: string) => {
     if (!profile) return;
 
-    const reason = window.prompt('Enter reason for deletion:');
+    const reason = globalThis.prompt('Enter reason for deletion:');
     if (!reason) return;
 
-    const confirmed = window.confirm('Are you sure you want to delete this comment?');
+    const confirmed = globalThis.confirm('Are you sure you want to delete this comment?');
     if (!confirmed) return;
 
     const result = await deleteComment({
@@ -184,17 +195,17 @@ export function ContentModeration() {
   const handleBulkDeletePosts = async () => {
     if (!profile || selectedPosts.size === 0) return;
 
-    const reason = window.prompt('Enter reason for bulk deletion:');
+    const reason = globalThis.prompt('Enter reason for bulk deletion:');
     if (!reason) return;
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       `Delete ${selectedPosts.size} posts? This action cannot be undone.`
     );
     if (!confirmed) return;
 
     const result = await bulkDeletePosts({
       currentUserId: profile.id,
-      postIds: Array.from(selectedPosts),
+      postIds: [...selectedPosts],
       reason,
     });
 
@@ -207,17 +218,17 @@ export function ContentModeration() {
   const handleBulkDeleteComments = async () => {
     if (!profile || selectedComments.size === 0) return;
 
-    const reason = window.prompt('Enter reason for bulk deletion:');
+    const reason = globalThis.prompt('Enter reason for bulk deletion:');
     if (!reason) return;
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       `Delete ${selectedComments.size} comments? This action cannot be undone.`
     );
     if (!confirmed) return;
 
     const result = await bulkDeleteComments({
       currentUserId: profile.id,
-      commentIds: Array.from(selectedComments),
+      commentIds: [...selectedComments],
       reason,
     });
 
@@ -301,7 +312,7 @@ export function ContentModeration() {
                   <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                   <p className="text-gray-400">Loading reports...</p>
                 </div>
-              ) : reports.length === 0 ? (
+              ) : (reports.length === 0 ? (
                 <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 text-center text-gray-400">
                   No reports found
                 </div>
@@ -362,7 +373,7 @@ export function ContentModeration() {
                           </button>
                           <button
                             onClick={() => {
-                              const notes = window.prompt('Resolution notes:');
+                              const notes = globalThis.prompt('Resolution notes:');
                               if (notes) handleReportAction(report.id, 'resolved', notes);
                             }}
                             className="px-3 py-1.5 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded text-sm transition-colors"
@@ -388,7 +399,7 @@ export function ContentModeration() {
                     )}
                   </div>
                 ))
-              )}
+              ))}
             </div>
           </div>
         )}
@@ -440,7 +451,7 @@ export function ContentModeration() {
                   <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                   <p className="text-gray-400">Loading posts...</p>
                 </div>
-              ) : posts.length === 0 ? (
+              ) : (posts.length === 0 ? (
                 <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 text-center text-gray-400">
                   No posts found
                 </div>
@@ -473,7 +484,7 @@ export function ContentModeration() {
                           <h3 className="text-lg font-semibold text-white">{post.title}</h3>
                         </div>
                         <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-                          {post.content.substring(0, 200)}...
+                          {post.content.slice(0, 200)}...
                         </p>
                         <div className="flex items-center space-x-4 text-sm text-gray-500">
                           <span>
@@ -512,7 +523,7 @@ export function ContentModeration() {
                     </div>
                   </div>
                 ))
-              )}
+              ))}
             </div>
           </div>
         )}
@@ -539,7 +550,7 @@ export function ContentModeration() {
                   <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                   <p className="text-gray-400">Loading comments...</p>
                 </div>
-              ) : comments.length === 0 ? (
+              ) : (comments.length === 0 ? (
                 <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 text-center text-gray-400">
                   No comments found
                 </div>
@@ -587,7 +598,7 @@ export function ContentModeration() {
                     </div>
                   </div>
                 ))
-              )}
+              ))}
             </div>
           </div>
         )}

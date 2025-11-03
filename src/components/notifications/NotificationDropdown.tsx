@@ -2,11 +2,11 @@ import { useNotifications } from '../../contexts/NotificationContext';
 import { NotificationItem } from './NotificationItem';
 import { CheckCheck, Loader2 } from 'lucide-react';
 
-type NotificationDropdownProps = {
+type NotificationDropdownProperties = {
   onClose: () => void;
 };
 
-export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
+export function NotificationDropdown({ onClose }: NotificationDropdownProperties) {
   const { notifications, loading, markAllAsRead, unreadCount } = useNotifications();
 
   return (
@@ -34,7 +34,7 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
           <div className="flex items-center justify-center py-8">
             <Loader2 className="animate-spin text-terminal-green" size={24} />
           </div>
-        ) : notifications.length === 0 ? (
+        ) : (notifications.length === 0 ? (
           <div className="py-8 text-center">
             <p className="text-gray-500 font-mono text-sm">$ no notifications found</p>
             <p className="text-gray-600 font-mono text-xs mt-1">system idle...</p>
@@ -49,7 +49,7 @@ export function NotificationDropdown({ onClose }: NotificationDropdownProps) {
               />
             ))}
           </div>
-        )}
+        ))}
       </div>
     </div>
   );

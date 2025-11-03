@@ -28,7 +28,7 @@ import { logger } from './logger';
  */
 const REDIS_CONFIG = {
   host: import.meta.env.VITE_REDIS_HOST || 'localhost',
-  port: parseInt(import.meta.env.VITE_REDIS_PORT || '6379'),
+  port: Number.parseInt(import.meta.env.VITE_REDIS_PORT || '6379'),
   password: import.meta.env.VITE_REDIS_PASSWORD,
 };
 
@@ -213,36 +213,44 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<EmailResult> {
     let result: EmailResult;
 
     switch (job.data.type) {
-      case 'raw':
+      case 'raw': {
         result = await sendEmail(job.data.options);
         break;
+      }
 
-      case 'post-reply':
+      case 'post-reply': {
         result = await sendPostReplyEmail(job.data.to, job.data.params);
         break;
+      }
 
-      case 'comment-reply':
+      case 'comment-reply': {
         result = await sendCommentReplyEmail(job.data.to, job.data.params);
         break;
+      }
 
-      case 'vote-notification':
+      case 'vote-notification': {
         result = await sendVoteNotificationEmail(job.data.to, job.data.params);
         break;
+      }
 
-      case 'mention-notification':
+      case 'mention-notification': {
         result = await sendMentionNotificationEmail(job.data.to, job.data.params);
         break;
+      }
 
-      case 'task-assigned':
+      case 'task-assigned': {
         result = await sendTaskAssignedEmail(job.data.to, job.data.params);
         break;
+      }
 
-      case 'weekly-digest':
+      case 'weekly-digest': {
         result = await sendWeeklyDigestEmail(job.data.to, job.data.params);
         break;
+      }
 
-      default:
+      default: {
         throw new Error(`Unknown email type: ${(job.data as Record<string, unknown>).type}`);
+      }
     }
 
     if (!result.success) {
@@ -356,7 +364,7 @@ export async function queueEmail(
  */
 export async function queuePostReplyEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     replierName: string;
     postTitle: string;
@@ -369,7 +377,7 @@ export async function queuePostReplyEmail(
     {
       type: 'post-reply',
       to,
-      params,
+      params: parameters,
     },
     {
       priority: 5,
@@ -383,7 +391,7 @@ export async function queuePostReplyEmail(
  */
 export async function queueCommentReplyEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     replierName: string;
     postTitle: string;
@@ -397,7 +405,7 @@ export async function queueCommentReplyEmail(
     {
       type: 'comment-reply',
       to,
-      params,
+      params: parameters,
     },
     {
       priority: 5,
@@ -411,7 +419,7 @@ export async function queueCommentReplyEmail(
  */
 export async function queueVoteNotificationEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     postTitle: string;
     voteCount: number;
@@ -424,7 +432,7 @@ export async function queueVoteNotificationEmail(
     {
       type: 'vote-notification',
       to,
-      params,
+      params: parameters,
     },
     {
       priority: 3,
@@ -438,7 +446,7 @@ export async function queueVoteNotificationEmail(
  */
 export async function queueMentionNotificationEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     mentionerName: string;
     contentType: 'post' | 'comment';
@@ -452,7 +460,7 @@ export async function queueMentionNotificationEmail(
     {
       type: 'mention-notification',
       to,
-      params,
+      params: parameters,
     },
     {
       priority: 6,
@@ -466,7 +474,7 @@ export async function queueMentionNotificationEmail(
  */
 export async function queueTaskAssignedEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     assignerName: string;
     taskTitle: string;
@@ -477,13 +485,13 @@ export async function queueTaskAssignedEmail(
   },
   options: EmailQueueOptions = {}
 ): Promise<Job<EmailJobData>> {
-  const emailPriority = params.priority === 'urgent' ? 10 : params.priority === 'high' ? 7 : 5;
+  const emailPriority = parameters.priority === 'urgent' ? 10 : (parameters.priority === 'high' ? 7 : 5);
 
   return queueEmail(
     {
       type: 'task-assigned',
       to,
-      params,
+      params: parameters,
     },
     {
       priority: emailPriority,
@@ -497,7 +505,7 @@ export async function queueTaskAssignedEmail(
  */
 export async function queueWeeklyDigestEmail(
   to: string,
-  params: {
+  parameters: {
     recipientName: string;
     weekStart: string;
     weekEnd: string;
@@ -522,7 +530,7 @@ export async function queueWeeklyDigestEmail(
     {
       type: 'weekly-digest',
       to,
-      params,
+      params: parameters,
     },
     {
       priority: 1, // Low priority for digest emails

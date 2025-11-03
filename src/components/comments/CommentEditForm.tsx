@@ -17,7 +17,7 @@ import { MentionsInput } from '../mentions/MentionsInput';
 import { isValidContentLength, sanitizeInput } from '../../utils/security';
 import { checkContentSafety, shouldAutoBlock } from '../../utils/contentFilter';
 
-export interface CommentEditFormProps {
+export interface CommentEditFormProperties {
   /**
    * Current comment content
    */
@@ -56,7 +56,7 @@ export function CommentEditForm({
   onSubmit,
   onCancel,
   className,
-}: CommentEditFormProps) {
+}: CommentEditFormProperties) {
   const [content, setContent] = useState(initialContent);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -91,8 +91,8 @@ export function CommentEditForm({
     try {
       setLoading(true);
       await onSubmit(sanitized);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update comment');
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'Failed to update comment');
     } finally {
       setLoading(false);
     }
@@ -137,9 +137,9 @@ export function CommentEditForm({
             'transition-colors',
             isOverLimit
               ? 'text-red-500 font-bold'
-              : characterCount > 900
+              : (characterCount > 900
                 ? 'text-yellow-500'
-                : 'text-gray-500'
+                : 'text-gray-500')
           )}
         >
           {characterCount}/1000

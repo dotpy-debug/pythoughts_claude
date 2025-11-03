@@ -29,7 +29,7 @@ import {
 import { useBlogOfTheDay } from '../../hooks/useBlogOfTheDay';
 import { LazyImage } from '../performance/LazyImage';
 
-interface BlogOfTheDaySectionProps {
+interface BlogOfTheDaySectionProperties {
   showAuthorBio?: boolean;
   showSocialShare?: boolean;
 }
@@ -37,7 +37,7 @@ interface BlogOfTheDaySectionProps {
 export const BlogOfTheDaySection = memo(function BlogOfTheDaySection({
   showAuthorBio = true,
   // showSocialShare reserved for future social sharing feature
-}: BlogOfTheDaySectionProps) {
+}: BlogOfTheDaySectionProperties) {
   const { blog, loading, error, refresh } = useBlogOfTheDay();
 
   // Loading state
@@ -80,10 +80,10 @@ export const BlogOfTheDaySection = memo(function BlogOfTheDaySection({
   const readingTime = blog.reading_time_minutes || Math.ceil(blog.word_count / 200) || 5;
 
   // Format numbers
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
+  const formatNumber = (number_: number): string => {
+    if (number_ >= 1_000_000) return `${(number_ / 1_000_000).toFixed(1)}M`;
+    if (number_ >= 1000) return `${(number_ / 1000).toFixed(1)}K`;
+    return number_.toString();
   };
 
   // Get engagement data
@@ -101,7 +101,7 @@ export const BlogOfTheDaySection = memo(function BlogOfTheDaySection({
 
   // Create excerpt from HTML content (first 250 words)
   const createExcerpt = (html: string, wordLimit: number = 50): string => {
-    const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const text = html.replaceAll(/<[^>]+>/g, ' ').replaceAll(/\s+/g, ' ').trim();
     const words = text.split(' ');
     return words.length > wordLimit
       ? words.slice(0, wordLimit).join(' ') + '...'

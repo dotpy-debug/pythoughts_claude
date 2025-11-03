@@ -2,7 +2,7 @@ import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-interface CalendarProps {
+interface CalendarProperties {
   selected?: Date;
   onSelect?: (date: Date | undefined) => void;
   className?: string;
@@ -11,7 +11,7 @@ interface CalendarProps {
   initialFocus?: boolean;
 }
 
-export function Calendar({ selected, onSelect, className, disabled, mode: _mode, initialFocus: _initialFocus }: CalendarProps) {
+export function Calendar({ selected, onSelect, className, disabled, mode: _mode, initialFocus: _initialFocus }: CalendarProperties) {
   const [currentMonth, setCurrentMonth] = React.useState(selected || new Date());
 
   const daysInMonth = new Date(
@@ -66,8 +66,8 @@ export function Calendar({ selected, onSelect, className, disabled, mode: _mode,
   };
 
   const days = [];
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    days.push(<div key={`empty-${i}`} className="h-9 w-9" />);
+  for (let index = 0; index < firstDayOfMonth; index++) {
+    days.push(<div key={`empty-${index}`} className="h-9 w-9" />);
   }
 
   for (let day = 1; day <= daysInMonth; day++) {

@@ -17,7 +17,7 @@ import {
   Hr,
 } from '@react-email/components';
 
-export interface VoteNotificationEmailProps {
+export interface VoteNotificationEmailProperties {
   recipientName: string;
   postTitle: string;
   voteCount: number;
@@ -33,7 +33,7 @@ export function VoteNotificationEmail({
   milestone = 10,
   postUrl = 'https://pythoughts.com',
   unsubscribeUrl = 'https://pythoughts.com/settings/preferences',
-}: VoteNotificationEmailProps) {
+}: VoteNotificationEmailProperties) {
   const getMilestoneMessage = () => {
     if (milestone >= 100) return '🎉 Your post is going viral!';
     if (milestone >= 50) return '🚀 Your post is trending!';
