@@ -42,17 +42,18 @@ class AutomatedDeployment {
     console.log('\n=== Pre-Deployment Validation ===\n');
 
     // Check environment variables
-    const requiredVariables = [
+    const baseVariables = [
       'DATABASE_URL',
       'VITE_SUPABASE_URL',
       'VITE_SUPABASE_ANON_KEY',
     ];
+    
+    const productionVariables = ['REDIS_URL', 'SESSION_SECRET'];
+    const requiredVariables = this.config.environment === 'production'
+      ? [...baseVariables, ...productionVariables]
+      : baseVariables;
 
-    if (this.config.environment === 'production') {
-      requiredVars.push('REDIS_URL', 'SESSION_SECRET');
-    }
-
-    const missing = requiredVars.filter(v => !process.env[v]);
+    const missing = requiredVariables.filter((variableName) => !process.env[variableName]);
     if (missing.length > 0) {
       console.error(`✗ Missing required environment variables: ${missing.join(', ')}`);
       return false;

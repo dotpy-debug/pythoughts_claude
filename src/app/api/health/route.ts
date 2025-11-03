@@ -188,7 +188,12 @@ export async function GET() {
     };
 
     // Determine HTTP status code
-    const statusCode = health.overall === 'healthy' ? 200 : (health.overall === 'degraded' ? 200 : 503);
+    let statusCode: number;
+    if (health.overall === 'unhealthy') {
+      statusCode = 503;
+    } else {
+      statusCode = 200; // healthy or degraded
+    }
 
     return NextResponse.json(health, { status: statusCode });
   } catch (error) {

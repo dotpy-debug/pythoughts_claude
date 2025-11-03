@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { format } from 'date-fns';
 import { CalendarIcon, Send, Eye } from 'lucide-react';
 
-type NewsletterStatus = 'draft' | 'scheduled' | 'sent';
+// NewsletterStatus removed as unused
 
 type NewsletterComposerProperties = {
   publicationId: string;
