@@ -58,3 +58,7 @@ playwright/.cache/
 *.tmp
 *.temp
 .cache
+
+# Git Hooks
+.githooks/.cache/
+.githooks/reports/

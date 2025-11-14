@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run enhanced pre-push checks with smart test execution
+npx tsx .githooks/scripts/pre-push-check.ts

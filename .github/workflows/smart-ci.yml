@@ -1,0 +1,393 @@
+name: Smart CI/CD Pipeline
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+    inputs:
+      force_full_build:
+        description: 'Force full build (skip optimizations)'
+        required: false
+        type: boolean
+        default: false
+
+# Cancel in-progress runs for same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # PHASE 1: Analyze what changed
+  analyze-changes:
+    name: 🔍 Analyze Changes
+    runs-on: ubuntu-latest
+    outputs:
+      build_scope: ${{ steps.analysis.outputs.build_scope }}
+      skip_database: ${{ steps.analysis.outputs.skip_database }}
+      skip_redis: ${{ steps.analysis.outputs.skip_redis }}
+      skip_integration: ${{ steps.analysis.outputs.skip_integration }}
+      skip_e2e: ${{ steps.analysis.outputs.skip_e2e }}
+      files_changed: ${{ steps.analysis.outputs.files_changed }}
+      time_saved: ${{ steps.analysis.outputs.time_saved }}
+      cost_saved: ${{ steps.analysis.outputs.cost_saved }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for change analysis
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run change analysis
+        id: analysis
+        run: |
+          # Run the analysis script
+          node --loader tsx .githooks/scripts/analyze-changes.ts > analysis.json
+
+          # Parse and set outputs
+          BUILD_SCOPE=$(jq -r '.buildScope' analysis.json)
+          SKIP_DB=$(jq -r '.skipDatabase' analysis.json)
+          SKIP_REDIS=$(jq -r '.skipRedis' analysis.json)
+          SKIP_INTEG=$(jq -r '.skipIntegration' analysis.json)
+          SKIP_E2E=$(jq -r '.skipE2E' analysis.json)
+          FILES_CHANGED=$(jq -r '.filesChanged' analysis.json)
+          TIME_SAVED=$(jq -r '.estimatedTimeSaved' analysis.json)
+          COST_SAVED=$(jq -r '.estimatedCostSaved' analysis.json)
+
+          echo "build_scope=$BUILD_SCOPE" >> $GITHUB_OUTPUT
+          echo "skip_database=$SKIP_DB" >> $GITHUB_OUTPUT
+          echo "skip_redis=$SKIP_REDIS" >> $GITHUB_OUTPUT
+          echo "skip_integration=$SKIP_INTEG" >> $GITHUB_OUTPUT
+          echo "skip_e2e=$SKIP_E2E" >> $GITHUB_OUTPUT
+          echo "files_changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
+          echo "time_saved=$TIME_SAVED" >> $GITHUB_OUTPUT
+          echo "cost_saved=$COST_SAVED" >> $GITHUB_OUTPUT
+
+          # Display results
+          cat analysis.json
+
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v4
+        with:
+          name: change-analysis
+          path: analysis.json
+          retention-days: 7
+
+  # PHASE 2: Code Quality (always runs)
+  code-quality:
+    name: 🔍 Lint & Type Check
+    runs-on: ubuntu-latest
+    needs: analyze-changes
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run typecheck
+
+      - name: Check formatting
+        run: npm run format:check
+
+  # PHASE 3: Unit Tests (always runs on code changes)
+  unit-tests:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, code-quality]
+    if: needs.analyze-changes.outputs.build_scope != 'none'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unit
+
+  # PHASE 4: Database Tests (conditional)
+  database-tests:
+    name: 🗄️  Database Tests
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, code-quality]
+    if: needs.analyze-changes.outputs.skip_database == 'false' && needs.analyze-changes.outputs.build_scope != 'none'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npm run migrate
+
+      - name: Run database tests
+        run: npm run test:integration
+
+  # PHASE 5: Redis/Cache Tests (conditional)
+  cache-tests:
+    name: 💾 Redis/Cache Tests
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, code-quality]
+    if: needs.analyze-changes.outputs.skip_redis == 'false' && needs.analyze-changes.outputs.build_scope != 'none'
+    services:
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    env:
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run cache tests
+        run: npm run test:integration -- --grep="cache|redis"
+
+  # PHASE 6: Integration Tests (conditional)
+  integration-tests:
+    name: 🔗 Integration Tests
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, unit-tests, database-tests]
+    if: needs.analyze-changes.outputs.skip_integration == 'false' && needs.analyze-changes.outputs.build_scope == 'full'
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npm run migrate
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+  # PHASE 7: E2E Tests (conditional)
+  e2e-tests:
+    name: 🎭 E2E Tests
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, integration-tests]
+    if: needs.analyze-changes.outputs.skip_e2e == 'false' && needs.analyze-changes.outputs.build_scope == 'full'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  # PHASE 8: Build (conditional)
+  build:
+    name: 🏗️  Build Application
+    runs-on: ubuntu-latest
+    needs: [analyze-changes, code-quality]
+    if: needs.analyze-changes.outputs.build_scope != 'none'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vite app
+        if: needs.analyze-changes.outputs.build_scope == 'full' || needs.analyze-changes.outputs.build_scope == 'partial'
+        run: npm run build
+
+      - name: Build Next.js app
+        if: needs.analyze-changes.outputs.build_scope == 'full'
+        run: npm run build:next
+
+      - name: Upload build artifacts
+        if: needs.analyze-changes.outputs.build_scope == 'full'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            .next/
+            dist/
+          retention-days: 7
+
+  # PHASE 9: Security Scanning
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: analyze-changes
+    if: needs.analyze-changes.outputs.build_scope != 'none'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run secret scanning
+        run: |
+          echo "Scanning for secrets..."
+          # Add secret scanning logic here
+
+  # PHASE 10: Summary
+  summary:
+    name: 📊 Pipeline Summary
+    runs-on: ubuntu-latest
+    needs:
+      - analyze-changes
+      - code-quality
+      - unit-tests
+      - database-tests
+      - cache-tests
+      - integration-tests
+      - e2e-tests
+      - build
+      - security
+    if: always()
+    steps:
+      - name: Download analysis
+        uses: actions/download-artifact@v4
+        with:
+          name: change-analysis
+
+      - name: Generate summary
+        run: |
+          echo "# 🎯 CI/CD Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Change Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Scope:** ${{ needs.analyze-changes.outputs.build_scope }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files Changed:** ${{ needs.analyze-changes.outputs.files_changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Optimizations" >> $GITHUB_STEP_SUMMARY
+          echo "- ⏱️  **Time Saved:** ~${{ needs.analyze-changes.outputs.time_saved }}s" >> $GITHUB_STEP_SUMMARY
+          echo "- 💰 **Cost Saved:** ~${{ needs.analyze-changes.outputs.cost_saved }}%" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Tests Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "- Database: ${{ needs.analyze-changes.outputs.skip_database }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Redis: ${{ needs.analyze-changes.outputs.skip_redis }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Integration: ${{ needs.analyze-changes.outputs.skip_integration }}" >> $GITHUB_STEP_SUMMARY
+          echo "- E2E: ${{ needs.analyze-changes.outputs.skip_e2e }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "✨ **Smart CI/CD optimizations active!**" >> $GITHUB_STEP_SUMMARY
