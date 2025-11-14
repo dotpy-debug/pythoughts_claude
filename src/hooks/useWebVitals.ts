@@ -238,7 +238,7 @@ export function useWebVitals(
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true } as PerformanceObserverInit);
     } catch (error) {
       // LCP not supported
-      logger.debug('LCP metric not supported in this browser', { error });
+      logger.debug('LCP metric not supported in this browser', { error: error instanceof Error ? error : new Error(String(error)) });
     }
 
     // FID (First Input Delay)
@@ -254,7 +254,7 @@ export function useWebVitals(
       fidObserver.observe({ type: 'first-input', buffered: true } as PerformanceObserverInit);
     } catch (error) {
       // FID not supported
-      logger.debug('FID metric not supported in this browser', { error });
+      logger.debug('FID metric not supported in this browser', { error: error instanceof Error ? error : new Error(String(error)) });
     }
 
     // CLS (Cumulative Layout Shift)
@@ -274,7 +274,7 @@ export function useWebVitals(
       clsObserver.observe({ type: 'layout-shift', buffered: true } as PerformanceObserverInit);
     } catch (error) {
       // CLS not supported
-      logger.debug('CLS metric not supported in this browser', { error });
+      logger.debug('CLS metric not supported in this browser', { error: error instanceof Error ? error : new Error(String(error)) });
     }
 
     // FCP (First Contentful Paint)
@@ -292,7 +292,7 @@ export function useWebVitals(
       fcpObserver.observe({ type: 'paint', buffered: true } as PerformanceObserverInit);
     } catch (error) {
       // FCP not supported
-      logger.debug('FCP metric not supported in this browser', { error });
+      logger.debug('FCP metric not supported in this browser', { error: error instanceof Error ? error : new Error(String(error)) });
     }
 
     // TTFB (Time to First Byte)
@@ -327,7 +327,7 @@ export function useWebVitals(
       } as PerformanceObserverInit);
     } catch (error) {
       // INP not supported
-      logger.debug('INP metric not supported in this browser', { error });
+      logger.debug('INP metric not supported in this browser', { error: error instanceof Error ? error : new Error(String(error)) });
     }
 
     // Cleanup

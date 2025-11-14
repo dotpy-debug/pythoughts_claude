@@ -97,14 +97,17 @@ function buildHierarchy(headings: Array<{ level: number; text: string; id: strin
       children: [],
     };
 
-    while (stack.length > 0 && stack.at(-1).level >= level) {
+    while (stack.length > 0 && stack.at(-1)?.level !== undefined && stack.at(-1)!.level >= level) {
       stack.pop();
     }
 
     if (stack.length === 0) {
       root.push(item);
     } else {
-      stack.at(-1).children.push(item);
+      const parent = stack.at(-1);
+      if (parent) {
+        parent.children.push(item);
+      }
     }
 
     stack.push(item);

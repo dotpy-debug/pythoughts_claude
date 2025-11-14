@@ -63,7 +63,12 @@
     "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "clean": "rm -rf node_modules .next dist .cache .turbo",
+    "clean:cache": "rm -rf ~/.npm ~/.cache/next-swc ~/.cache/turbo",
+    "clean:all": "npm run clean && npm run clean:cache",
+    "reinstall": "npm run clean && npm install",
+    "fix:install": "npm run clean:all && npm cache clean --force && npm install"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [

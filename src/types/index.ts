@@ -88,7 +88,7 @@ export type {
 
 // Component types
 export type {
-  BaseComponentProps,
+  BaseComponentProperties,
   FormFieldChangeEvent,
   FormSubmitEvent,
   MouseClickEvent,
@@ -97,7 +97,7 @@ export type {
   FileInputChangeEvent,
   ToastType,
   Toast,
-  ModalProps,
+  ModalProperties,
   DialogAction,
   TableColumn,
   TableSortState,
@@ -118,7 +118,7 @@ export type {
   ButtonVariant,
   FileUploadStatus,
   InfiniteScrollState,
-  VirtualizedListProps,
+  VirtualizedListProperties,
   ErrorBoundaryState,
   KeyboardShortcut,
 } from './components';

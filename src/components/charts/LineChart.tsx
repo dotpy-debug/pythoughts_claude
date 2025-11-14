@@ -34,7 +34,8 @@ export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = tr
   ).join(' ');
 
   // Create area path (filled under line)
-  const areaD = `M ${points[0].x} ${chartHeight + padding.top} L ${points[0].x} ${points[0].y} ${pathD.slice(2)} L ${points.at(-1).x} ${chartHeight + padding.top} Z`;
+  const lastPoint = points.at(-1);
+  const areaD = `M ${points[0].x} ${chartHeight + padding.top} L ${points[0].x} ${points[0].y} ${pathD.slice(2)} L ${lastPoint?.x ?? points[0].x} ${chartHeight + padding.top} Z`;
 
   // Grid lines
   const gridLines = showGrid ? [0, 0.25, 0.5, 0.75, 1].map(fraction => {
