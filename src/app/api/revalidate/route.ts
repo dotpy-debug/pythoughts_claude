@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
     // Revalidate by tag
     if (tag) {
       try {
-        // @ts-expect-error - Next.js 16 type definition might be incorrect
         revalidateTag(tag);
       } catch (error) {
         console.error('Failed to revalidate tag:', error);
