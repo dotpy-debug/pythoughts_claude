@@ -1,4 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 /**
  * Root page - redirects to /blogs for Next.js mode
@@ -6,5 +9,15 @@ import { redirect } from 'next/navigation';
  * Next.js mode is optimized for SEO and blog rendering
  */
 export default function HomePage() {
-  redirect('/blogs');
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/blogs');
+  }, [router]);
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-[#0d1117]">
+      <div className="text-terminal-green font-mono">Redirecting to blogs...</div>
+    </div>
+  );
 }
