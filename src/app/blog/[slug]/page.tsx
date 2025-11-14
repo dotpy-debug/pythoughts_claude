@@ -22,17 +22,22 @@ export const dynamicParams = true;
  * These pages will be pre-rendered at build time
  */
 export async function generateStaticParams() {
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('slug')
-    .eq('post_type', 'blog')
-    .eq('status', 'published')
-    .order('view_count', { ascending: false })
-    .limit(100);
+  try {
+    const { data: posts } = await supabase
+      .from('posts')
+      .select('slug')
+      .eq('post_type', 'blog')
+      .eq('status', 'published')
+      .order('view_count', { ascending: false })
+      .limit(100);
 
-  return (posts || []).map((post) => ({
-    slug: post.slug,
-  }));
+    return (posts || []).map((post) => ({
+      slug: post.slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
 }
 
 /**
@@ -86,7 +91,7 @@ async function getBlogPost(slug: string): Promise<BlogPost | null> {
 }
 
 /**
- * Generate metadata for SEO
+ * Generate metadata for SEO (Next.js 15)
  */
 export async function generateMetadata({
   params,
@@ -141,7 +146,7 @@ export async function generateMetadata({
 }
 
 /**
- * Blog Post Page (Server Component with SSG/ISR)
+ * Blog Post Page (Server Component with SSG/ISR) - Next.js 15
  */
 export default async function BlogPostPage({
   params,
