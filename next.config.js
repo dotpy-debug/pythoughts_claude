@@ -40,12 +40,6 @@ const nextConfig = {
         contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
       },
 
-  // Server Actions configuration (stable in Next.js 15)
-  serverActions: {
-    bodySizeLimit: '2mb',
-    allowedOrigins: ['localhost:3000', 'localhost:5173'],
-  },
-
   // Experimental features for Next.js 15
   experimental: {
     // Optimize package imports for better tree-shaking
@@ -59,16 +53,15 @@ const nextConfig = {
       'recharts',
       'react-chartjs-2',
     ],
-    // Enable Turbopack for faster builds (Next.js 15 feature)
-    turbo: {
-      resolveAlias: {
-        '@': './src',
-      },
-    },
     // Strict Next.js caching semantics
     staleTimes: {
       dynamic: 30,
       static: 180,
+    },
+    // Server Actions configuration
+    serverActions: {
+      bodySizeLimit: '2mb',
+      allowedOrigins: ['localhost:3000', 'localhost:5173'],
     },
   },
 
@@ -166,12 +159,6 @@ const nextConfig = {
   typescript: {
     // Enforce type checking during build
     ignoreBuildErrors: false,
-  },
-
-  // ESLint configuration
-  eslint: {
-    // Enforce linting during build
-    ignoreDuringBuilds: false,
   },
 
   // Logging configuration
