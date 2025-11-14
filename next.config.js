@@ -9,31 +9,36 @@ const nextConfig = {
   turbopack: {},
 
   // Configure image optimization (Supabase Storage + external sources)
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-        port: '',
-        pathname: '/storage/v1/object/public/**',
+  // NOTE: For bolt.new deployments, if sharp fails to install, set NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true
+  images: process.env.NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION === 'true'
+    ? {
+        unoptimized: true,
+      }
+    : {
+        remotePatterns: [
+          {
+            protocol: 'https',
+            hostname: '*.supabase.co',
+            port: '',
+            pathname: '/storage/v1/object/public/**',
+          },
+          {
+            protocol: 'https',
+            hostname: 'images.unsplash.com',
+          },
+          {
+            protocol: 'https',
+            hostname: 'images.pexels.com',
+          },
+          {
+            protocol: 'https',
+            hostname: 'res.cloudinary.com',
+          },
+        ],
+        formats: ['image/avif', 'image/webp'],
+        deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+        imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
       },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.pexels.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-      },
-    ],
-    formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-  },
 
   // Experimental features
   experimental: {
