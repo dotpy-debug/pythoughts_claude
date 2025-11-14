@@ -63,7 +63,11 @@
     "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "bolt:fix": "bash scripts/bolt-fix.sh",
+    "bolt:dev": "NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true next dev --turbo=false",
+    "bolt:build": "NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true next build",
+    "bolt:start": "NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true next start"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
@@ -197,5 +201,8 @@
     "vite-ssg": "^28.2.2",
     "vite-ssg-sitemap": "^0.10.0",
     "vitest": "^3.2.4"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.34.4"
   }
 }
