@@ -135,12 +135,12 @@ export async function getMultiMetricTimeSeries(
   // Initialize result
   const result: Record<string, TimeSeriesPoint[]> = {};
 
-  metrics.forEach((metric) => {
+  for (const metric of metrics) {
     result[metric] = dateRange.map((date) => ({
       date: format(date, 'yyyy-MM-dd'),
       value: 0,
     }));
-  });
+  }
 
   // Aggregate views and reads
   if (data) {
@@ -149,15 +149,15 @@ export async function getMultiMetricTimeSeries(
       { views: number; reads: number }
     > = {};
 
-    data.forEach((row) => {
+    for (const row of data) {
       if (!dailyAggregates[row.date]) {
         dailyAggregates[row.date] = { views: 0, reads: 0 };
       }
       dailyAggregates[row.date].views += row.views || 0;
       dailyAggregates[row.date].reads += row.reads || 0;
-    });
+    }
 
-    Object.entries(dailyAggregates).forEach(([date, values]) => {
+    for (const [date, values] of Object.entries(dailyAggregates)) {
       if (metrics.includes('views')) {
         const point = result.views.find((p) => p.date === date);
         if (point) point.value = values.views;
@@ -166,43 +166,43 @@ export async function getMultiMetricTimeSeries(
         const point = result.reads.find((p) => p.date === date);
         if (point) point.value = values.reads;
       }
-    });
+    }
   }
 
   // Aggregate votes
   if (metrics.includes('votes') && postsData) {
     const dailyVotes: Record<string, number> = {};
 
-    postsData.forEach((post) => {
+    for (const post of postsData) {
       const date = format(new Date(post.created_at), 'yyyy-MM-dd');
       if (!dailyVotes[date]) {
         dailyVotes[date] = 0;
       }
       dailyVotes[date] += post.vote_count || 0;
-    });
+    }
 
-    Object.entries(dailyVotes).forEach(([date, votes]) => {
+    for (const [date, votes] of Object.entries(dailyVotes)) {
       const point = result.votes.find((p) => p.date === date);
       if (point) point.value = votes;
-    });
+    }
   }
 
   // Aggregate comments
   if (metrics.includes('comments') && commentsData) {
     const dailyComments: Record<string, number> = {};
 
-    commentsData.forEach((comment) => {
+    for (const comment of commentsData) {
       const date = format(new Date(comment.created_at), 'yyyy-MM-dd');
       if (!dailyComments[date]) {
         dailyComments[date] = 0;
       }
       dailyComments[date]++;
-    });
+    }
 
-    Object.entries(dailyComments).forEach(([date, comments]) => {
+    for (const [date, comments] of Object.entries(dailyComments)) {
       const point = result.comments.find((p) => p.date === date);
       if (point) point.value = comments;
-    });
+    }
   }
 
   return result;
@@ -354,7 +354,7 @@ export async function getEngagementHeatmap(
   // Group by day of week and hour
   const heatmapData: Record<string, Record<string, number>> = {};
 
-  data.forEach((event) => {
+  for (const event of data) {
     const date = new Date(event.created_at);
     const dayOfWeek = format(date, 'EEEE');
     const hour = date.getHours();
@@ -366,7 +366,7 @@ export async function getEngagementHeatmap(
       heatmapData[dayOfWeek][hour] = 0;
     }
     heatmapData[dayOfWeek][hour]++;
-  });
+  }
 
   // Convert to heatmap cells
   const cells: HeatmapCell[] = [];
@@ -380,7 +380,7 @@ export async function getEngagementHeatmap(
     'Sunday',
   ];
 
-  daysOfWeek.forEach((day, dayIndex) => {
+  for (const [dayIndex, day] of daysOfWeek.entries()) {
     for (let hour = 0; hour < 24; hour++) {
       cells.push({
         x: hour,
@@ -389,7 +389,7 @@ export async function getEngagementHeatmap(
         label: `${day} ${hour}:00`,
       });
     }
-  });
+  }
 
   return cells;
 }
@@ -411,7 +411,7 @@ export function calculateSummary(values: number[]): AnalyticsSummary {
   }
 
   const sorted = [...values].sort((a, b) => a - b);
-  const total = values.reduce((sum, val) => sum + val, 0);
+  const total = values.reduce((sum, value) => sum + value, 0);
   const average = total / values.length;
 
   // Median
@@ -423,7 +423,7 @@ export function calculateSummary(values: number[]): AnalyticsSummary {
 
   // Min/Max
   const min = sorted[0];
-  const max = sorted[sorted.length - 1];
+  const max = sorted.at(-1);
 
   // 95th percentile
   const p95Index = Math.ceil(sorted.length * 0.95) - 1;
@@ -431,9 +431,9 @@ export function calculateSummary(values: number[]): AnalyticsSummary {
 
   // Standard deviation
   const variance =
-    values.reduce((sum, val) => sum + Math.pow(val - average, 2), 0) /
+    values.reduce((sum, value) => sum + Math.pow(value - average, 2), 0) /
     values.length;
-  const stdDev = Math.sqrt(variance);
+  const standardDeviation = Math.sqrt(variance);
 
   return {
     total,
@@ -442,7 +442,7 @@ export function calculateSummary(values: number[]): AnalyticsSummary {
     min,
     max,
     percentile95,
-    stdDev,
+    stdDev: standardDeviation,
   };
 }
 
@@ -521,15 +521,15 @@ export async function getTopPerformingPosts(
 
   // Aggregate analytics per post
   const postAnalytics = analyticsData.reduce(
-    (acc, row) => {
-      if (!acc[row.post_id]) {
-        acc[row.post_id] = { views: 0, reads: 0, engagement_rate: 0, count: 0 };
+    (accumulator, row) => {
+      if (!accumulator[row.post_id]) {
+        accumulator[row.post_id] = { views: 0, reads: 0, engagement_rate: 0, count: 0 };
       }
-      acc[row.post_id].views += row.views || 0;
-      acc[row.post_id].reads += row.reads || 0;
-      acc[row.post_id].engagement_rate += row.engagement_rate || 0;
-      acc[row.post_id].count++;
-      return acc;
+      accumulator[row.post_id].views += row.views || 0;
+      accumulator[row.post_id].reads += row.reads || 0;
+      accumulator[row.post_id].engagement_rate += row.engagement_rate || 0;
+      accumulator[row.post_id].count++;
+      return accumulator;
     },
     {} as Record<
       string,
@@ -551,9 +551,9 @@ export async function getTopPerformingPosts(
         value:
           metric === 'views'
             ? analytics.views
-            : metric === 'reads'
+            : (metric === 'reads'
               ? analytics.reads
-              : avgEngagementRate,
+              : avgEngagementRate),
         views: analytics.views,
         reads: analytics.reads,
         engagement_rate: avgEngagementRate,

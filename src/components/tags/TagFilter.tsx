@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { supabase, Tag } from '../../lib/supabase';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
 
-type TagFilterProps = {
+type TagFilterProperties = {
   selectedTags: string[]; // Array of tag slugs
   onTagsChange: (tagSlugs: string[]) => void;
 };
 
-export function TagFilter({ selectedTags, onTagsChange }: TagFilterProps) {
+export function TagFilter({ selectedTags, onTagsChange }: TagFilterProperties) {
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);

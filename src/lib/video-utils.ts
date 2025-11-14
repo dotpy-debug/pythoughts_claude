@@ -75,7 +75,7 @@ export function detectVideoPlatform(url: string): VideoPlatform {
  */
 export function parseYouTubeUrl(url: string): YouTubeVideoData | null {
   try {
-    const urlObj = new URL(url);
+    const urlObject = new URL(url);
 
     let videoId: string | null = null;
     let playlistId: string | null = null;
@@ -84,16 +84,16 @@ export function parseYouTubeUrl(url: string): YouTubeVideoData | null {
     let timestamp: string | undefined;
 
     // Extract video ID from different YouTube URL formats
-    if (urlObj.hostname.includes('youtu.be')) {
+    if (urlObject.hostname.includes('youtu.be')) {
       // Short URL: https://youtu.be/VIDEO_ID
-      videoId = urlObj.pathname.slice(1).split('?')[0];
-    } else if (urlObj.hostname.includes('youtube.com')) {
+      videoId = urlObject.pathname.slice(1).split('?')[0];
+    } else if (urlObject.hostname.includes('youtube.com')) {
       // Standard URL: https://www.youtube.com/watch?v=VIDEO_ID
-      videoId = urlObj.searchParams.get('v');
+      videoId = urlObject.searchParams.get('v');
 
       // Embed URL: https://www.youtube.com/embed/VIDEO_ID
-      if (!videoId && urlObj.pathname.includes('/embed/')) {
-        videoId = urlObj.pathname.split('/embed/')[1].split('/')[0];
+      if (!videoId && urlObject.pathname.includes('/embed/')) {
+        videoId = urlObject.pathname.split('/embed/')[1].split('/')[0];
       }
     }
 
@@ -102,33 +102,33 @@ export function parseYouTubeUrl(url: string): YouTubeVideoData | null {
     }
 
     // Extract playlist ID
-    playlistId = urlObj.searchParams.get('list');
+    playlistId = urlObject.searchParams.get('list');
 
     // Extract start time (multiple formats supported)
-    const tParam = urlObj.searchParams.get('t');
-    const startParam = urlObj.searchParams.get('start');
+    const tParameter = urlObject.searchParams.get('t');
+    const startParameter = urlObject.searchParams.get('start');
 
-    if (tParam) {
-      timestamp = tParam;
-      startTime = parseTimeString(tParam);
-    } else if (startParam) {
-      startTime = parseInt(startParam, 10);
+    if (tParameter) {
+      timestamp = tParameter;
+      startTime = parseTimeString(tParameter);
+    } else if (startParameter) {
+      startTime = Number.parseInt(startParameter, 10);
     }
 
     // Extract end time
-    const endParam = urlObj.searchParams.get('end');
-    if (endParam) {
-      endTime = parseInt(endParam, 10);
+    const endParameter = urlObject.searchParams.get('end');
+    if (endParameter) {
+      endTime = Number.parseInt(endParameter, 10);
     }
 
     // Build embed URL with parameters
-    const embedParams = new URLSearchParams();
-    if (startTime) embedParams.set('start', startTime.toString());
-    if (endTime) embedParams.set('end', endTime.toString());
-    if (playlistId) embedParams.set('list', playlistId);
+    const embedParameters = new URLSearchParams();
+    if (startTime) embedParameters.set('start', startTime.toString());
+    if (endTime) embedParameters.set('end', endTime.toString());
+    if (playlistId) embedParameters.set('list', playlistId);
 
     const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}${
-      embedParams.toString() ? `?${embedParams.toString()}` : ''
+      embedParameters.toString() ? `?${embedParameters.toString()}` : ''
     }`;
 
     return {
@@ -152,30 +152,30 @@ export function parseYouTubeUrl(url: string): YouTubeVideoData | null {
  * Parse time string to seconds
  * Supports formats: "1m30s", "90s", "1h2m3s", "90"
  */
-export function parseTimeString(timeStr: string): number {
+export function parseTimeString(timeString: string): number {
   // If it's just a number, return it as seconds
-  if (/^\d+$/.test(timeStr)) {
-    return parseInt(timeStr, 10);
+  if (/^\d+$/.test(timeString)) {
+    return Number.parseInt(timeString, 10);
   }
 
   let totalSeconds = 0;
 
   // Parse hours
-  const hourMatch = timeStr.match(/(\d+)h/i);
+  const hourMatch = timeString.match(/(\d+)h/i);
   if (hourMatch) {
-    totalSeconds += parseInt(hourMatch[1], 10) * 3600;
+    totalSeconds += Number.parseInt(hourMatch[1], 10) * 3600;
   }
 
   // Parse minutes
-  const minuteMatch = timeStr.match(/(\d+)m/i);
+  const minuteMatch = timeString.match(/(\d+)m/i);
   if (minuteMatch) {
-    totalSeconds += parseInt(minuteMatch[1], 10) * 60;
+    totalSeconds += Number.parseInt(minuteMatch[1], 10) * 60;
   }
 
   // Parse seconds
-  const secondMatch = timeStr.match(/(\d+)s/i);
+  const secondMatch = timeString.match(/(\d+)s/i);
   if (secondMatch) {
-    totalSeconds += parseInt(secondMatch[1], 10);
+    totalSeconds += Number.parseInt(secondMatch[1], 10);
   }
 
   return totalSeconds;
@@ -219,13 +219,13 @@ export function getYouTubeThumbnail(
  */
 export function parseVimeoUrl(url: string): VimeoVideoData | null {
   try {
-    const urlObj = new URL(url);
+    const urlObject = new URL(url);
 
     let videoId: string | null = null;
 
     // Standard URL: https://vimeo.com/VIDEO_ID
-    if (urlObj.hostname.includes('vimeo.com')) {
-      const pathParts = urlObj.pathname.split('/').filter(Boolean);
+    if (urlObject.hostname.includes('vimeo.com')) {
+      const pathParts = urlObject.pathname.split('/').filter(Boolean);
 
       // Handle different Vimeo URL formats
       if (pathParts.length > 0) {
@@ -239,8 +239,8 @@ export function parseVimeoUrl(url: string): VimeoVideoData | null {
       }
 
       // Embed URL: https://player.vimeo.com/video/VIDEO_ID
-      if (urlObj.pathname.includes('/video/')) {
-        videoId = urlObj.pathname.split('/video/')[1].split('/')[0];
+      if (urlObject.pathname.includes('/video/')) {
+        videoId = urlObject.pathname.split('/video/')[1].split('/')[0];
       }
     }
 
@@ -269,12 +269,15 @@ export function parseVideoUrl(url: string): VideoData | null {
   const platform = detectVideoPlatform(url);
 
   switch (platform) {
-    case 'youtube':
+    case 'youtube': {
       return parseYouTubeUrl(url);
-    case 'vimeo':
+    }
+    case 'vimeo': {
       return parseVimeoUrl(url);
-    default:
+    }
+    default: {
       return null;
+    }
   }
 }
 
@@ -339,24 +342,24 @@ export function buildYouTubeEmbedUrl(
     ccLanguage?: string;
   } = {}
 ): string {
-  const params = new URLSearchParams();
+  const parameters = new URLSearchParams();
 
-  if (options.autoplay) params.set('autoplay', '1');
-  if (options.controls === false) params.set('controls', '0');
+  if (options.autoplay) parameters.set('autoplay', '1');
+  if (options.controls === false) parameters.set('controls', '0');
   if (options.loop) {
-    params.set('loop', '1');
-    params.set('playlist', videoId); // Loop requires playlist parameter
+    parameters.set('loop', '1');
+    parameters.set('playlist', videoId); // Loop requires playlist parameter
   }
-  if (options.mute) params.set('mute', '1');
-  if (options.startTime) params.set('start', options.startTime.toString());
-  if (options.endTime) params.set('end', options.endTime.toString());
-  if (options.playlistId) params.set('list', options.playlistId);
-  if (options.modestBranding) params.set('modestbranding', '1');
-  if (options.relatedVideos === false) params.set('rel', '0');
-  if (options.cc) params.set('cc_load_policy', '1');
-  if (options.ccLanguage) params.set('cc_lang_pref', options.ccLanguage);
+  if (options.mute) parameters.set('mute', '1');
+  if (options.startTime) parameters.set('start', options.startTime.toString());
+  if (options.endTime) parameters.set('end', options.endTime.toString());
+  if (options.playlistId) parameters.set('list', options.playlistId);
+  if (options.modestBranding) parameters.set('modestbranding', '1');
+  if (options.relatedVideos === false) parameters.set('rel', '0');
+  if (options.cc) parameters.set('cc_load_policy', '1');
+  if (options.ccLanguage) parameters.set('cc_lang_pref', options.ccLanguage);
 
-  return `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+  return `https://www.youtube-nocookie.com/embed/${videoId}?${parameters.toString()}`;
 }
 
 /**
@@ -376,19 +379,19 @@ export function buildVimeoEmbedUrl(
     dnt?: boolean; // Do Not Track
   } = {}
 ): string {
-  const params = new URLSearchParams();
+  const parameters = new URLSearchParams();
 
-  if (options.autoplay) params.set('autoplay', '1');
-  if (options.loop) params.set('loop', '1');
-  if (options.muted) params.set('muted', '1');
-  if (options.controls === false) params.set('controls', '0');
-  if (options.title === false) params.set('title', '0');
-  if (options.byline === false) params.set('byline', '0');
-  if (options.portrait === false) params.set('portrait', '0');
-  if (options.color) params.set('color', options.color.replace('#', ''));
-  if (options.dnt) params.set('dnt', '1');
+  if (options.autoplay) parameters.set('autoplay', '1');
+  if (options.loop) parameters.set('loop', '1');
+  if (options.muted) parameters.set('muted', '1');
+  if (options.controls === false) parameters.set('controls', '0');
+  if (options.title === false) parameters.set('title', '0');
+  if (options.byline === false) parameters.set('byline', '0');
+  if (options.portrait === false) parameters.set('portrait', '0');
+  if (options.color) parameters.set('color', options.color.replace('#', ''));
+  if (options.dnt) parameters.set('dnt', '1');
 
-  return `https://player.vimeo.com/video/${videoId}?${params.toString()}`;
+  return `https://player.vimeo.com/video/${videoId}?${parameters.toString()}`;
 }
 
 /**
@@ -407,11 +410,14 @@ export function isVideoEmbed(url: string): boolean {
  */
 export function getVideoAspectRatio(platform: VideoPlatform): number {
   switch (platform) {
-    case 'youtube':
-      return 16 / 9; // YouTube default
-    case 'vimeo':
-      return 16 / 9; // Vimeo default
-    default:
+    case 'youtube': {
       return 16 / 9;
+    } // YouTube default
+    case 'vimeo': {
+      return 16 / 9;
+    } // Vimeo default
+    default: {
+      return 16 / 9;
+    }
   }
 }

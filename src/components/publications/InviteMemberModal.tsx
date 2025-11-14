@@ -24,7 +24,7 @@ import { sendPublicationInvitationEmail } from '../../lib/email-service';
 
 type MemberRole = 'editor' | 'writer' | 'contributor';
 
-type InviteMemberModalProps = {
+type InviteMemberModalProperties = {
   publicationId: string;
   publicationName: string;
   isOpen: boolean;
@@ -38,7 +38,7 @@ export function InviteMemberModal({
   isOpen,
   onClose,
   onSuccess,
-}: InviteMemberModalProps) {
+}: InviteMemberModalProperties) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<MemberRole>('writer');
   const [message, setMessage] = useState('');
@@ -103,7 +103,7 @@ export function InviteMemberModal({
       }
 
       // Send invitation email
-      const invitationUrl = `${window.location.origin}/publications/invite/${token}`;
+      const invitationUrl = `${globalThis.location.origin}/publications/invite/${token}`;
       const emailResult = await sendPublicationInvitationEmail(
         email.trim().toLowerCase(),
         {
@@ -138,9 +138,9 @@ export function InviteMemberModal({
       }
 
       onClose();
-    } catch (err) {
-      logger.error('Failed to create invitation', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to send invitation');
+    } catch (error_) {
+      logger.error('Failed to create invitation', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to send invitation');
     } finally {
       setIsSubmitting(false);
     }

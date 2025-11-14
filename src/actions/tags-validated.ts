@@ -170,7 +170,7 @@ export async function getTrendingTags(limit: number = 10, days: number = 7): Pro
     }
 
     // Sort by engagement and recent activity
-    const trendingTags = Array.from(tagActivity.values())
+    const trendingTags = [...tagActivity.values()]
       .sort((a, b) => {
         const scoreA = a.recent_posts_count * 2 + a.total_engagement;
         const scoreB = b.recent_posts_count * 2 + b.total_engagement;
@@ -284,7 +284,7 @@ export async function getTagDetails(tagSlug: string, userId?: string): Promise<T
       }
     }
 
-    const top_authors = Array.from(authorCounts.values())
+    const top_authors = [...authorCounts.values()]
       .sort((a, b) => b.post_count - a.post_count)
       .slice(0, 10);
 

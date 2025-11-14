@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { toggleFeaturedPost } from '../../actions/posts';
 import { logger } from '../../lib/logger';
 
-interface FeaturedToggleProps {
+interface FeaturedToggleProperties {
   postId: string;
   postAuthorId: string;
   initialFeatured: boolean;
@@ -20,7 +20,7 @@ export function FeaturedToggle({
   onToggle,
   size = 'md',
   showLabel = false,
-}: FeaturedToggleProps) {
+}: FeaturedToggleProperties) {
   const { user, profile } = useAuth();
   const [featured, setFeatured] = useState(initialFeatured);
   const [isToggling, setIsToggling] = useState(false);
@@ -55,13 +55,13 @@ export function FeaturedToggle({
         setError(result.error || 'Failed to toggle featured status');
         logger.error('Failed to toggle featured status', { postId, errorMessage: result.error });
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+    } catch (error_) {
+      const errorMessage = error_ instanceof Error ? error_.message : 'An unexpected error occurred';
       setError(errorMessage);
-      if (err instanceof Error) {
-        logger.error('Unexpected error toggling featured status', err, { postId });
+      if (error_ instanceof Error) {
+        logger.error('Unexpected error toggling featured status', error_, { postId });
       } else {
-        logger.error('Unexpected error toggling featured status', { postId, errorMessage: String(err) });
+        logger.error('Unexpected error toggling featured status', { postId, errorMessage: String(error_) });
       }
     } finally {
       setIsToggling(false);
@@ -90,16 +90,16 @@ export function FeaturedToggle({
         `}
         title={
           canToggle
-            ? featured
+            ? (featured
               ? 'Unfeature this post'
-              : 'Feature this post'
+              : 'Feature this post')
             : 'Featured Post'
         }
         aria-label={
           canToggle
-            ? featured
+            ? (featured
               ? 'Unfeature this post'
-              : 'Feature this post'
+              : 'Feature this post')
             : 'Featured Post'
         }
       >

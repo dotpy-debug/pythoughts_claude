@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Loader2, FileText } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
-const DraftEditor = lazy(() => import('../components/drafts/DraftEditor').then(mod => ({ default: mod.DraftEditor })));
+const DraftEditor = lazy(() => import('../components/drafts/DraftEditor').then(module_ => ({ default: module_.DraftEditor })));
 
 export function DraftsPage() {
   const { user } = useAuth();

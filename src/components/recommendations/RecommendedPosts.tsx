@@ -2,9 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Sparkles } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
 
-type RecommendedPostsProps = {
+type RecommendedPostsProperties = {
   currentPostId?: string;
   currentPostCategory?: string;
   currentPostTags?: string[];
@@ -26,8 +25,7 @@ export function RecommendedPosts({
   currentPostCategory,
   currentPostTags = [],
   limit = 5,
-}: RecommendedPostsProps) {
-  const { user: _user } = useAuth();
+}: RecommendedPostsProperties) {
   const navigate = useNavigate();
   const [recommendations, setRecommendations] = useState<RecommendedPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,9 +113,7 @@ export function RecommendedPosts({
 
           // Merge and deduplicate recommendations
           const allRecommendations = [...(data || []), ...taggedPostsData] as RecommendedPost[];
-          const uniqueRecommendations = Array.from(
-            new Map(allRecommendations.map((post) => [post.id, post])).values()
-          );
+          const uniqueRecommendations = [...new Map(allRecommendations.map((post) => [post.id, post])).values()];
 
           setRecommendations(uniqueRecommendations.slice(0, limit));
         } else {
@@ -146,8 +142,8 @@ export function RecommendedPosts({
           <h3 className="font-semibold text-gray-100 font-mono">Recommended for you</h3>
         </div>
         <div className="space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse">
+          {Array.from({length: 3}).map((_, index) => (
+            <div key={index} className="animate-pulse">
               <div className="h-4 bg-gray-800 rounded w-3/4 mb-2"></div>
               <div className="h-3 bg-gray-800 rounded w-1/2"></div>
             </div>

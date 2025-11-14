@@ -117,7 +117,10 @@ export enum FileValidationError {
  */
 function generateFileName(originalName: string): string {
   const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 15);
+  // Use crypto for secure random generation
+  const randomBytes = new Uint8Array(6);
+  crypto.getRandomValues(randomBytes);
+  const random = Array.from(randomBytes, byte => byte.toString(36)).join('').slice(0, 13);
   const extension = originalName.split('.').pop()?.toLowerCase() || '';
   return `${timestamp}-${random}.${extension}`;
 }
@@ -190,7 +193,8 @@ export async function uploadFile(
     path = '',
     cacheControl = 3600,
     upsert = false,
-    isPublic: _isPublic = true,
+    // isPublic option is reserved for future public/private file access control
+    // isPublic = true,
   } = options;
 
   try {
@@ -260,16 +264,16 @@ export async function uploadFile(
       path: filePath,
     };
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Unexpected error during file upload', errorObj, {
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error during file upload', errorObject, {
       fileName: file.name,
     });
 
-    const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return {
       success: false,
-      error: errorMsg,
-      errorMessage: errorMsg,
+      error: errorMessage,
+      errorMessage: errorMessage,
     };
   }
 }
@@ -350,8 +354,8 @@ export async function deleteFile(
 
     return true;
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Unexpected error during file deletion', errorObj, {
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error during file deletion', errorObject, {
       filePath,
     });
     return false;
@@ -396,8 +400,8 @@ export async function deleteMultipleFiles(
 
     return true;
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Unexpected error during bulk file deletion', errorObj, {
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error during bulk file deletion', errorObject, {
       count: filePaths.length,
     });
     return false;
@@ -451,8 +455,8 @@ export async function createSignedUrl(
 
     return data.signedUrl;
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Unexpected error creating signed URL', errorObj, {
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error creating signed URL', errorObject, {
       filePath,
     });
     return null;
@@ -486,8 +490,8 @@ export async function listFiles(
 
     return data || [];
   } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
-    logger.error('Unexpected error listing files', errorObj, {
+    const errorObject = error instanceof Error ? error : new Error(String(error));
+    logger.error('Unexpected error listing files', errorObject, {
       bucket,
       path,
     });
@@ -502,7 +506,7 @@ export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
+    reader.addEventListener('load', () => resolve(reader.result as string));
     reader.onerror = error => reject(error);
   });
 }
@@ -521,8 +525,8 @@ export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  const index = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${Number.parseFloat((bytes / Math.pow(k, index)).toFixed(2))} ${sizes[index]}`;
 }
 
 /**

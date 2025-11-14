@@ -20,7 +20,7 @@ import {
   type VideoData,
 } from '../../lib/video-utils';
 
-interface LazyVideoEmbedProps {
+interface LazyVideoEmbedProperties {
   /**
    * Video URL (YouTube or Vimeo)
    */
@@ -87,12 +87,12 @@ export function LazyVideoEmbed({
   rootMargin = '200px',
   autoplay = false,
   className,
-  iframeProps = {},
-}: LazyVideoEmbedProps) {
+  iframeProps: iframeProperties = {},
+}: LazyVideoEmbedProperties) {
   const [isActivated, setIsActivated] = useState(false);
   const [isInView, setIsInView] = useState(!lazy);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerReference = useRef<HTMLDivElement>(null);
 
   // Parse video URL
   useEffect(() => {
@@ -102,7 +102,7 @@ export function LazyVideoEmbed({
 
   // Intersection Observer for lazy loading
   useEffect(() => {
-    if (!lazy || !containerRef.current || isActivated) {
+    if (!lazy || !containerReference.current || isActivated) {
       setIsInView(true);
       return;
     }
@@ -120,7 +120,7 @@ export function LazyVideoEmbed({
       }
     );
 
-    observer.observe(containerRef.current);
+    observer.observe(containerReference.current);
 
     return () => {
       observer.disconnect();
@@ -167,7 +167,7 @@ export function LazyVideoEmbed({
 
   return (
     <div
-      ref={containerRef}
+      ref={containerReference}
       className={cn(
         'relative overflow-hidden bg-gray-900 rounded-lg group',
         className
@@ -242,7 +242,7 @@ export function LazyVideoEmbed({
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
           loading="lazy"
-          {...iframeProps}
+          {...iframeProperties}
         />
       )}
 
@@ -261,7 +261,7 @@ export function LazyVideoEmbed({
  *
  * Maintains aspect ratio for video embeds
  */
-interface VideoAspectRatioProps {
+interface VideoAspectRatioProperties {
   /**
    * Aspect ratio (width / height)
    * @default 16/9
@@ -283,7 +283,7 @@ export function VideoAspectRatio({
   ratio = 16 / 9,
   children,
   className,
-}: VideoAspectRatioProps) {
+}: VideoAspectRatioProperties) {
   return (
     <div
       className={cn('relative overflow-hidden', className)}

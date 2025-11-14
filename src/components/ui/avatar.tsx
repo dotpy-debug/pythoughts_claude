@@ -4,14 +4,14 @@ import { cn } from '../../lib/utils';
 const Avatar = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...properties }, reference) => (
   <div
-    ref={ref}
+    ref={reference}
     className={cn(
       'relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full',
       className
     )}
-    {...props}
+    {...properties}
   />
 ));
 Avatar.displayName = 'Avatar';
@@ -19,11 +19,11 @@ Avatar.displayName = 'Avatar';
 const AvatarImage = React.forwardRef<
   HTMLImageElement,
   React.ImgHTMLAttributes<HTMLImageElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...properties }, reference) => (
   <img
-    ref={ref}
+    ref={reference}
     className={cn('aspect-square h-full w-full object-cover', className)}
-    {...props}
+    {...properties}
   />
 ));
 AvatarImage.displayName = 'AvatarImage';
@@ -31,14 +31,14 @@ AvatarImage.displayName = 'AvatarImage';
 const AvatarFallback = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+>(({ className, ...properties }, reference) => (
   <div
-    ref={ref}
+    ref={reference}
     className={cn(
       'flex h-full w-full items-center justify-center rounded-full bg-white/10 text-[#E6EDF3]',
       className
     )}
-    {...props}
+    {...properties}
   />
 ));
 AvatarFallback.displayName = 'AvatarFallback';

@@ -11,10 +11,10 @@ import { checkContentSafety, shouldAutoBlock } from '../../utils/contentFilter';
 import { autoFlagContent } from '../../utils/autoFlag';
 import { logger } from '../../lib/logger';
 
-const TipTapEditor = lazy(() => import('../editor/TipTapEditor').then(mod => ({ default: mod.TipTapEditor })));
-const PexelsSearchModal = lazy(() => import('../editor/PexelsSearchModal').then(mod => ({ default: mod.PexelsSearchModal })));
+const TipTapEditor = lazy(() => import('../editor/TipTapEditor').then(module_ => ({ default: module_.TipTapEditor })));
+const PexelsSearchModal = lazy(() => import('../editor/PexelsSearchModal').then(module_ => ({ default: module_.PexelsSearchModal })));
 
-type CreatePostModalProps = {
+type CreatePostModalProperties = {
   isOpen: boolean;
   onClose: () => void;
   postType: 'news' | 'blog';
@@ -22,7 +22,7 @@ type CreatePostModalProps = {
 
 const categories = ['Tech', 'Product', 'Design', 'Engineering', 'Culture', 'Other'];
 
-export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalProps) {
+export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalProperties) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -63,7 +63,7 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
       }
 
       // Validate content length (min 10, max 10000 chars)
-      if (!isValidContentLength(content, 10, 10000)) {
+      if (!isValidContentLength(content, 10, 10_000)) {
         setContentError('Content must be between 10 and 10,000 characters');
         setSubmitting(false);
         return;
@@ -181,8 +181,8 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
       setCategory('');
       setSelectedTags([]);
       onClose();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create post';
+    } catch (error_) {
+      const errorMessage = error_ instanceof Error ? error_.message : 'Failed to create post';
       logger.error('Failed to create post', {
         errorMessage,
         userId: user.id,
@@ -286,7 +286,7 @@ export function CreatePostModal({ isOpen, onClose, postType }: CreatePostModalPr
                   onChange={setContent}
                   placeholder="Write your blog post..."
                   onPexelsClick={() => setShowPexelsModal(true)}
-                  maxLength={50000}
+                  maxLength={50_000}
                 />
               </Suspense>
             ) : (

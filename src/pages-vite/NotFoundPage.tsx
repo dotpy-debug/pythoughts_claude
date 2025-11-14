@@ -22,7 +22,7 @@ export function NotFoundPage() {
             Go Home
           </Link>
           <button
-            onClick={() => window.history.back()}
+            onClick={() => globalThis.history.back()}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gray-800/50 text-gray-300 border border-gray-700/50 rounded-lg hover:bg-gray-800/70 hover:border-gray-700/70 transition-all duration-220"
           >
             <ArrowLeft size={20} />

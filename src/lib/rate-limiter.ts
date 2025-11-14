@@ -1,4 +1,4 @@
-import { getRedisClient, CACHE_TTL as _CACHE_TTL } from './redis';
+import { getRedisClient } from './redis';
 import { logger } from './logger';
 import { ExternalServiceError } from './errors';
 
@@ -83,8 +83,11 @@ export class RateLimiter {
       // Count requests in current window
       multi.zcard(redisKey);
 
-      // Add current request
-      multi.zadd(redisKey, now, `${now}-${Math.random()}`);
+      // Add current request with secure random value
+      const randomBytes = new Uint8Array(4);
+      crypto.getRandomValues(randomBytes);
+      const randomValue = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+      multi.zadd(redisKey, now, `${now}-${randomValue}`);
 
       // Set expiry on the key
       multi.expire(redisKey, Math.ceil(config.windowMs / 1000));
@@ -109,7 +112,7 @@ export class RateLimiter {
         // Get the oldest request timestamp
         const oldestRequests = await this.redis.zrange(redisKey, 0, 0, 'WITHSCORES');
         if (oldestRequests && oldestRequests.length >= 2) {
-          const oldestTimestamp = parseInt(oldestRequests[1]);
+          const oldestTimestamp = Number.parseInt(oldestRequests[1]);
           retryAfter = Math.ceil((oldestTimestamp + config.windowMs - now) / 1000);
         }
       }

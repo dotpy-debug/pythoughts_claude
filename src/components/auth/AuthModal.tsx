@@ -4,13 +4,13 @@ import { SignInForm } from './SignInForm';
 import { SignUpForm } from './SignUpForm';
 import { ForgotPasswordForm } from './ForgotPasswordForm';
 
-type AuthModalProps = {
+type AuthModalProperties = {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: 'signin' | 'signup' | 'forgot-password';
 };
 
-export function AuthModal({ isOpen, onClose, initialMode = 'signin' }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, initialMode = 'signin' }: AuthModalProperties) {
   const [mode, setMode] = useState<'signin' | 'signup' | 'forgot-password'>(initialMode);
 
   if (!isOpen) return null;
@@ -21,21 +21,24 @@ export function AuthModal({ isOpen, onClose, initialMode = 'signin' }: AuthModal
 
   const getTitleAndDescription = () => {
     switch (mode) {
-      case 'signin':
+      case 'signin': {
         return {
           title: 'Welcome back',
           description: 'Sign in to continue to Pythoughts',
         };
-      case 'signup':
+      }
+      case 'signup': {
         return {
           title: 'Create your account',
           description: 'Join the Pythoughts community',
         };
-      case 'forgot-password':
+      }
+      case 'forgot-password': {
         return {
           title: 'Forgot password',
           description: 'Reset your password',
         };
+      }
     }
   };
 

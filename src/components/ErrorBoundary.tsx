@@ -1,7 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { logger } from '../lib/logger';
 
-interface Props {
+interface Properties {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
@@ -18,9 +18,9 @@ interface State {
  * Catches React rendering errors and displays a fallback UI
  * Logs errors to centralized logger for monitoring
  */
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+export class ErrorBoundary extends Component<Properties, State> {
+  constructor(properties: Properties) {
+    super(properties);
     this.state = {
       hasError: false,
       error: null,
@@ -112,7 +112,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 Try Again
               </button>
               <button
-                onClick={() => window.location.href = '/'}
+                onClick={() => globalThis.location.href = '/'}
                 className="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-md transition-colors"
               >
                 Go Home
@@ -134,10 +134,10 @@ export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   fallback?: ReactNode
 ): React.ComponentType<P> {
-  return function WithErrorBoundaryComponent(props: P) {
+  return function WithErrorBoundaryComponent(properties: P) {
     return (
       <ErrorBoundary fallback={fallback}>
-        <Component {...props} />
+        <Component {...properties} />
       </ErrorBoundary>
     );
   };

@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from 'react';
 import { X, Terminal } from 'lucide-react';
 
-interface ModalProps {
+interface ModalProperties {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
@@ -16,13 +16,9 @@ const sizeClasses = {
   xl: 'max-w-4xl',
 };
 
-export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProperties) {
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
 
     return () => {
       document.body.style.overflow = 'unset';

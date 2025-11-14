@@ -4,12 +4,12 @@ import { useNotifications } from '../../contexts/NotificationContext';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { MessageCircle, ThumbsUp, UserPlus, FileText } from 'lucide-react';
 
-type NotificationItemProps = {
+type NotificationItemProperties = {
   notification: NotificationType;
   onClose: () => void;
 };
 
-export const NotificationItem = memo(function NotificationItem({ notification, onClose }: NotificationItemProps) {
+export const NotificationItem = memo(function NotificationItem({ notification, onClose }: NotificationItemProperties) {
   const { markAsRead } = useNotifications();
 
   const handleClick = () => {
@@ -21,31 +21,41 @@ export const NotificationItem = memo(function NotificationItem({ notification, o
 
   const getIcon = () => {
     switch (notification.type) {
-      case 'post_reply':
+      case 'post_reply': {
         return <MessageCircle size={16} className="text-terminal-blue" />;
-      case 'comment_reply':
+      }
+      case 'comment_reply': {
         return <MessageCircle size={16} className="text-terminal-purple" />;
-      case 'vote':
+      }
+      case 'vote': {
         return <ThumbsUp size={16} className="text-terminal-green" />;
-      case 'task_assigned':
+      }
+      case 'task_assigned': {
         return <UserPlus size={16} className="text-terminal-pink" />;
-      default:
+      }
+      default: {
         return <FileText size={16} className="text-terminal-sky" />;
+      }
     }
   };
 
   const getTypeLabel = () => {
     switch (notification.type) {
-      case 'post_reply':
+      case 'post_reply': {
         return 'POST_REPLY';
-      case 'comment_reply':
+      }
+      case 'comment_reply': {
         return 'COMMENT_REPLY';
-      case 'vote':
+      }
+      case 'vote': {
         return 'VOTE';
-      case 'task_assigned':
+      }
+      case 'task_assigned': {
         return 'TASK_ASSIGNED';
-      default:
+      }
+      default: {
         return 'NOTIFICATION';
+      }
     }
   };
 
@@ -53,7 +63,7 @@ export const NotificationItem = memo(function NotificationItem({ notification, o
     <div
       onClick={handleClick}
       className={`px-4 py-3 hover:bg-gray-800 cursor-pointer transition-colors ${
-        !notification.is_read ? 'bg-gray-850' : ''
+        notification.is_read ? '' : 'bg-gray-850'
       }`}
     >
       <div className="flex items-start space-x-3">

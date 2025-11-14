@@ -5,8 +5,8 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { writeFileSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
@@ -35,7 +35,7 @@ async function generateSitemap() {
 
     // Static pages
     const staticPages = [
-      { url: '/', priority: 1.0, changefreq: 'daily' },
+      { url: '/', priority: 1, changefreq: 'daily' },
       { url: '/blogs', priority: 0.9, changefreq: 'daily' },
       { url: '/tasks', priority: 0.8, changefreq: 'daily' },
       { url: '/trending', priority: 0.9, changefreq: 'hourly' },
@@ -118,7 +118,7 @@ async function generateRSS() {
         const pubDate = new Date(post.published_at || post.created_at).toUTCString();
         const link = `${baseUrl}/post/${post.id}`;
         const author = post.profiles?.username || 'Anonymous';
-        const description = post.content.substring(0, 200).replace(/<[^>]+>/g, '');
+        const description = post.content.slice(0, 200).replaceAll(/<[^>]+>/g, '');
 
         return `
     <item>

@@ -12,11 +12,11 @@ import { TOCItem } from '../../../types/blog';
 import { TOCGenerator } from '../../../utils/blog/toc-generator';
 import { ScrollArea } from '../../ui/scroll-area';
 
-interface EditorTOCProps {
+interface EditorTOCProperties {
   editor: Editor;
 }
 
-export function EditorTOC({ editor }: EditorTOCProps) {
+export function EditorTOC({ editor }: EditorTOCProperties) {
   const [tocItems, setTocItems] = useState<TOCItem[]>([]);
 
   useEffect(() => {

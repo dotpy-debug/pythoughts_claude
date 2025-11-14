@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { serverEnv } from './env';
+import { serverEnv as serverEnvironment } from './env';
 import { ExternalServiceError, ErrorLogger, withRetry, isRetryableError } from './errors';
 import { logger } from './logger';
 
@@ -12,10 +12,10 @@ export function getRedisClient(): Redis {
   if (!redisClient) {
     try {
       logger.info('Initializing Redis client', {
-        url: serverEnv.REDIS_URL,
+        url: serverEnvironment.REDIS_URL,
       });
 
-      redisClient = new Redis(serverEnv.REDIS_URL, {
+      redisClient = new Redis(serverEnvironment.REDIS_URL, {
         retryStrategy(times) {
           const delay = Math.min(times * 50, 2000);
 
@@ -31,8 +31,8 @@ export function getRedisClient(): Redis {
         lazyConnect: false,
       });
 
-      redisClient.on('error', (err) => {
-        const error = new ExternalServiceError('Redis', err.message, err);
+      redisClient.on('error', (error_) => {
+        const error = new ExternalServiceError('Redis', error_.message, error_);
         ErrorLogger.logExternalService(error, 'redis-error');
       });
 
@@ -53,13 +53,13 @@ export function getRedisClient(): Redis {
       });
 
     } catch (error) {
-      const err = new ExternalServiceError(
+      const error_ = new ExternalServiceError(
         'Redis',
         'Failed to initialize Redis client',
         error instanceof Error ? error : undefined
       );
-      ErrorLogger.logExternalService(err, 'redis-init');
-      throw err;
+      ErrorLogger.logExternalService(error_, 'redis-init');
+      throw error_;
     }
   }
 
@@ -129,8 +129,8 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
 
     return JSON.parse(cached) as T;
   } catch (error) {
-    const err = new ExternalServiceError('Redis', 'Cache get failed', error as Error);
-    ErrorLogger.logExternalService(err, 'cache-get', { key });
+    const error_ = new ExternalServiceError('Redis', 'Cache get failed', error as Error);
+    ErrorLogger.logExternalService(error_, 'cache-get', { key });
     return null;
   }
 }
@@ -153,8 +153,8 @@ export async function cacheSet(key: string, value: unknown, ttl: number = CACHE_
       }
     );
   } catch (error) {
-    const err = new ExternalServiceError('Redis', 'Cache set failed', error as Error);
-    ErrorLogger.logExternalService(err, 'cache-set', { key, ttl });
+    const error_ = new ExternalServiceError('Redis', 'Cache set failed', error as Error);
+    ErrorLogger.logExternalService(error_, 'cache-set', { key, ttl });
   }
 }
 
@@ -173,8 +173,8 @@ export async function cacheDelete(key: string): Promise<void> {
       }
     );
   } catch (error) {
-    const err = new ExternalServiceError('Redis', 'Cache delete failed', error as Error);
-    ErrorLogger.logExternalService(err, 'cache-delete', { key });
+    const error_ = new ExternalServiceError('Redis', 'Cache delete failed', error as Error);
+    ErrorLogger.logExternalService(error_, 'cache-delete', { key });
   }
 }
 
@@ -196,8 +196,8 @@ export async function cacheDeletePattern(pattern: string): Promise<void> {
       );
     }
   } catch (error) {
-    const err = new ExternalServiceError('Redis', 'Cache delete pattern failed', error as Error);
-    ErrorLogger.logExternalService(err, 'cache-delete-pattern', { pattern });
+    const error_ = new ExternalServiceError('Redis', 'Cache delete pattern failed', error as Error);
+    ErrorLogger.logExternalService(error_, 'cache-delete-pattern', { pattern });
   }
 }
 

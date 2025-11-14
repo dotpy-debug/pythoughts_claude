@@ -26,8 +26,8 @@ type FilterOptions = {
 
 export function SearchResultsPage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const [searchParameters] = useSearchParams();
+  const query = searchParameters.get('q') || '';
 
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,12 +51,23 @@ export function SearchResultsPage() {
       // Calculate date filter
       let dateFilter: Date | null = null;
       const now = new Date();
-      if (filters.dateRange === 'week') {
+      switch (filters.dateRange) {
+      case 'week': {
         dateFilter = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      } else if (filters.dateRange === 'month') {
+      
+      break;
+      }
+      case 'month': {
         dateFilter = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      } else if (filters.dateRange === 'year') {
+      
+      break;
+      }
+      case 'year': {
         dateFilter = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+      
+      break;
+      }
+      // No default
       }
 
       // Search Posts
@@ -92,7 +103,7 @@ export function SearchResultsPage() {
               id: String(post.id),
               type: 'post' as const,
               title: String(post.title),
-              description: typeof post.content === 'string' ? post.content.substring(0, 200) : '',
+              description: typeof post.content === 'string' ? post.content.slice(0, 200) : '',
               author: post.profiles && typeof post.profiles === 'object' && 'username' in post.profiles
                 ? String(post.profiles.username)
                 : undefined,
@@ -216,29 +227,48 @@ export function SearchResultsPage() {
   }, [performSearch]);
 
   const handleResultClick = (result: SearchResult) => {
-    if (result.type === 'post') {
+    switch (result.type) {
+    case 'post': {
       navigate(`/post/${result.id}`);
-    } else if (result.type === 'user') {
+    
+    break;
+    }
+    case 'user': {
       navigate(`/user/${result.title}`);
-    } else if (result.type === 'publication') {
+    
+    break;
+    }
+    case 'publication': {
       navigate(`/publication/${result.slug}`);
-    } else if (result.type === 'series') {
+    
+    break;
+    }
+    case 'series': {
       navigate(`/series/${result.slug}`);
+    
+    break;
+    }
+    // No default
     }
   };
 
   const getResultIcon = (type: string) => {
     switch (type) {
-      case 'post':
+      case 'post': {
         return <FileText size={20} className="text-terminal-green" />;
-      case 'user':
+      }
+      case 'user': {
         return <Users size={20} className="text-terminal-blue" />;
-      case 'publication':
+      }
+      case 'publication': {
         return <BookOpen size={20} className="text-terminal-purple" />;
-      case 'series':
+      }
+      case 'series': {
         return <List size={20} className="text-terminal-pink" />;
-      default:
+      }
+      default: {
         return <Search size={20} />;
+      }
     }
   };
 
@@ -341,7 +371,7 @@ export function SearchResultsPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="animate-spin text-terminal-green" size={48} />
         </div>
-      ) : results.length === 0 ? (
+      ) : (results.length === 0 ? (
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
             <Search size={48} className="text-gray-600 mx-auto" />
@@ -394,7 +424,7 @@ export function SearchResultsPage() {
             </div>
           ))}
         </div>
-      )}
+      ))}
     </div>
   );
 }

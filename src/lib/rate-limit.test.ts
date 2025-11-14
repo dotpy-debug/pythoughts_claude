@@ -52,7 +52,7 @@ describe('Rate Limiting', () => {
       const limit = RATE_LIMITS.COMMENT_CREATE.points;
 
       // Consume all points
-      for (let i = 0; i < limit; i++) {
+      for (let index = 0; index < limit; index++) {
         const result = await checkRateLimit('COMMENT_CREATE', testIdentifier);
         expect(result.success).toBe(true);
       }
@@ -116,7 +116,7 @@ describe('Rate Limiting', () => {
       const limit = RATE_LIMITS.COMMENT_CREATE.points;
 
       // Consume all points
-      for (let i = 0; i < limit; i++) {
+      for (let index = 0; index < limit; index++) {
         await checkRateLimit('COMMENT_CREATE', testIdentifier);
       }
 
@@ -139,7 +139,7 @@ describe('Rate Limiting', () => {
       const limit = RATE_LIMITS.COMMENT_CREATE.points;
 
       // Consume all points
-      for (let i = 0; i < limit; i++) {
+      for (let index = 0; index < limit; index++) {
         await enforceRateLimit('COMMENT_CREATE', testIdentifier);
       }
 
@@ -153,7 +153,7 @@ describe('Rate Limiting', () => {
       const limit = RATE_LIMITS.COMMENT_CREATE.points;
 
       // Consume all points
-      for (let i = 0; i < limit; i++) {
+      for (let index = 0; index < limit; index++) {
         await enforceRateLimit('COMMENT_CREATE', testIdentifier);
       }
 

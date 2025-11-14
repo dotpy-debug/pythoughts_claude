@@ -3,13 +3,13 @@ import { supabase, Tag } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Plus, Check } from 'lucide-react';
 
-type TagBadgeProps = {
+type TagBadgeProperties = {
   tag: Tag;
   onClick?: () => void;
   showFollowButton?: boolean;
 };
 
-export function TagBadge({ tag, onClick, showFollowButton = false }: TagBadgeProps) {
+export function TagBadge({ tag, onClick, showFollowButton = false }: TagBadgeProperties) {
   const { user } = useAuth();
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -94,13 +94,13 @@ export function TagBadge({ tag, onClick, showFollowButton = false }: TagBadgePro
   );
 }
 
-type TagInputProps = {
+type TagInputProperties = {
   selectedTags: string[];
   onChange: (tags: string[]) => void;
   maxTags?: number;
 };
 
-export function TagInput({ selectedTags, onChange, maxTags = 5 }: TagInputProps) {
+export function TagInput({ selectedTags, onChange, maxTags = 5 }: TagInputProperties) {
   const [input, setInput] = useState('');
   const [suggestions, setSuggestions] = useState<Tag[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);

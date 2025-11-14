@@ -29,7 +29,7 @@ vi.mock('../../utils/security', () => ({
   checkRateLimit: vi.fn(() => ({
     allowed: true,
     remaining: 5,
-    resetTime: Date.now() + 60000,
+    resetTime: Date.now() + 60_000,
   })),
 }));
 

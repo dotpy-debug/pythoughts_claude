@@ -11,13 +11,13 @@
 
 import { memo } from 'react';
 
-interface FeaturedBlogSkeletonProps {
+interface FeaturedBlogSkeletonProperties {
   count?: number;
 }
 
 export const FeaturedBlogSkeleton = memo(function FeaturedBlogSkeleton({
   count = 3,
-}: FeaturedBlogSkeletonProps) {
+}: FeaturedBlogSkeletonProperties) {
   const showHero = count >= 1;
   const showCompact = count > 1;
   const compactCount = Math.min(count - 1, 2);

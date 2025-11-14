@@ -5,13 +5,13 @@ import { ShadcnButton } from '../ui/ShadcnButton';
 import { X, Loader2, Upload } from 'lucide-react';
 import { sanitizeInput } from '../../utils/security';
 
-type CreatePublicationModalProps = {
+type CreatePublicationModalProperties = {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
 };
 
-export function CreatePublicationModal({ isOpen, onClose, onSuccess }: CreatePublicationModalProps) {
+export function CreatePublicationModal({ isOpen, onClose, onSuccess }: CreatePublicationModalProperties) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ export function CreatePublicationModal({ isOpen, onClose, onSuccess }: CreatePub
       setLoading(true);
 
       // Generate slug from name if not provided
-      const slug = formData.slug || formData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const slug = formData.slug || formData.name.toLowerCase().replaceAll(/\s+/g, '-').replaceAll(/[^a-z0-9-]/g, '');
 
       // Sanitize inputs
       const sanitizedData = {

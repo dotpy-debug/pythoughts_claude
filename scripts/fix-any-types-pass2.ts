@@ -5,8 +5,8 @@
  * understanding of the codebase structure.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 interface FileReplacement {
   filePath: string;

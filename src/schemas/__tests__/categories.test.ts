@@ -202,9 +202,9 @@ describe('Category Schemas', () => {
     });
 
     it('should reject too many categories', () => {
-      const categoryOrders = Array(101).fill(null).map((_, i) => ({
+      const categoryOrders = Array.from({length: 101}).fill(null).map((_, index) => ({
         id: '123e4567-e89b-12d3-a456-426614174000',
-        display_order: i,
+        display_order: index,
       }));
 
       const invalidData = {

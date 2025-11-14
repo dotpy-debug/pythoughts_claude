@@ -59,8 +59,8 @@ export async function toggleFeaturedPost(
     logger.info('Featured status toggled', { postId, featured: newFeaturedStatus, userId });
 
     return { success: true, featured: newFeaturedStatus };
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error('Unexpected error in toggleFeaturedPost', { errorMessage, postId, userId });
     return { success: false, error: 'An unexpected error occurred' };
   }
@@ -100,8 +100,8 @@ export async function getFeaturedPosts(limit: number = 10) {
     }
 
     return posts || [];
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error('Unexpected error in getFeaturedPosts', { errorMessage });
     return [];
   }

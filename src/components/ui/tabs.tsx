@@ -16,7 +16,7 @@ function useTabsContext() {
   return context;
 }
 
-interface TabsProps {
+interface TabsProperties {
   value?: string;
   onValueChange?: (value: string) => void;
   defaultValue?: string;
@@ -24,10 +24,10 @@ interface TabsProps {
   className?: string;
 }
 
-export function Tabs({ value: controlledValue, onValueChange, defaultValue, children, className }: TabsProps) {
+export function Tabs({ value: controlledValue, onValueChange, defaultValue, children, className }: TabsProperties) {
   const [internalValue, setInternalValue] = React.useState(defaultValue || "");
 
-  const value = controlledValue !== undefined ? controlledValue : internalValue;
+  const value = controlledValue === undefined ? internalValue : controlledValue;
   const handleValueChange = (newValue: string) => {
     if (controlledValue === undefined) {
       setInternalValue(newValue);
@@ -42,12 +42,12 @@ export function Tabs({ value: controlledValue, onValueChange, defaultValue, chil
   );
 }
 
-interface TabsListProps {
+interface TabsListProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function TabsList({ children, className }: TabsListProps) {
+export function TabsList({ children, className }: TabsListProperties) {
   return (
     <div
       className={cn(
@@ -60,14 +60,14 @@ export function TabsList({ children, className }: TabsListProps) {
   );
 }
 
-interface TabsTriggerProps {
+interface TabsTriggerProperties {
   value: string;
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
 }
 
-export function TabsTrigger({ value: triggerValue, children, className, disabled }: TabsTriggerProps) {
+export function TabsTrigger({ value: triggerValue, children, className, disabled }: TabsTriggerProperties) {
   const { value, onValueChange } = useTabsContext();
   const isActive = value === triggerValue;
 
@@ -89,13 +89,13 @@ export function TabsTrigger({ value: triggerValue, children, className, disabled
   );
 }
 
-interface TabsContentProps {
+interface TabsContentProperties {
   value: string;
   children: React.ReactNode;
   className?: string;
 }
 
-export function TabsContent({ value: contentValue, children, className }: TabsContentProps) {
+export function TabsContent({ value: contentValue, children, className }: TabsContentProperties) {
   const { value } = useTabsContext();
 
   if (value !== contentValue) return null;

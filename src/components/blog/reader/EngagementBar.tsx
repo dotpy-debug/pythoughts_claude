@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
-interface EngagementBarProps {
+interface EngagementBarProperties {
   postId: string;
   initialLikes?: number;
   initialComments?: number;
@@ -30,7 +30,7 @@ export function EngagementBar({
   initialIsBookmarked = false,
   onCommentClick,
   className,
-}: EngagementBarProps) {
+}: EngagementBarProperties) {
   const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
@@ -70,7 +70,7 @@ export function EngagementBar({
       try {
         await navigator.share({
           title: document.title,
-          url: window.location.href,
+          url: globalThis.location.href,
         });
       } catch (error) {
         console.error('Failed to share:', error);
@@ -78,7 +78,7 @@ export function EngagementBar({
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(globalThis.location.href);
         // TODO: Show toast notification
         console.log('Link copied to clipboard');
       } catch (error) {

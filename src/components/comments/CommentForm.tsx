@@ -3,13 +3,13 @@ import { MentionsInput } from '../mentions/MentionsInput';
 import { isValidContentLength } from '../../utils/security';
 import { checkContentSafety, shouldAutoBlock } from '../../utils/contentFilter';
 
-type CommentFormProps = {
+type CommentFormProperties = {
   onSubmit: (content: string) => Promise<void>;
   onCancel?: () => void;
   placeholder?: string;
 };
 
-export function CommentForm({ onSubmit, onCancel, placeholder = 'Write a comment...' }: CommentFormProps) {
+export function CommentForm({ onSubmit, onCancel, placeholder = 'Write a comment...' }: CommentFormProperties) {
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');

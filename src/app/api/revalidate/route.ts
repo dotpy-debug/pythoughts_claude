@@ -70,10 +70,10 @@ export async function POST(request: NextRequest) {
       { message: 'Missing revalidation target (slug, path, or tag)' },
       { status: 400 }
     );
-  } catch (err) {
-    console.error('Revalidation error:', err);
+  } catch (error) {
+    console.error('Revalidation error:', error);
     return NextResponse.json(
-      { message: 'Error revalidating', error: err instanceof Error ? err.message : String(err) },
+      { message: 'Error revalidating', error: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

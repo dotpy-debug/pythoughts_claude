@@ -482,7 +482,7 @@ export function SettingsPage() {
                   <div className="flex items-center justify-center py-8">
                     <Loader2 className="animate-spin text-terminal-green" size={32} />
                   </div>
-                ) : blockedUsers.length === 0 ? (
+                ) : (blockedUsers.length === 0 ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="text-center space-y-2">
                       <UserX size={32} className="text-gray-600 mx-auto" />
@@ -520,7 +520,7 @@ export function SettingsPage() {
                       </div>
                     ))}
                   </div>
-                )}
+                ))}
               </div>
             </ShadcnCardContent>
           </ShadcnCard>
@@ -774,7 +774,7 @@ export function SettingsPage() {
               <h3 className="text-lg font-semibold text-gray-100 font-mono mb-4">Preview</h3>
               <div className="p-4 bg-gray-800 border border-gray-700 rounded">
                 <p className="text-gray-100 mb-2" style={{
-                  fontSize: fontSize === 'small' ? '14px' : fontSize === 'large' ? '18px' : '16px'
+                  fontSize: fontSize === 'small' ? '14px' : (fontSize === 'large' ? '18px' : '16px')
                 }}>
                   The quick brown fox jumps over the lazy dog.
                 </p>

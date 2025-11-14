@@ -16,7 +16,7 @@ export interface FABAction {
   variant?: 'default' | 'primary' | 'danger';
 }
 
-interface FloatingActionButtonProps {
+interface FloatingActionButtonProperties {
   /**
    * Primary action (shown on FAB when closed)
    */
@@ -56,7 +56,7 @@ export function FloatingActionButton({
   icon,
   hideOnScroll = false,
   className,
-}: FloatingActionButtonProps) {
+}: FloatingActionButtonProperties) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);

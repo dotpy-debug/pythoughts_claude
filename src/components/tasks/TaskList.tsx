@@ -5,12 +5,12 @@ import { TaskCard } from './TaskCard';
 import { TaskDetailModal } from './TaskDetailModal';
 import { Loader2 } from 'lucide-react';
 
-interface TaskListProps {
+interface TaskListProperties {
   filter?: 'all' | 'todo' | 'in_progress' | 'completed';
   onTaskClick?: (task: Task) => void;
 }
 
-export function TaskList({ filter = 'all', onTaskClick }: TaskListProps) {
+export function TaskList({ filter = 'all', onTaskClick }: TaskListProperties) {
   const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);

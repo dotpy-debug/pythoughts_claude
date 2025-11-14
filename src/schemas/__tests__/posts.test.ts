@@ -51,7 +51,7 @@ describe('Post Schemas', () => {
       const invalidData = {
         title: 'Test',
         content_html: '<p>Test</p>',
-        tags: Array(15).fill('tag'), // More than 10
+        tags: Array.from({length: 15}).fill('tag'), // More than 10
       };
 
       const result = createPostSchema.safeParse(invalidData);
@@ -245,7 +245,7 @@ describe('Post Schemas', () => {
 
   describe('schedulePostSchema', () => {
     it('should validate future scheduled date', () => {
-      const futureDate = new Date(Date.now() + 86400000); // Tomorrow
+      const futureDate = new Date(Date.now() + 86_400_000); // Tomorrow
       const validData = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         scheduled_at: futureDate,
@@ -256,7 +256,7 @@ describe('Post Schemas', () => {
     });
 
     it('should reject past scheduled date', () => {
-      const pastDate = new Date(Date.now() - 86400000); // Yesterday
+      const pastDate = new Date(Date.now() - 86_400_000); // Yesterday
       const invalidData = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         scheduled_at: pastDate,

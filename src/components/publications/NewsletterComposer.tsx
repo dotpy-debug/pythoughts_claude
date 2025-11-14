@@ -11,9 +11,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { format } from 'date-fns';
 import { CalendarIcon, Send, Eye } from 'lucide-react';
 
-type NewsletterStatus = 'draft' | 'scheduled' | 'sent';
+// NewsletterStatus removed as unused
 
-type NewsletterComposerProps = {
+type NewsletterComposerProperties = {
   publicationId: string;
   publicationName: string;
   onSent?: () => void;
@@ -23,12 +23,11 @@ export function NewsletterComposer({
   publicationId,
   publicationName,
   onSent,
-}: NewsletterComposerProps) {
+}: NewsletterComposerProperties) {
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [previewText, setPreviewText] = useState('');
-  const [scheduledFor, setScheduledFor] = useState<Date | undefined>(undefined);
-  const [_status, _setStatus] = useState<NewsletterStatus>('draft');
+  const [scheduledFor, setScheduledFor] = useState<Date | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -67,9 +66,9 @@ export function NewsletterComposer({
       setPreviewText('');
       setScheduledFor(undefined);
       setError(null);
-    } catch (err) {
-      logger.error('Failed to save draft', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to save draft');
+    } catch (error_) {
+      logger.error('Failed to save draft', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to save draft');
     } finally {
       setIsSubmitting(false);
     }
@@ -127,9 +126,9 @@ export function NewsletterComposer({
       setPreviewText('');
       setScheduledFor(undefined);
       setError(null);
-    } catch (err) {
-      logger.error('Failed to schedule newsletter', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to schedule newsletter');
+    } catch (error_) {
+      logger.error('Failed to schedule newsletter', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to schedule newsletter');
     } finally {
       setIsSubmitting(false);
     }
@@ -206,9 +205,9 @@ export function NewsletterComposer({
       if (onSent) {
         onSent();
       }
-    } catch (err) {
-      logger.error('Failed to send newsletter', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to send newsletter');
+    } catch (error_) {
+      logger.error('Failed to send newsletter', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to send newsletter');
     } finally {
       setIsSubmitting(false);
     }
@@ -299,7 +298,7 @@ export function NewsletterComposer({
                     onChange={(e) => {
                       const [hours, minutes] = e.target.value.split(':');
                       const newDate = scheduledFor || new Date();
-                      newDate.setHours(parseInt(hours), parseInt(minutes));
+                      newDate.setHours(Number.parseInt(hours), Number.parseInt(minutes));
                       setScheduledFor(new Date(newDate));
                     }}
                     className="mt-1"

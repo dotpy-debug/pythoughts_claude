@@ -5,16 +5,16 @@ import { HighlightRenderer } from './HighlightRenderer';
 import { useAuth } from '../../contexts/AuthContext';
 import { liveAnnouncer } from '../../utils/accessibility';
 
-interface TextHighlighterProps {
+interface TextHighlighterProperties {
   postId: string;
   content: string;
   children?: ReactNode;
   enabled?: boolean;
 }
 
-export function TextHighlighter({ postId, content, children, enabled = true }: TextHighlighterProps) {
+export function TextHighlighter({ postId, content, children, enabled = true }: TextHighlighterProperties) {
   const { user } = useAuth();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerReference = useRef<HTMLDivElement>(null);
   const {
     highlights,
     selection,
@@ -42,7 +42,7 @@ export function TextHighlighter({ postId, content, children, enabled = true }: T
       }
     };
 
-    const container = containerRef.current;
+    const container = containerReference.current;
     if (container) {
       container.addEventListener('mouseup', handleMouseUp);
       container.addEventListener('keyup', handleKeyUp);
@@ -68,7 +68,7 @@ export function TextHighlighter({ postId, content, children, enabled = true }: T
     if (highlight) {
       liveAnnouncer.announce(`Text highlighted in ${color}${note ? ' with note' : ''}`, 'polite');
       clearSelection();
-      window.getSelection()?.removeAllRanges();
+      globalThis.getSelection()?.removeAllRanges();
     }
   };
 
@@ -91,7 +91,7 @@ export function TextHighlighter({ postId, content, children, enabled = true }: T
   }
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerReference} className="relative">
       {children ? (
         children
       ) : (

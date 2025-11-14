@@ -197,31 +197,41 @@ export function PublicationsManagement() {
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'owner':
+      case 'owner': {
         return <Crown className="w-4 h-4" />;
-      case 'editor':
+      }
+      case 'editor': {
         return <Edit3 className="w-4 h-4" />;
-      case 'writer':
+      }
+      case 'writer': {
         return <PenTool className="w-4 h-4" />;
-      case 'contributor':
+      }
+      case 'contributor': {
         return <UserPlus className="w-4 h-4" />;
-      default:
+      }
+      default: {
         return null;
+      }
     }
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'owner':
+      case 'owner': {
         return 'text-yellow-400';
-      case 'editor':
+      }
+      case 'editor': {
         return 'text-purple-400';
-      case 'writer':
+      }
+      case 'writer': {
         return 'text-blue-400';
-      case 'contributor':
+      }
+      case 'contributor': {
         return 'text-green-400';
-      default:
+      }
+      default: {
         return 'text-gray-400';
+      }
     }
   };
 

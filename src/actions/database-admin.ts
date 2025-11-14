@@ -17,11 +17,11 @@ import type { DatabaseRecord } from '../types/common';
 /**
  * Get list of all tables in the database
  */
-export async function getDatabaseTables(params: {
+export async function getDatabaseTables(parameters: {
   currentUserId: string;
 }): Promise<{ tables: DatabaseTable[]; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     // Query information_schema for tables
     const { data, error } = await supabase.rpc('get_table_list');
@@ -80,22 +80,22 @@ export async function getDatabaseTables(params: {
 /**
  * Get table schema information
  */
-export async function getTableSchema(params: {
+export async function getTableSchema(parameters: {
   currentUserId: string;
   tableName: string;
 }): Promise<{ columns: TableColumn[]; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     // This would ideally query information_schema.columns
     // For now, we'll return a simple structure
     const columns: TableColumn[] = [];
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'view_table_schema',
       targetType: 'table',
-      details: { tableName: params.tableName },
+      details: { tableName: parameters.tableName },
     });
 
     return { columns };
@@ -111,7 +111,7 @@ export async function getTableSchema(params: {
 /**
  * Browse table data with pagination
  */
-export async function browseTableData(params: {
+export async function browseTableData(parameters: {
   currentUserId: string;
   tableName: string;
   page?: number;
@@ -120,38 +120,34 @@ export async function browseTableData(params: {
   orderDirection?: 'asc' | 'desc';
 }): Promise<{ data: DatabaseRecord[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const page = parameters.page ?? 1;
+    const limit = parameters.limit ?? 50;
     const offset = (page - 1) * limit;
 
     let query = supabase
-      .from(params.tableName)
+      .from(parameters.tableName)
       .select('*', { count: 'exact' });
 
-    if (params.orderBy) {
-      query = query.order(params.orderBy, {
-        ascending: params.orderDirection === 'asc',
-      });
-    } else {
-      query = query.order('created_at', { ascending: false });
-    }
+    query = parameters.orderBy ? query.order(parameters.orderBy, {
+        ascending: parameters.orderDirection === 'asc',
+      }) : query.order('created_at', { ascending: false });
 
     query = query.range(offset, offset + limit - 1);
 
     const { data, error, count } = await query;
 
     if (error) {
-      logger.error('Error browsing table data', { errorDetails: error, tableName: params.tableName });
+      logger.error('Error browsing table data', { errorDetails: error, tableName: parameters.tableName });
       return { data: [], total: 0, error: 'Failed to browse table data' };
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'browse_table_data',
       targetType: 'table',
-      details: { tableName: params.tableName, page, limit },
+      details: { tableName: parameters.tableName, page, limit },
     });
 
     return {
@@ -171,7 +167,7 @@ export async function browseTableData(params: {
 /**
  * Search table data
  */
-export async function searchTableData(params: {
+export async function searchTableData(parameters: {
   currentUserId: string;
   tableName: string;
   searchColumn: string;
@@ -180,18 +176,18 @@ export async function searchTableData(params: {
   limit?: number;
 }): Promise<{ data: DatabaseRecord[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const page = parameters.page ?? 1;
+    const limit = parameters.limit ?? 50;
     const offset = (page - 1) * limit;
 
     let query = supabase
-      .from(params.tableName)
+      .from(parameters.tableName)
       .select('*', { count: 'exact' });
 
     // Use ilike for case-insensitive search
-    query = query.ilike(params.searchColumn, `%${params.searchValue}%`);
+    query = query.ilike(parameters.searchColumn, `%${parameters.searchValue}%`);
 
     query = query.range(offset, offset + limit - 1);
 
@@ -203,13 +199,13 @@ export async function searchTableData(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'search_table_data',
       targetType: 'table',
       details: {
-        tableName: params.tableName,
-        searchColumn: params.searchColumn,
-        searchValue: params.searchValue,
+        tableName: parameters.tableName,
+        searchColumn: parameters.searchColumn,
+        searchValue: parameters.searchValue,
       },
     });
 
@@ -230,25 +226,25 @@ export async function searchTableData(params: {
 /**
  * Update a record in a table
  */
-export async function updateTableRecord(params: {
+export async function updateTableRecord(parameters: {
   currentUserId: string;
   tableName: string;
   recordId: string;
   updates: DatabaseRecord;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     // Add updated_at if the table has it
     const updatesWithTimestamp = {
-      ...params.updates,
+      ...parameters.updates,
       updated_at: new Date().toISOString(),
     };
 
     const { error } = await supabase
-      .from(params.tableName)
+      .from(parameters.tableName)
       .update(updatesWithTimestamp)
-      .eq('id', params.recordId);
+      .eq('id', parameters.recordId);
 
     if (error) {
       logger.error('Error updating table record', { errorDetails: error });
@@ -256,13 +252,13 @@ export async function updateTableRecord(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_table_record',
       targetType: 'table',
-      targetId: params.recordId,
+      targetId: parameters.recordId,
       details: {
-        tableName: params.tableName,
-        updates: params.updates,
+        tableName: parameters.tableName,
+        updates: parameters.updates,
       },
     });
 
@@ -279,18 +275,18 @@ export async function updateTableRecord(params: {
 /**
  * Delete a record from a table
  */
-export async function deleteTableRecord(params: {
+export async function deleteTableRecord(parameters: {
   currentUserId: string;
   tableName: string;
   recordId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     const { error } = await supabase
-      .from(params.tableName)
+      .from(parameters.tableName)
       .delete()
-      .eq('id', params.recordId);
+      .eq('id', parameters.recordId);
 
     if (error) {
       logger.error('Error deleting table record', { errorDetails: error });
@@ -298,11 +294,11 @@ export async function deleteTableRecord(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_table_record',
       targetType: 'table',
-      targetId: params.recordId,
-      details: { tableName: params.tableName },
+      targetId: parameters.recordId,
+      details: { tableName: parameters.tableName },
     });
 
     return { success: true };
@@ -318,11 +314,11 @@ export async function deleteTableRecord(params: {
 /**
  * Get database statistics
  */
-export async function getDatabaseStats(params: {
+export async function getDatabaseStats(parameters: {
   currentUserId: string;
 }): Promise<{ stats: DatabaseStats; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     // Get counts for major tables
     const tables = [

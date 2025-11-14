@@ -56,11 +56,90 @@ type PublicationMember = {
   postCount: number;
 };
 
-type PublicationHomepageProps = {
+type PublicationHomepageProperties = {
   slug: string;
 };
 
-export function PublicationHomepage({ slug }: PublicationHomepageProps) {
+const getFirstEntry = <T,>(value: T | T[] | null | undefined): T | null => {
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+  return value ?? null;
+};
+
+const normalizePostAuthor = (author: unknown): PublicationPost['author'] => {
+  const entry = getFirstEntry(
+    author as Record<string, unknown> | Record<string, unknown>[] | null | undefined
+  );
+  if (!entry || typeof entry !== 'object') {
+    return { username: '', displayName: null, avatarUrl: null };
+  }
+
+  const record = entry as Record<string, unknown>;
+  return {
+    username: typeof record.username === 'string' ? record.username : '',
+    displayName: typeof record.display_name === 'string' ? record.display_name : null,
+    avatarUrl: typeof record.avatar_url === 'string' ? record.avatar_url : null,
+  };
+};
+
+const transformPublicationPost = (entry: unknown): PublicationPost | null => {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const record = entry as Record<string, unknown>;
+  const rawPost = getFirstEntry(record.post as unknown);
+  if (!rawPost || typeof rawPost !== 'object') {
+    return null;
+  }
+
+  const postRecord = rawPost as Record<string, unknown>;
+  return {
+    id: typeof postRecord.id === 'string' ? postRecord.id : '',
+    title: typeof postRecord.title === 'string' ? postRecord.title : '',
+    excerpt: typeof postRecord.excerpt === 'string' ? postRecord.excerpt : null,
+    publishedAt: typeof record.published_at === 'string' ? record.published_at : '',
+    author: normalizePostAuthor(postRecord.author),
+    stats: {
+      views: 0,
+      claps: 0,
+      comments: 0,
+    },
+  };
+};
+
+const transformPublicationMember = (entry: unknown): PublicationMember | null => {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const record = entry as Record<string, unknown>;
+  const userEntry = getFirstEntry(record.user as unknown);
+  if (!userEntry || typeof userEntry !== 'object') {
+    return null;
+  }
+
+  const userRecord = userEntry as Record<string, unknown>;
+  return {
+    id:
+      typeof record.id === 'string'
+        ? record.id
+        : (typeof userRecord.username === 'string'
+          ? userRecord.username
+          : ''),
+    role: typeof record.role === 'string' ? record.role : '',
+    user: {
+      username: typeof userRecord.username === 'string' ? userRecord.username : '',
+      displayName: typeof userRecord.display_name === 'string' ? userRecord.display_name : null,
+      avatarUrl: typeof userRecord.avatar_url === 'string' ? userRecord.avatar_url : null,
+      bio: typeof userRecord.bio === 'string' ? userRecord.bio : null,
+    },
+    postCount: typeof record.post_count === 'number' ? record.post_count : 0,
+  };
+};
+
+export function PublicationHomepage({ slug }: PublicationHomepageProperties) {
   const [publication, setPublication] = useState<Publication | null>(null);
   const [posts, setPosts] = useState<PublicationPost[]>([]);
   const [members, setMembers] = useState<PublicationMember[]>([]);
@@ -87,7 +166,8 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
       // Load posts
       const { data: postsData, error: postsError } = await supabase
         .from('publication_posts')
-        .select(`
+        .select(
+          `
           id,
           published_at,
           post:post_id (
@@ -100,7 +180,8 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
               avatar_url
             )
           )
-        `)
+        `
+        )
         .eq('publication_id', pubData.id)
         .order('published_at', { ascending: false })
         .limit(10);
@@ -108,31 +189,17 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
       if (postsError) {
         logger.error('Failed to load posts', postsError);
       } else {
-        // Transform posts data
-        setPosts(
-          (postsData || []).map((item: any) => ({
-            id: (Array.isArray(item.post) ? item.post[0]?.id : item.post?.id) || '',
-            title: (Array.isArray(item.post) ? item.post[0]?.title : item.post?.title) || '',
-            excerpt: (Array.isArray(item.post) ? item.post[0]?.excerpt : item.post?.excerpt) || null,
-            publishedAt: item.published_at,
-            author: {
-              username: Array.isArray(item.post) ? (Array.isArray(item.post[0]?.author) ? item.post[0]?.author[0]?.username : item.post[0]?.author?.username) : (Array.isArray(item.post?.author) ? item.post?.author[0]?.username : item.post?.author?.username) || '',
-              displayName: item.post.author.display_name,
-              avatarUrl: item.post.author.avatar_url,
-            },
-            stats: {
-              views: 0, // TODO: Get from analytics
-              claps: 0,
-              comments: 0,
-            },
-          }))
-        );
+        const normalizedPosts = (postsData ?? [])
+          .map(transformPublicationPost)
+          .filter((post): post is PublicationPost => post !== null);
+        setPosts(normalizedPosts);
       }
 
       // Load members
       const { data: membersData, error: membersError } = await supabase
         .from('publication_members')
-        .select(`
+        .select(
+          `
           id,
           role,
           post_count,
@@ -142,7 +209,8 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
             avatar_url,
             bio
           )
-        `)
+        `
+        )
         .eq('publication_id', pubData.id)
         .order('role', { ascending: true })
         .limit(12);
@@ -150,19 +218,10 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
       if (membersError) {
         logger.error('Failed to load members', membersError);
       } else {
-        setMembers(
-          (membersData || []).map((item: any) => ({
-            id: item.id,
-            role: item.role,
-            postCount: item.post_count,
-            user: {
-              username: item.user.username,
-              displayName: item.user.display_name,
-              avatarUrl: item.user.avatar_url,
-              bio: item.user.bio,
-            },
-          }))
-        );
+        const normalizedMembers = (membersData ?? [])
+          .map(transformPublicationMember)
+          .filter((member): member is PublicationMember => member !== null);
+        setMembers(normalizedMembers);
       }
 
       // Check subscription status
@@ -177,8 +236,8 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
 
         setIsSubscribed(subData?.is_active || false);
       }
-    } catch (err) {
-      logger.error('Failed to load publication', err as Error);
+    } catch (error) {
+      logger.error('Failed to load publication', error as Error);
     } finally {
       setIsLoading(false);
     }
@@ -216,8 +275,8 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
 
         setIsSubscribed(true);
       }
-    } catch (err) {
-      logger.error('Failed to update subscription', err as Error);
+    } catch (error) {
+      logger.error('Failed to update subscription', error as Error);
     }
   };
 
@@ -234,9 +293,7 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Publication Not Found</h1>
-          <p className="text-muted-foreground">
-            The publication you're looking for doesn't exist.
-          </p>
+          <p className="text-muted-foreground">The publication you're looking for doesn't exist.</p>
         </div>
       </div>
     );
@@ -356,9 +413,7 @@ export function PublicationHomepage({ slug }: PublicationHomepageProps) {
 
           <TabsContent value="posts" className="mt-6">
             {posts.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                No posts published yet
-              </div>
+              <div className="text-center py-12 text-muted-foreground">No posts published yet</div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {posts.map((post) => (

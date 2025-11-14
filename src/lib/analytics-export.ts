@@ -45,14 +45,18 @@ export class AnalyticsExporter {
       }
 
       switch (format) {
-        case 'csv':
+        case 'csv': {
           return this.exportToCSV(data || []);
-        case 'json':
+        }
+        case 'json': {
           return this.exportToJSON(data || []);
-        case 'xlsx':
+        }
+        case 'xlsx': {
           return this.exportToXLSX(data || []);
-        default:
+        }
+        default: {
           throw new Error(`Unsupported format: ${format}`);
+        }
       }
     } catch (error) {
       logger.error('Failed to export post analytics', error as Error);
@@ -82,14 +86,18 @@ export class AnalyticsExporter {
       }
 
       switch (format) {
-        case 'csv':
+        case 'csv': {
           return this.exportToCSV(data || []);
-        case 'json':
+        }
+        case 'json': {
           return this.exportToJSON(data || []);
-        case 'xlsx':
+        }
+        case 'xlsx': {
           return this.exportToXLSX(data || []);
-        default:
+        }
+        default: {
           throw new Error(`Unsupported format: ${format}`);
+        }
       }
     } catch (error) {
       logger.error('Failed to export referral data', error as Error);
@@ -126,14 +134,18 @@ export class AnalyticsExporter {
       }
 
       switch (format) {
-        case 'csv':
+        case 'csv': {
           return this.exportToCSV(data || []);
-        case 'json':
+        }
+        case 'json': {
           return this.exportToJSON(data || []);
-        case 'xlsx':
+        }
+        case 'xlsx': {
           return this.exportToXLSX(data || []);
-        default:
+        }
+        default: {
           throw new Error(`Unsupported format: ${format}`);
+        }
       }
     } catch (error) {
       logger.error('Failed to export events', error as Error);
@@ -182,11 +194,11 @@ export class AnalyticsExporter {
           const value = (row as Record<string, unknown>)[header];
           // Handle nested objects and arrays
           if (typeof value === 'object' && value !== null) {
-            return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+            return `"${JSON.stringify(value).replaceAll('"', '""')}"`;
           }
           // Escape quotes in strings
           if (typeof value === 'string') {
-            return `"${value.replace(/"/g, '""')}"`;
+            return `"${value.replaceAll('"', '""')}"`;
           }
           return value;
         }).join(',');
@@ -222,14 +234,14 @@ export class AnalyticsExporter {
    * Trigger download of exported data
    */
   static downloadExport(blob: Blob, filename: string): void {
-    const url = window.URL.createObjectURL(blob);
+    const url = globalThis.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = filename;
-    document.body.appendChild(link);
+    document.body.append(link);
     link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    link.remove();
+    globalThis.URL.revokeObjectURL(url);
   }
 
   /**
@@ -241,11 +253,11 @@ export class AnalyticsExporter {
     dateRange?: DateRange
   ): string {
     const timestamp = new Date().toISOString().split('T')[0];
-    const rangeStr = dateRange
+    const rangeString = dateRange
       ? `_${dateRange.start.toISOString().split('T')[0]}_to_${dateRange.end.toISOString().split('T')[0]}`
       : '';
 
-    return `${type}_analytics${rangeStr}_${timestamp}.${format}`;
+    return `${type}_analytics${rangeString}_${timestamp}.${format}`;
   }
 }
 

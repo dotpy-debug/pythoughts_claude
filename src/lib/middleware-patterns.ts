@@ -77,7 +77,7 @@ const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
 export const createRateLimitMiddleware = (
   maxRequests: number = 100,
-  windowMs: number = 60000
+  windowMs: number = 60_000
 ): Middleware<unknown> => {
   return async (_input, context) => {
     const key = context.userId || context.ip || 'anonymous';
@@ -315,7 +315,7 @@ export const updatePost = createHandler(
     middleware: [
       withAuth,
       withRequestLogging,
-      createRateLimitMiddleware(20, 60000),
+      createRateLimitMiddleware(20, 60_000),
     ],
   }
 );
@@ -369,7 +369,7 @@ export const createPostWithValidation = createHandler(
     middleware: [
       withAuth,
       createValidationMiddleware(validateCreatePostInput),
-      createRateLimitMiddleware(10, 60000),
+      createRateLimitMiddleware(10, 60_000),
     ],
   }
 );
@@ -399,8 +399,8 @@ export async function executeBatch<T>(
 
   // Simple concurrency control
   const chunks: Array<Array<() => Promise<T>>> = [];
-  for (let i = 0; i < operations.length; i += maxConcurrency) {
-    chunks.push(operations.slice(i, i + maxConcurrency));
+  for (let index = 0; index < operations.length; index += maxConcurrency) {
+    chunks.push(operations.slice(index, index + maxConcurrency));
   }
 
   for (const chunk of chunks) {
@@ -417,11 +417,7 @@ export async function executeBatch<T>(
       }
     });
 
-    if (stopOnError) {
-      await Promise.all(promises);
-    } else {
-      await Promise.allSettled(promises);
-    }
+    await (stopOnError ? Promise.all(promises) : Promise.allSettled(promises));
   }
 
   return {
@@ -480,13 +476,13 @@ export async function batchDeletePosts(
   });
 
   // Map errors to failed posts
-  result.errors.forEach((error, index) => {
+  for (const [index, error] of result.errors.entries()) {
     const postId = postIds[index];
     failed.push({
       postId,
       error: error.message,
     });
-  });
+  }
 
   logger.info('Batch delete completed', {
     total: postIds.length,
@@ -514,10 +510,10 @@ export async function executeTransaction<T>(
   const executedOps: number[] = [];
 
   try {
-    for (let i = 0; i < operations.length; i++) {
-      const result = await operations[i].execute();
+    for (const [index, operation] of operations.entries()) {
+      const result = await operation.execute();
       results.push(result);
-      executedOps.push(i);
+      executedOps.push(index);
     }
 
     return results;
@@ -528,8 +524,8 @@ export async function executeTransaction<T>(
       totalOps: operations.length,
     });
 
-    for (let i = executedOps.length - 1; i >= 0; i--) {
-      const opIndex = executedOps[i];
+    for (let index = executedOps.length - 1; index >= 0; index--) {
+      const opIndex = executedOps[index];
       try {
         await operations[opIndex].rollback();
       } catch (rollbackError) {

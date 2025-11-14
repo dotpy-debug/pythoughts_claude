@@ -17,7 +17,7 @@ import {
   Hr,
 } from '@react-email/components';
 
-export interface MentionNotificationEmailProps {
+export interface MentionNotificationEmailProperties {
   recipientName: string;
   mentionerName: string;
   contentType: 'post' | 'comment';
@@ -35,7 +35,7 @@ export function MentionNotificationEmail({
   contentExcerpt = 'Check out what they said...',
   contentUrl = 'https://pythoughts.com',
   unsubscribeUrl = 'https://pythoughts.com/settings/preferences',
-}: MentionNotificationEmailProps) {
+}: MentionNotificationEmailProperties) {
   const getTitle = () => {
     if (contentType === 'post') {
       return `${mentionerName} mentioned you in a post`;

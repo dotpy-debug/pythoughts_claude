@@ -127,31 +127,41 @@ export function ModerationPage() {
 
   const getStatusColor = (status: Report['status']) => {
     switch (status) {
-      case 'pending':
+      case 'pending': {
         return 'text-yellow-500';
-      case 'reviewed':
+      }
+      case 'reviewed': {
         return 'text-blue-500';
-      case 'resolved':
+      }
+      case 'resolved': {
         return 'text-green-500';
-      case 'dismissed':
+      }
+      case 'dismissed': {
         return 'text-gray-500';
-      default:
+      }
+      default: {
         return 'text-gray-400';
+      }
     }
   };
 
   const getStatusIcon = (status: Report['status']) => {
     switch (status) {
-      case 'pending':
+      case 'pending': {
         return <AlertTriangle size={16} />;
-      case 'reviewed':
+      }
+      case 'reviewed': {
         return <Eye size={16} />;
-      case 'resolved':
+      }
+      case 'resolved': {
         return <CheckCircle size={16} />;
-      case 'dismissed':
+      }
+      case 'dismissed': {
         return <XCircle size={16} />;
-      default:
+      }
+      default: {
         return null;
+      }
     }
   };
 
@@ -174,7 +184,7 @@ export function ModerationPage() {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-xs text-gray-500 font-mono">
-              {reports.length} report{reports.length !== 1 ? 's' : ''}
+              {reports.length} report{reports.length === 1 ? '' : 's'}
             </span>
           </div>
         </div>
@@ -202,9 +212,9 @@ export function ModerationPage() {
         <div className="divide-y divide-gray-700">
           {loading ? (
             <div className="p-8 text-center text-gray-500 font-mono">Loading reports...</div>
-          ) : reports.length === 0 ? (
+          ) : (reports.length === 0 ? (
             <div className="p-8 text-center text-gray-500 font-mono">
-              No {statusFilter !== 'all' ? statusFilter : ''} reports found
+              No {statusFilter === 'all' ? '' : statusFilter} reports found
             </div>
           ) : (
             reports.map((report) => (
@@ -340,7 +350,7 @@ export function ModerationPage() {
                 )}
               </div>
             ))
-          )}
+          ))}
         </div>
       </div>
     </div>

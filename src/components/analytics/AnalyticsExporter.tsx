@@ -28,7 +28,7 @@ export interface ExportOptions {
   emailTo?: string;
 }
 
-export interface AnalyticsExporterProps {
+export interface AnalyticsExporterProperties {
   userId: string;
   onExport: (options: ExportOptions) => Promise<void>;
   className?: string;
@@ -61,7 +61,7 @@ export function AnalyticsExporter({
   userId: _userId,
   onExport,
   className,
-}: AnalyticsExporterProps) {
+}: AnalyticsExporterProperties) {
   const [isOpen, setIsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
 
@@ -97,8 +97,8 @@ export function AnalyticsExporter({
   };
 
   const setDatePreset = (days: number) => {
-    setOptions((prev) => ({
-      ...prev,
+    setOptions((previous) => ({
+      ...previous,
       dateRange: {
         start: subDays(new Date(), days),
         end: new Date(),
@@ -107,11 +107,11 @@ export function AnalyticsExporter({
   };
 
   const toggleMetric = (metricId: string) => {
-    setOptions((prev) => ({
-      ...prev,
-      metrics: prev.metrics.includes(metricId)
-        ? prev.metrics.filter((m) => m !== metricId)
-        : [...prev.metrics, metricId],
+    setOptions((previous) => ({
+      ...previous,
+      metrics: previous.metrics.includes(metricId)
+        ? previous.metrics.filter((m) => m !== metricId)
+        : [...previous.metrics, metricId],
     }));
   };
 
@@ -165,8 +165,8 @@ export function AnalyticsExporter({
                 <button
                   key={fmt.value}
                   onClick={() =>
-                    setOptions((prev) => ({
-                      ...prev,
+                    setOptions((previous) => ({
+                      ...previous,
                       format: fmt.value as "json" | "csv" | "pdf",
                     }))
                   }
@@ -216,10 +216,10 @@ export function AnalyticsExporter({
                   type="date"
                   value={format(options.dateRange.start, 'yyyy-MM-dd')}
                   onChange={(e) =>
-                    setOptions((prev) => ({
-                      ...prev,
+                    setOptions((previous) => ({
+                      ...previous,
                       dateRange: {
-                        ...prev.dateRange,
+                        ...previous.dateRange,
                         start: new Date(e.target.value),
                       },
                     }))
@@ -235,10 +235,10 @@ export function AnalyticsExporter({
                   type="date"
                   value={format(options.dateRange.end, 'yyyy-MM-dd')}
                   onChange={(e) =>
-                    setOptions((prev) => ({
-                      ...prev,
+                    setOptions((previous) => ({
+                      ...previous,
                       dateRange: {
-                        ...prev.dateRange,
+                        ...previous.dateRange,
                         end: new Date(e.target.value),
                       },
                     }))
@@ -288,8 +288,8 @@ export function AnalyticsExporter({
                   type="checkbox"
                   checked={options.includeCharts}
                   onChange={(e) =>
-                    setOptions((prev) => ({
-                      ...prev,
+                    setOptions((previous) => ({
+                      ...previous,
                       includeCharts: e.target.checked,
                     }))
                   }
@@ -317,8 +317,8 @@ export function AnalyticsExporter({
               value={options.schedule || ''}
               onChange={(e) => {
                 const value = e.target.value;
-                setOptions((prev) => ({
-                  ...prev,
+                setOptions((previous) => ({
+                  ...previous,
                   schedule: value === '' ? null : (value as 'daily' | 'weekly' | 'monthly'),
                 }));
               }}
@@ -342,8 +342,8 @@ export function AnalyticsExporter({
                 placeholder="your@email.com"
                 value={options.emailTo || ''}
                 onChange={(e) =>
-                  setOptions((prev) => ({
-                    ...prev,
+                  setOptions((previous) => ({
+                    ...previous,
                     emailTo: e.target.value,
                   }))
                 }

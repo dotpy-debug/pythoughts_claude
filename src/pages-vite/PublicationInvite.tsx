@@ -83,13 +83,13 @@ export function PublicationInvite() {
 
       setInvitation(data as unknown as InvitationData);
       logger.info('Invitation loaded', { invitationId: data.id });
-    } catch (err) {
+    } catch (error_) {
       logger.error(
         'Failed to load invitation',
-        err instanceof Error ? err : new Error(String(err)),
+        error_ instanceof Error ? error_ : new Error(String(error_)),
         { token }
       );
-      setError(err instanceof Error ? err.message : 'Failed to load invitation');
+      setError(error_ instanceof Error ? error_.message : 'Failed to load invitation');
     } finally {
       setLoading(false);
     }
@@ -212,12 +212,12 @@ export function PublicationInvite() {
 
       // Navigate to publication homepage
       navigate(`/publications/${invitation.publication.id}`);
-    } catch (err) {
+    } catch (error_) {
       logger.error(
         'Failed to accept invitation',
-        err instanceof Error ? err : new Error(String(err))
+        error_ instanceof Error ? error_ : new Error(String(error_))
       );
-      setError(err instanceof Error ? err.message : 'Failed to accept invitation');
+      setError(error_ instanceof Error ? error_.message : 'Failed to accept invitation');
     } finally {
       setProcessing(false);
     }
@@ -246,12 +246,12 @@ export function PublicationInvite() {
 
       // Navigate to home
       navigate('/');
-    } catch (err) {
+    } catch (error_) {
       logger.error(
         'Failed to decline invitation',
-        err instanceof Error ? err : new Error(String(err))
+        error_ instanceof Error ? error_ : new Error(String(error_))
       );
-      setError(err instanceof Error ? err.message : 'Failed to decline invitation');
+      setError(error_ instanceof Error ? error_.message : 'Failed to decline invitation');
     } finally {
       setProcessing(false);
     }

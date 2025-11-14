@@ -32,11 +32,11 @@ import {
 import { Separator } from '../../ui/separator';
 import { cn } from '../../../lib/utils';
 
-interface EditorToolbarProps {
+interface EditorToolbarProperties {
   editor: Editor;
 }
 
-export function EditorToolbar({ editor }: EditorToolbarProps) {
+export function EditorToolbar({ editor }: EditorToolbarProperties) {
   const ToolbarButton = ({
     icon: Icon,
     onClick,
@@ -171,7 +171,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
       <ToolbarButton
         icon={LinkIcon}
         onClick={() => {
-          const url = window.prompt('Enter URL:');
+          const url = globalThis.prompt('Enter URL:');
           if (url) {
             editor.chain().focus().setLink({ href: url }).run();
           }
@@ -182,7 +182,7 @@ export function EditorToolbar({ editor }: EditorToolbarProps) {
       <ToolbarButton
         icon={ImageIcon}
         onClick={() => {
-          const url = window.prompt('Enter image URL:');
+          const url = globalThis.prompt('Enter image URL:');
           if (url) {
             editor.chain().focus().setImage({ src: url }).run();
           }

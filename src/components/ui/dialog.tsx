@@ -17,13 +17,13 @@ function useDialog() {
   return context;
 }
 
-interface DialogProps {
+interface DialogProperties {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
 }
 
-export function Dialog({ open = false, onOpenChange, children }: DialogProps) {
+export function Dialog({ open = false, onOpenChange, children }: DialogProperties) {
   return (
     <DialogContext.Provider value={{ open, onOpenChange: onOpenChange || (() => {}) }}>
       {children}
@@ -31,20 +31,16 @@ export function Dialog({ open = false, onOpenChange, children }: DialogProps) {
   );
 }
 
-interface DialogContentProps {
+interface DialogContentProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function DialogContent({ children, className }: DialogContentProps) {
+export function DialogContent({ children, className }: DialogContentProperties) {
   const { open, onOpenChange } = useDialog();
 
   React.useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = open ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -87,12 +83,12 @@ export function DialogContent({ children, className }: DialogContentProps) {
   );
 }
 
-interface DialogHeaderProps {
+interface DialogHeaderProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function DialogHeader({ children, className }: DialogHeaderProps) {
+export function DialogHeader({ children, className }: DialogHeaderProperties) {
   return (
     <div className={cn("flex flex-col space-y-1.5 text-center sm:text-left p-6", className)}>
       {children}
@@ -100,12 +96,12 @@ export function DialogHeader({ children, className }: DialogHeaderProps) {
   );
 }
 
-interface DialogFooterProps {
+interface DialogFooterProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function DialogFooter({ children, className }: DialogFooterProps) {
+export function DialogFooter({ children, className }: DialogFooterProperties) {
   return (
     <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 p-6", className)}>
       {children}
@@ -113,12 +109,12 @@ export function DialogFooter({ children, className }: DialogFooterProps) {
   );
 }
 
-interface DialogTitleProps {
+interface DialogTitleProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function DialogTitle({ children, className }: DialogTitleProps) {
+export function DialogTitle({ children, className }: DialogTitleProperties) {
   return (
     <h2 className={cn("text-lg font-semibold leading-none tracking-tight", className)}>
       {children}
@@ -126,12 +122,12 @@ export function DialogTitle({ children, className }: DialogTitleProps) {
   );
 }
 
-interface DialogDescriptionProps {
+interface DialogDescriptionProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function DialogDescription({ children, className }: DialogDescriptionProps) {
+export function DialogDescription({ children, className }: DialogDescriptionProperties) {
   return (
     <p className={cn("text-sm text-gray-500 dark:text-gray-400", className)}>
       {children}

@@ -16,12 +16,12 @@ import { Clock, Calendar } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '../../ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 
-interface BlogHeroProps {
+interface BlogHeroProperties {
   post: BlogPost;
   onFollowClick?: () => void;
 }
 
-export function BlogHero({ post, onFollowClick }: BlogHeroProps) {
+export function BlogHero({ post, onFollowClick }: BlogHeroProperties) {
   return (
     <section className="relative mb-12">
       {/* Cover Image (optional) */}

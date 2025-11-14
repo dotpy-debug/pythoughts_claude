@@ -3,7 +3,7 @@ import { X, StickyNote, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Highlight } from '../../lib/supabase';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 
-interface HighlightsModalProps {
+interface HighlightsModalProperties {
   highlights: Highlight[];
   onClose: () => void;
   onUpdateHighlight: (highlightId: string, updates: { note?: string; is_public?: boolean }) => void;
@@ -23,7 +23,7 @@ export function HighlightsModal({
   onClose,
   onUpdateHighlight,
   onDeleteHighlight,
-}: HighlightsModalProps) {
+}: HighlightsModalProperties) {
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [noteValue, setNoteValue] = useState('');
 

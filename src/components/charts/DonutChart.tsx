@@ -1,11 +1,11 @@
-interface DonutChartProps {
+interface DonutChartProperties {
   data: { label: string; value: number; color?: string }[];
   size?: number;
   centerLabel?: string;
   centerValue?: string;
 }
 
-export function DonutChart({ data, size = 200, centerLabel, centerValue }: DonutChartProps) {
+export function DonutChart({ data, size = 200, centerLabel, centerValue }: DonutChartProperties) {
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500 font-mono text-sm">

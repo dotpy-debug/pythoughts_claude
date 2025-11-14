@@ -196,8 +196,8 @@ export class SpamDetector {
     }
 
     // Check for repeated phrases
-    for (let i = 0; i < words.length - 2; i++) {
-      const phrase = `${words[i]} ${words[i + 1]} ${words[i + 2]}`;
+    for (let index = 0; index < words.length - 2; index++) {
+      const phrase = `${words[index]} ${words[index + 1]} ${words[index + 2]}`;
       const phraseCount = content.toLowerCase().split(phrase).length - 1;
       if (phraseCount > 2) {
         return true;

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { cn } from '../../lib/utils';
 
-type CardProps = {
+type CardProperties = {
   className?: string;
   children: ReactNode;
   /**
@@ -15,32 +15,32 @@ type CardProps = {
   onClick?: () => void;
 };
 
-type CardHeaderProps = {
+type CardHeaderProperties = {
   className?: string;
   children: ReactNode;
 };
 
-type CardTitleProps = {
+type CardTitleProperties = {
   className?: string;
   children: ReactNode;
 };
 
-type CardDescriptionProps = {
+type CardDescriptionProperties = {
   className?: string;
   children: ReactNode;
 };
 
-type CardContentProps = {
+type CardContentProperties = {
   className?: string;
   children: ReactNode;
 };
 
-type CardFooterProps = {
+type CardFooterProperties = {
   className?: string;
   children: ReactNode;
 };
 
-export function ShadcnCard({ className, children, hover = false, onClick }: CardProps) {
+export function ShadcnCard({ className, children, hover = false, onClick }: CardProperties) {
   return (
     <div
       className={cn(
@@ -69,7 +69,7 @@ export function ShadcnCard({ className, children, hover = false, onClick }: Card
   );
 }
 
-export function ShadcnCardHeader({ className, children }: CardHeaderProps) {
+export function ShadcnCardHeader({ className, children }: CardHeaderProperties) {
   return (
     <div className={cn('flex flex-col space-y-1.5 p-6', className)}>
       {children}
@@ -77,7 +77,7 @@ export function ShadcnCardHeader({ className, children }: CardHeaderProps) {
   );
 }
 
-export function ShadcnCardTitle({ className, children }: CardTitleProps) {
+export function ShadcnCardTitle({ className, children }: CardTitleProperties) {
   return (
     <h3
       className={cn(
@@ -90,7 +90,7 @@ export function ShadcnCardTitle({ className, children }: CardTitleProps) {
   );
 }
 
-export function ShadcnCardDescription({ className, children }: CardDescriptionProps) {
+export function ShadcnCardDescription({ className, children }: CardDescriptionProperties) {
   return (
     <p className={cn('text-sm text-gray-400 font-mono', className)}>
       {children}
@@ -98,11 +98,11 @@ export function ShadcnCardDescription({ className, children }: CardDescriptionPr
   );
 }
 
-export function ShadcnCardContent({ className, children }: CardContentProps) {
+export function ShadcnCardContent({ className, children }: CardContentProperties) {
   return <div className={cn('p-6 pt-0', className)}>{children}</div>;
 }
 
-export function ShadcnCardFooter({ className, children }: CardFooterProps) {
+export function ShadcnCardFooter({ className, children }: CardFooterProperties) {
   return (
     <div className={cn('flex items-center p-6 pt-0', className)}>
       {children}

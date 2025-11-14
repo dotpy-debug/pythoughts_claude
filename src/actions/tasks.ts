@@ -64,11 +64,7 @@ export async function getTasks(filters?: TaskFilters): Promise<TaskWithDetails[]
     }
 
     if (filters?.has_due_date !== undefined) {
-      if (filters.has_due_date) {
-        query = query.not('due_date', 'is', null);
-      } else {
-        query = query.is('due_date', null);
-      }
+      query = filters.has_due_date ? query.not('due_date', 'is', null) : query.is('due_date', null);
     }
 
     if (filters?.overdue) {
@@ -400,11 +396,11 @@ export async function getTasksByStatus(filters?: Omit<TaskFilters, 'status'>): P
       archived: [] as TaskWithDetails[],
     };
 
-    tasks.forEach(task => {
+    for (const task of tasks) {
       if (task.status in grouped) {
         grouped[task.status as keyof typeof grouped].push(task);
       }
-    });
+    }
 
     return grouped;
   } catch (error) {
@@ -446,7 +442,7 @@ export async function getTaskStats(userId?: string): Promise<{
       overdue: 0,
     };
 
-    data.forEach(task => {
+    for (const task of data) {
       if (task.status === 'todo') stats.todo++;
       if (task.status === 'in_progress') stats.in_progress++;
       if (task.status === 'completed') stats.completed++;
@@ -454,7 +450,7 @@ export async function getTaskStats(userId?: string): Promise<{
       if (task.due_date && new Date(task.due_date) < now && task.status !== 'completed') {
         stats.overdue++;
       }
-    });
+    }
 
     return stats;
   } catch (error) {

@@ -14,15 +14,14 @@ import { BlogComment } from '../../../types/blog';
 import { Avatar, AvatarImage, AvatarFallback } from '../../ui/avatar';
 import { formatDistanceToNow } from 'date-fns';
 
-interface CommentsPanelProps {
+interface CommentsPanelProperties {
   postId: string;
   className?: string;
 }
 
-export function CommentsPanel({ postId, className }: CommentsPanelProps) {
+export function CommentsPanel({ postId, className }: CommentsPanelProperties) {
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [_newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,7 +53,6 @@ export function CommentsPanel({ postId, className }: CommentsPanelProps) {
       // const newComment = await createComment(postId, content, parentId);
       // setComments([...comments, newComment]);
 
-      setNewComment('');
       setReplyingTo(null);
     } catch (error) {
       console.error('Failed to submit comment:', error);
@@ -162,7 +160,7 @@ export function CommentsPanel({ postId, className }: CommentsPanelProps) {
           <div className="text-center text-[#E6EDF3]/60 py-8">
             Loading comments...
           </div>
-        ) : comments.length === 0 ? (
+        ) : (comments.length === 0 ? (
           <div className="text-center text-[#E6EDF3]/60 py-8">
             No comments yet. Be the first to share your thoughts!
           </div>
@@ -172,13 +170,13 @@ export function CommentsPanel({ postId, className }: CommentsPanelProps) {
               .filter((c) => !c.parent_id)
               .map((comment) => renderComment(comment))}
           </div>
-        )}
+        ))}
       </div>
     </section>
   );
 }
 
-interface CommentFormProps {
+interface CommentFormProperties {
   placeholder: string;
   onSubmit: (content: string) => void;
   onCancel?: () => void;
@@ -190,7 +188,7 @@ function CommentForm({
   onSubmit,
   onCancel,
   autoFocus,
-}: CommentFormProps) {
+}: CommentFormProperties) {
   const [content, setContent] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {

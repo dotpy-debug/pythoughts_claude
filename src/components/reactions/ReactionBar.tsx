@@ -3,7 +3,7 @@ import { supabase, Reaction } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { EmojiReactionPicker } from './EmojiReactionPicker';
 
-type ReactionBarProps = {
+type ReactionBarProperties = {
   postId?: string;
   commentId?: string;
 };
@@ -23,7 +23,7 @@ const emojiMap: Record<string, string> = {
   rocket: '🚀',
 };
 
-export function ReactionBar({ postId, commentId }: ReactionBarProps) {
+export function ReactionBar({ postId, commentId }: ReactionBarProperties) {
   const { user } = useAuth();
   const [reactions, setReactions] = useState<Reaction[]>([]);
 
@@ -50,9 +50,9 @@ export function ReactionBar({ postId, commentId }: ReactionBarProps) {
     const table = 'reactions';
     const filter = postId
       ? `post_id=eq.${postId}`
-      : commentId
+      : (commentId
       ? `comment_id=eq.${commentId}`
-      : '';
+      : '');
 
     const channel = supabase
       .channel(`reactions:${postId || commentId}`)
@@ -88,19 +88,15 @@ export function ReactionBar({ postId, commentId }: ReactionBarProps) {
         await supabase.from('reactions').delete().eq('id', existingReaction.id);
       } else {
         const userReaction = reactions.find((r) => r.user_id === user.id);
-        if (userReaction) {
-          await supabase
+        await (userReaction ? supabase
             .from('reactions')
             .update({ reaction_type: type })
-            .eq('id', userReaction.id);
-        } else {
-          await supabase.from('reactions').insert({
+            .eq('id', userReaction.id) : supabase.from('reactions').insert({
             user_id: user.id,
             post_id: postId || null,
             comment_id: commentId || null,
             reaction_type: type,
-          });
-        }
+          }));
       }
 
       await loadReactions();
@@ -110,9 +106,9 @@ export function ReactionBar({ postId, commentId }: ReactionBarProps) {
   };
 
   const reactionCounts: Record<string, number> = {};
-  reactions.forEach((reaction) => {
+  for (const reaction of reactions) {
     reactionCounts[reaction.reaction_type] = (reactionCounts[reaction.reaction_type] || 0) + 1;
-  });
+  }
 
   const userReactions = user ? reactions.filter((r) => r.user_id === user.id).map((r) => r.reaction_type) : [];
 

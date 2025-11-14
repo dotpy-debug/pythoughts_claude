@@ -91,9 +91,9 @@ export function getCORSHeaders(origin?: string): Record<string, string> {
  * Apply security headers to a Response object (for service workers/middleware)
  */
 export function applySecurityHeaders(headers: Headers): Headers {
-  Object.entries(securityHeaders).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(securityHeaders)) {
     headers.set(key, value);
-  });
+  }
   return headers;
 }
 
@@ -120,17 +120,21 @@ export function isCSPCompliant(resourceUrl: string, directive: string): boolean 
 
     // Check against CSP directives
     switch (directive) {
-      case 'script-src':
-        return url.hostname === window.location.hostname || url.hostname === 'cdn.jsdelivr.net';
-      case 'img-src':
+      case 'script-src': {
+        return url.hostname === globalThis.location.hostname || url.hostname === 'cdn.jsdelivr.net';
+      }
+      case 'img-src': {
         return url.protocol === 'https:' || url.protocol === 'data:';
-      case 'connect-src':
+      }
+      case 'connect-src': {
         return (
-          url.hostname === window.location.hostname ||
+          url.hostname === globalThis.location.hostname ||
           url.hostname.endsWith('.supabase.co')
         );
-      default:
+      }
+      default: {
         return false;
+      }
     }
   } catch {
     return false;

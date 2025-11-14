@@ -5,8 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Profile, UserProfileExtended, UserSkill, Post } from '../lib/supabase';
 import { ShadcnCard, ShadcnCardContent } from '../components/ui/ShadcnCard';
 
-const UserProfileCard = lazy(() => import('../components/profile/UserProfileCard').then(mod => ({ default: mod.UserProfileCard })));
-const PostList = lazy(() => import('../components/posts/PostList').then(mod => ({ default: mod.PostList })));
+const UserProfileCard = lazy(() => import('../components/profile/UserProfileCard').then(module_ => ({ default: module_.UserProfileCard })));
+const PostList = lazy(() => import('../components/posts/PostList').then(module_ => ({ default: module_.PostList })));
 
 type UserStats = {
   totalViews: number;

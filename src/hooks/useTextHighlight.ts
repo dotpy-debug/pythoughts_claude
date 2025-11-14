@@ -73,7 +73,7 @@ export function useTextHighlight(postId: string | undefined) {
 
         if (error) throw error;
 
-        setHighlights((prev) => [...prev, data]);
+        setHighlights((previous) => [...previous, data]);
         logger.info('Highlight created', { highlightId: data.id });
         return data;
       } catch (error) {
@@ -98,8 +98,8 @@ export function useTextHighlight(postId: string | undefined) {
 
         if (error) throw error;
 
-        setHighlights((prev) =>
-          prev.map((h) => (h.id === highlightId ? { ...h, ...updates } : h))
+        setHighlights((previous) =>
+          previous.map((h) => (h.id === highlightId ? { ...h, ...updates } : h))
         );
         logger.info('Highlight updated', { highlightId });
         return true;
@@ -125,7 +125,7 @@ export function useTextHighlight(postId: string | undefined) {
 
         if (error) throw error;
 
-        setHighlights((prev) => prev.filter((h) => h.id !== highlightId));
+        setHighlights((previous) => previous.filter((h) => h.id !== highlightId));
         logger.info('Highlight deleted', { highlightId });
         return true;
       } catch (error) {
@@ -138,7 +138,7 @@ export function useTextHighlight(postId: string | undefined) {
 
   // Handle text selection
   const handleTextSelection = useCallback(() => {
-    const windowSelection = window.getSelection();
+    const windowSelection = globalThis.getSelection();
     if (!windowSelection || windowSelection.rangeCount === 0) {
       setSelection(null);
       return;

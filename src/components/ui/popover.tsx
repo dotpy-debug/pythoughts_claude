@@ -17,17 +17,17 @@ function usePopoverContext() {
   return context;
 }
 
-interface PopoverProps {
+interface PopoverProperties {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
 }
 
-export function Popover({ open: controlledOpen, onOpenChange, children }: PopoverProps) {
+export function Popover({ open: controlledOpen, onOpenChange, children }: PopoverProperties) {
   const [internalOpen, setInternalOpen] = React.useState(false);
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const triggerReference = React.useRef<HTMLButtonElement>(null);
 
-  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const open = controlledOpen === undefined ? internalOpen : controlledOpen;
   const handleOpenChange = (newOpen: boolean) => {
     if (controlledOpen === undefined) {
       setInternalOpen(newOpen);
@@ -36,20 +36,20 @@ export function Popover({ open: controlledOpen, onOpenChange, children }: Popove
   };
 
   return (
-    <PopoverContext.Provider value={{ open, onOpenChange: handleOpenChange, triggerRef }}>
+    <PopoverContext.Provider value={{ open, onOpenChange: handleOpenChange, triggerRef: triggerReference }}>
       <div className="relative inline-block">{children}</div>
     </PopoverContext.Provider>
   );
 }
 
-interface PopoverTriggerProps {
+interface PopoverTriggerProperties {
   children: React.ReactNode;
   asChild?: boolean;
   className?: string;
 }
 
-export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProps>(
-  ({ children, asChild, className }, ref) => {
+export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTriggerProperties>(
+  ({ children, asChild, className }, reference) => {
     const { open, onOpenChange, triggerRef } = usePopoverContext();
 
     const handleClick = () => {
@@ -59,7 +59,7 @@ export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTrigger
     if (asChild && React.isValidElement(children)) {
       return React.cloneElement(children, {
         ...children.props,
-        ref: ref || triggerRef,
+        ref: reference || triggerRef,
         onClick: (e: React.MouseEvent) => {
           handleClick();
           children.props.onClick?.(e);
@@ -70,7 +70,7 @@ export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTrigger
     return (
       <button
         type="button"
-        ref={ref || triggerRef}
+        ref={reference || triggerRef}
         onClick={handleClick}
         className={cn("inline-flex items-center justify-center", className)}
       >
@@ -82,22 +82,22 @@ export const PopoverTrigger = React.forwardRef<HTMLButtonElement, PopoverTrigger
 
 PopoverTrigger.displayName = "PopoverTrigger";
 
-interface PopoverContentProps {
+interface PopoverContentProperties {
   children: React.ReactNode;
   className?: string;
   align?: "start" | "center" | "end";
   sideOffset?: number;
 }
 
-export function PopoverContent({ children, className, align = "center", sideOffset = 4 }: PopoverContentProps) {
+export function PopoverContent({ children, className, align = "center", sideOffset = 4 }: PopoverContentProperties) {
   const { open, onOpenChange, triggerRef } = usePopoverContext();
-  const contentRef = React.useRef<HTMLDivElement>(null);
+  const contentReference = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        contentRef.current &&
-        !contentRef.current.contains(event.target as Node) &&
+        contentReference.current &&
+        !contentReference.current.contains(event.target as Node) &&
         triggerRef.current &&
         !triggerRef.current.contains(event.target as Node)
       ) {
@@ -124,7 +124,7 @@ export function PopoverContent({ children, className, align = "center", sideOffs
 
   return (
     <div
-      ref={contentRef}
+      ref={contentReference}
       style={{ marginTop: `${sideOffset}px` }}
       className={cn(
         "absolute z-50 w-72 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 shadow-lg outline-none animate-fade-in",

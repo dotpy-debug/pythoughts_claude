@@ -74,7 +74,7 @@ export function AnalyticsDashboard() {
         const blob = new Blob([result.data], {
           type: format === 'json' ? 'application/json' : 'text/csv',
         });
-        const url = window.URL.createObjectURL(blob);
+        const url = globalThis.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `analytics-${new Date().toISOString()}.${format}`;
@@ -218,10 +218,10 @@ export function AnalyticsDashboard() {
             <h2 className="text-lg font-semibold text-white mb-4">Top Categories</h2>
             {analytics.topCategories.length > 0 ? (
               <div className="space-y-3">
-                {analytics.topCategories.map((cat, i) => (
-                  <div key={i} className="flex items-center justify-between">
+                {analytics.topCategories.map((cat, index) => (
+                  <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <span className="text-gray-500 font-mono text-sm">#{i + 1}</span>
+                      <span className="text-gray-500 font-mono text-sm">#{index + 1}</span>
                       <span className="text-gray-200">{cat.label}</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -242,10 +242,10 @@ export function AnalyticsDashboard() {
             <h2 className="text-lg font-semibold text-white mb-4">Top Tags</h2>
             {analytics.topTags.length > 0 ? (
               <div className="space-y-3">
-                {analytics.topTags.map((tag, i) => (
-                  <div key={i} className="flex items-center justify-between">
+                {analytics.topTags.map((tag, index) => (
+                  <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <span className="text-gray-500 font-mono text-sm">#{i + 1}</span>
+                      <span className="text-gray-500 font-mono text-sm">#{index + 1}</span>
                       <span className="text-gray-200">#{tag.label}</span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -287,9 +287,9 @@ export function AnalyticsDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
-                  {analytics.trendingPosts.map((post, i) => (
+                  {analytics.trendingPosts.map((post, index) => (
                     <tr key={post.id} className="hover:bg-gray-800/50">
-                      <td className="py-3 pr-4 text-gray-500 font-mono text-sm">{i + 1}</td>
+                      <td className="py-3 pr-4 text-gray-500 font-mono text-sm">{index + 1}</td>
                       <td className="py-3 pr-4 text-gray-200">{post.title}</td>
                       <td className="py-3 pr-4 text-center text-gray-400">{post.view_count}</td>
                       <td className="py-3 pr-4 text-center text-gray-400">{post.vote_count}</td>

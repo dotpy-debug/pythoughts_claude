@@ -1,9 +1,9 @@
-interface BarChartProps {
+interface BarChartProperties {
   data: { label: string; value: number; color?: string }[];
   height?: number;
 }
 
-export function BarChart({ data, height: _height = 200 }: BarChartProps) {
+export function BarChart({ data, height: _height = 200 }: BarChartProperties) {
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500 font-mono text-sm">

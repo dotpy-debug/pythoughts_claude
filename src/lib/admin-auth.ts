@@ -151,7 +151,7 @@ export async function isUserSuspended(userId: string): Promise<boolean> {
  * @param params - Activity logging parameters
  * @returns Promise<string | null> - The activity log ID or null on error
  */
-export async function logAdminActivity(params: {
+export async function logAdminActivity(parameters: {
   adminId: string;
   actionType: string;
   targetType?: string;
@@ -164,31 +164,31 @@ export async function logAdminActivity(params: {
     const { data, error } = await supabase
       .from('admin_activity_logs')
       .insert({
-        admin_id: params.adminId,
-        action_type: params.actionType,
-        target_type: params.targetType ?? '',
-        target_id: params.targetId ?? null,
-        details: params.details ?? {},
-        ip_address: params.ipAddress ?? '',
-        user_agent: params.userAgent ?? '',
+        admin_id: parameters.adminId,
+        action_type: parameters.actionType,
+        target_type: parameters.targetType ?? '',
+        target_id: parameters.targetId ?? null,
+        details: parameters.details ?? {},
+        ip_address: parameters.ipAddress ?? '',
+        user_agent: parameters.userAgent ?? '',
       })
       .select('id')
       .single();
 
     if (error) {
-      logger.error('Error logging admin activity', { errorDetails: error, params });
+      logger.error('Error logging admin activity', { errorDetails: error, params: parameters });
       return null;
     }
 
     logger.info('Admin activity logged', {
       logId: data.id,
-      adminId: params.adminId,
-      actionType: params.actionType,
+      adminId: parameters.adminId,
+      actionType: parameters.actionType,
     });
 
     return data.id;
   } catch (error) {
-    logger.error('Exception logging admin activity', { errorDetails: error, params });
+    logger.error('Exception logging admin activity', { errorDetails: error, params: parameters });
     return null;
   }
 }

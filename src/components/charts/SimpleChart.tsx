@@ -5,22 +5,22 @@
  * No external dependencies required
  */
 
-interface LineChartProps {
+interface LineChartProperties {
   data: { label: string; value: number }[];
   height?: number;
   color?: string;
 }
 
-export function LineChart({ data, height = 200, color = '#f97316' }: LineChartProps) {
+export function LineChart({ data, height = 200, color = '#f97316' }: LineChartProperties) {
   if (data.length === 0) return null;
 
   const maxValue = Math.max(...data.map((d) => d.value));
-  const points = data.map((d, i) => ({
-    x: (i / (data.length - 1)) * 100,
+  const points = data.map((d, index) => ({
+    x: (index / (data.length - 1)) * 100,
     y: 100 - (d.value / maxValue) * 80,
   }));
 
-  const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  const pathData = points.map((p, index) => `${index === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
   return (
     <div className="w-full">
@@ -45,9 +45,9 @@ export function LineChart({ data, height = 200, color = '#f97316' }: LineChartPr
           vectorEffect="non-scaling-stroke"
         />
         {/* Points */}
-        {points.map((p, i) => (
+        {points.map((p, index) => (
           <circle
-            key={i}
+            key={index}
             cx={p.x}
             cy={p.y}
             r="1"
@@ -58,20 +58,20 @@ export function LineChart({ data, height = 200, color = '#f97316' }: LineChartPr
       </svg>
       {/* Labels */}
       <div className="flex justify-between mt-2 text-xs text-gray-500">
-        {data.map((d, i) => (
-          <span key={i}>{d.label}</span>
+        {data.map((d, index) => (
+          <span key={index}>{d.label}</span>
         ))}
       </div>
     </div>
   );
 }
 
-interface BarChartProps {
+interface BarChartProperties {
   data: { label: string; value: number; color?: string }[];
   height?: number;
 }
 
-export function BarChart({ data, height = 200 }: BarChartProps) {
+export function BarChart({ data, height = 200 }: BarChartProperties) {
   if (data.length === 0) return null;
 
   const maxValue = Math.max(...data.map((d) => d.value));
@@ -79,8 +79,8 @@ export function BarChart({ data, height = 200 }: BarChartProps) {
   return (
     <div className="w-full" style={{ height: `${height}px` }}>
       <div className="flex items-end justify-around h-full gap-2">
-        {data.map((item, i) => (
-          <div key={i} className="flex-1 flex flex-col items-center">
+        {data.map((item, index) => (
+          <div key={index} className="flex-1 flex flex-col items-center">
             <div className="w-full flex flex-col justify-end h-full">
               <div
                 className="w-full rounded-t transition-all duration-300 hover:opacity-80"
@@ -101,18 +101,18 @@ export function BarChart({ data, height = 200 }: BarChartProps) {
   );
 }
 
-interface PieChartProps {
+interface PieChartProperties {
   data: { label: string; value: number; color?: string }[];
   size?: number;
 }
 
-export function PieChart({ data, size: _size = 200 }: PieChartProps) {
+export function PieChart({ data, size: _size = 200 }: PieChartProperties) {
   if (data.length === 0) return null;
 
   const total = data.reduce((sum, d) => sum + d.value, 0);
   let currentAngle = -90;
 
-  const slices = data.map((item, i) => {
+  const slices = data.map((item, index) => {
     const percentage = (item.value / total) * 100;
     const angle = (percentage / 100) * 360;
     const startAngle = currentAngle;
@@ -129,7 +129,7 @@ export function PieChart({ data, size: _size = 200 }: PieChartProps) {
     const largeArc = angle > 180 ? 1 : 0;
 
     const colors = ['#f97316', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
-    const color = item.color || colors[i % colors.length];
+    const color = item.color || colors[index % colors.length];
 
     return {
       path: `M 50 50 L ${x1} ${y1} A 45 45 0 ${largeArc} 1 ${x2} ${y2} Z`,
@@ -143,8 +143,8 @@ export function PieChart({ data, size: _size = 200 }: PieChartProps) {
   return (
     <div className="flex items-center gap-6">
       <svg viewBox="0 0 100 100" className="w-full max-w-[200px]">
-        {slices.map((slice, i) => (
-          <g key={i}>
+        {slices.map((slice, index) => (
+          <g key={index}>
             <title>{`${slice.label}: ${slice.value} (${slice.percentage}%)`}</title>
             <path
               d={slice.path}
@@ -155,8 +155,8 @@ export function PieChart({ data, size: _size = 200 }: PieChartProps) {
         ))}
       </svg>
       <div className="flex flex-col gap-2">
-        {slices.map((slice, i) => (
-          <div key={i} className="flex items-center gap-2 text-sm">
+        {slices.map((slice, index) => (
+          <div key={index} className="flex items-center gap-2 text-sm">
             <div
               className="w-3 h-3 rounded-sm"
               style={{ backgroundColor: slice.color }}
@@ -171,7 +171,7 @@ export function PieChart({ data, size: _size = 200 }: PieChartProps) {
   );
 }
 
-interface StatCardProps {
+interface StatCardProperties {
   label: string;
   value: string | number;
   change?: number;
@@ -179,7 +179,7 @@ interface StatCardProps {
   color?: string;
 }
 
-export function StatCard({ label, value, change, icon: Icon, color = 'orange' }: StatCardProps) {
+export function StatCard({ label, value, change, icon: Icon, color = 'orange' }: StatCardProperties) {
   const colorClasses = {
     orange: 'bg-orange-500/10 border-orange-500/20 text-orange-400',
     blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',

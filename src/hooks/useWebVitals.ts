@@ -191,11 +191,11 @@ export function useWebVitals(
   const reportMetric = useCallback(
     (name: string, value: number, rating: string) => {
       // Update state
-      setMetrics((prev) => ({ ...prev, [name.toLowerCase()]: value }));
-      setRatings((prev) => ({ ...prev, [name.toLowerCase()]: rating }));
+      setMetrics((previous) => ({ ...previous, [name.toLowerCase()]: value }));
+      setRatings((previous) => ({ ...previous, [name.toLowerCase()]: rating }));
 
       // Log to logger
-      const emoji = rating === 'good' ? '✅' : rating === 'needs-improvement' ? '⚠️' : '❌';
+      const emoji = rating === 'good' ? '✅' : (rating === 'needs-improvement' ? '⚠️' : '❌');
       const unit = name === 'cls' ? '' : 'ms';
 
       if (logToConsole) {
@@ -212,7 +212,7 @@ export function useWebVitals(
           metric: name,
           value,
           rating,
-          url: window.location.href,
+          url: globalThis.location.href,
         });
       }
 
@@ -228,7 +228,7 @@ export function useWebVitals(
     // LCP (Largest Contentful Paint)
     const lcpObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
-      const lastEntry = entries[entries.length - 1] as LargestContentfulPaintEntry;
+      const lastEntry = entries.at(-1) as LargestContentfulPaintEntry;
       const value = lastEntry.renderTime || lastEntry.loadTime;
       const rating = getLCPRating(value);
       reportMetric('LCP', value, rating);
@@ -236,9 +236,9 @@ export function useWebVitals(
 
     try {
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true } as PerformanceObserverInit);
-    } catch (_e) {
+    } catch (error) {
       // LCP not supported
-      logger.debug('LCP metric not supported in this browser');
+      logger.debug('LCP metric not supported in this browser', { error });
     }
 
     // FID (First Input Delay)
@@ -252,9 +252,9 @@ export function useWebVitals(
 
     try {
       fidObserver.observe({ type: 'first-input', buffered: true } as PerformanceObserverInit);
-    } catch (_e) {
+    } catch (error) {
       // FID not supported
-      logger.debug('FID metric not supported in this browser');
+      logger.debug('FID metric not supported in this browser', { error });
     }
 
     // CLS (Cumulative Layout Shift)
@@ -272,9 +272,9 @@ export function useWebVitals(
 
     try {
       clsObserver.observe({ type: 'layout-shift', buffered: true } as PerformanceObserverInit);
-    } catch (_e) {
+    } catch (error) {
       // CLS not supported
-      logger.debug('CLS metric not supported in this browser');
+      logger.debug('CLS metric not supported in this browser', { error });
     }
 
     // FCP (First Contentful Paint)
@@ -290,9 +290,9 @@ export function useWebVitals(
 
     try {
       fcpObserver.observe({ type: 'paint', buffered: true } as PerformanceObserverInit);
-    } catch (_e) {
+    } catch (error) {
       // FCP not supported
-      logger.debug('FCP metric not supported in this browser');
+      logger.debug('FCP metric not supported in this browser', { error });
     }
 
     // TTFB (Time to First Byte)
@@ -325,9 +325,9 @@ export function useWebVitals(
         buffered: true,
         durationThreshold: 16
       } as PerformanceObserverInit);
-    } catch (_e) {
+    } catch (error) {
       // INP not supported
-      logger.debug('INP metric not supported in this browser');
+      logger.debug('INP metric not supported in this browser', { error });
     }
 
     // Cleanup

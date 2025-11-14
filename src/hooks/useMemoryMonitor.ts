@@ -78,8 +78,8 @@ function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+  const index = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${Number.parseFloat((bytes / Math.pow(k, index)).toFixed(2))} ${sizes[index]}`;
 }
 
 /**
@@ -161,9 +161,9 @@ export function useMemoryMonitor(
     return performanceWithMemory.memory !== undefined;
   });
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastWarningRef = useRef<number>(0);
-  const warningCooldown = 30000; // 30 seconds
+  const intervalReference = useRef<NodeJS.Timeout | null>(null);
+  const lastWarningReference = useRef<number>(0);
+  const warningCooldown = 30_000; // 30 seconds
 
   // Check for memory leaks
   const checkForLeaks = useCallback(
@@ -173,7 +173,7 @@ export function useMemoryMonitor(
       // Get last 6 samples
       const recentSamples = history.slice(-6);
       const firstSample = recentSamples[0];
-      const lastSample = recentSamples[recentSamples.length - 1];
+      const lastSample = recentSamples.at(-1);
 
       // Calculate growth rate (MB per minute)
       const timeDiff = (lastSample.timestamp - firstSample.timestamp) / 1000 / 60; // minutes
@@ -185,8 +185,8 @@ export function useMemoryMonitor(
       if (growthRate > 5) {
         // Check if all samples show growth
         let consistentGrowth = true;
-        for (let i = 1; i < recentSamples.length; i++) {
-          if (recentSamples[i].usedJSHeapSize <= recentSamples[i - 1].usedJSHeapSize) {
+        for (let index = 1; index < recentSamples.length; index++) {
+          if (recentSamples[index].usedJSHeapSize <= recentSamples[index - 1].usedJSHeapSize) {
             consistentGrowth = false;
             break;
           }
@@ -214,8 +214,8 @@ export function useMemoryMonitor(
     if (!newMetrics) return;
 
     setMetrics(newMetrics);
-    setHistory((prev) => {
-      const newHistory = [...prev, newMetrics];
+    setHistory((previous) => {
+      const newHistory = [...previous, newMetrics];
       // Keep last 60 samples (5 minutes of data at 5s intervals)
       if (newHistory.length > 60) {
         newHistory.shift();
@@ -229,7 +229,7 @@ export function useMemoryMonitor(
 
     // Check thresholds
     const now = Date.now();
-    if (now - lastWarningRef.current < warningCooldown) {
+    if (now - lastWarningReference.current < warningCooldown) {
       return; // Cooldown period
     }
 
@@ -255,7 +255,7 @@ export function useMemoryMonitor(
         onWarning(newMetrics, 'critical');
       }
 
-      lastWarningRef.current = now;
+      lastWarningReference.current = now;
     } else if (newMetrics.usedPercentage >= warningThreshold) {
       const warningMessage = 'High memory usage';
       const warningData = {
@@ -277,7 +277,7 @@ export function useMemoryMonitor(
         onWarning(newMetrics, 'warning');
       }
 
-      lastWarningRef.current = now;
+      lastWarningReference.current = now;
     }
   }, [
     checkForLeaks,
@@ -295,18 +295,18 @@ export function useMemoryMonitor(
     updateMetrics();
 
     // Start polling
-    intervalRef.current = setInterval(updateMetrics, interval);
+    intervalReference.current = setInterval(updateMetrics, interval);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+      if (intervalReference.current) {
+        clearInterval(intervalReference.current);
       }
     };
   }, [isSupported, interval, updateMetrics]);
 
   // Force garbage collection (if available)
   const forceGC = useCallback(() => {
-    const windowWithGC = window as WindowWithGC;
+    const windowWithGC = globalThis as WindowWithGC;
 
     if (windowWithGC.gc && typeof windowWithGC.gc === 'function') {
       windowWithGC.gc();

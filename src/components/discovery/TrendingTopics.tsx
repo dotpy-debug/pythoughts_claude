@@ -5,12 +5,12 @@ import { getTrendingTags } from '../../actions/tags';
 import type { TagWithStats } from '../../actions/tags';
 import { logger } from '../../lib/logger';
 
-interface TrendingTopicsProps {
+interface TrendingTopicsProperties {
   limit?: number;
   compact?: boolean;
 }
 
-export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsProps) {
+export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsProperties) {
   const navigate = useNavigate();
   const [topics, setTopics] = useState<TagWithStats[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,8 +50,8 @@ export function TrendingTopics({ limit = 5, compact = false }: TrendingTopicsPro
           <h3 className="font-semibold text-gray-100 font-mono">Trending Topics</h3>
         </div>
         <div className="space-y-3">
-          {[...Array(limit)].map((_, i) => (
-            <div key={i} className="animate-pulse">
+          {[...new Array(limit)].map((_, index) => (
+            <div key={index} className="animate-pulse">
               <div className="h-4 bg-gray-800 rounded w-3/4"></div>
             </div>
           ))}

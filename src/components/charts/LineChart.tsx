@@ -1,11 +1,11 @@
-interface LineChartProps {
+interface LineChartProperties {
   data: { label: string; value: number }[];
   height?: number;
   color?: string;
   showGrid?: boolean;
 }
 
-export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = true }: LineChartProps) {
+export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = true }: LineChartProperties) {
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500 font-mono text-sm">
@@ -22,19 +22,19 @@ export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = tr
   const chartWidth = width - padding.left / 5 - padding.right / 5; // adjust for percentage
 
   // Calculate points for the line
-  const points = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * chartWidth + (padding.left / 5);
+  const points = data.map((d, index) => {
+    const x = (index / (data.length - 1)) * chartWidth + (padding.left / 5);
     const y = chartHeight - (d.value / maxValue) * chartHeight + padding.top;
     return { x, y, value: d.value, label: d.label };
   });
 
   // Create path string
-  const pathD = points.map((p, i) =>
-    `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`
+  const pathD = points.map((p, index) =>
+    `${index === 0 ? 'M' : 'L'} ${p.x} ${p.y}`
   ).join(' ');
 
   // Create area path (filled under line)
-  const areaD = `M ${points[0].x} ${chartHeight + padding.top} L ${points[0].x} ${points[0].y} ${pathD.substring(2)} L ${points[points.length - 1].x} ${chartHeight + padding.top} Z`;
+  const areaD = `M ${points[0].x} ${chartHeight + padding.top} L ${points[0].x} ${points[0].y} ${pathD.slice(2)} L ${points.at(-1).x} ${chartHeight + padding.top} Z`;
 
   // Grid lines
   const gridLines = showGrid ? [0, 0.25, 0.5, 0.75, 1].map(fraction => {
@@ -52,8 +52,8 @@ export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = tr
         className="overflow-visible"
       >
         {/* Grid lines */}
-        {showGrid && gridLines.map((line, i) => (
-          <g key={i}>
+        {showGrid && gridLines.map((line, index) => (
+          <g key={index}>
             <line
               x1={padding.left / 5}
               y1={line.y}
@@ -94,8 +94,8 @@ export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = tr
         />
 
         {/* Data points */}
-        {points.map((point, i) => (
-          <g key={i}>
+        {points.map((point, index) => (
+          <g key={index}>
             <circle
               cx={point.x}
               cy={point.y}
@@ -109,9 +109,9 @@ export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = tr
         ))}
 
         {/* X-axis labels */}
-        {points.map((point, i) => (
+        {points.map((point, index) => (
           <text
-            key={i}
+            key={index}
             x={point.x}
             y={height - 5}
             fill="#6b7280"
@@ -119,7 +119,7 @@ export function LineChart({ data, height = 200, color = '#00ff9f', showGrid = tr
             fontFamily="monospace"
             textAnchor="middle"
           >
-            {data[i].label}
+            {data[index].label}
           </text>
         ))}
       </svg>

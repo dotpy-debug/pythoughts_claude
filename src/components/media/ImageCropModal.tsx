@@ -24,7 +24,7 @@ interface CroppedArea {
 
 type CroppedAreaPixels = CroppedArea;
 
-interface ImageCropModalProps {
+interface ImageCropModalProperties {
   /**
    * Image URL or data URL to crop
    */
@@ -84,15 +84,15 @@ const ASPECT_RATIOS: Record<AspectRatioPreset, AspectRatio> = {
  * Helper function to create cropped image from canvas
  */
 async function createCroppedImage(
-  imageSrc: string,
+  imageSource: string,
   croppedAreaPixels: CroppedAreaPixels,
   outputQuality: number = 0.92
 ): Promise<Blob> {
-  const image = await loadImage(imageSrc);
+  const image = await loadImage(imageSource);
   const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  const context = canvas.getContext('2d');
 
-  if (!ctx) {
+  if (!context) {
     throw new Error('Failed to get canvas context');
   }
 
@@ -101,7 +101,7 @@ async function createCroppedImage(
   canvas.height = croppedAreaPixels.height;
 
   // Draw cropped image
-  ctx.drawImage(
+  context.drawImage(
     image,
     croppedAreaPixels.x,
     croppedAreaPixels.y,
@@ -135,7 +135,7 @@ async function createCroppedImage(
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.onload = () => resolve(image);
+    image.addEventListener('load', () => resolve(image));
     image.onerror = reject;
     image.src = url;
   });
@@ -172,7 +172,7 @@ export function ImageCropModal({
   initialAspect = 'free',
   outputQuality = 0.92,
   className,
-}: ImageCropModalProps) {
+}: ImageCropModalProperties) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [aspectRatio, setAspectRatio] = useState<AspectRatioPreset>(initialAspect);

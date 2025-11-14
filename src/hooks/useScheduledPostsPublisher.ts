@@ -10,7 +10,7 @@ import { logger } from '../lib/logger';
  * @param enabled - Whether to enable the publisher (default: true)
  */
 export function useScheduledPostsPublisher(intervalMinutes: number = 1, enabled: boolean = true) {
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalReference = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (!enabled) return;
@@ -30,11 +30,11 @@ export function useScheduledPostsPublisher(intervalMinutes: number = 1, enabled:
     checkAndPublish();
 
     // Then run periodically
-    intervalRef.current = setInterval(checkAndPublish, intervalMinutes * 60 * 1000);
+    intervalReference.current = setInterval(checkAndPublish, intervalMinutes * 60 * 1000);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+      if (intervalReference.current) {
+        clearInterval(intervalReference.current);
       }
     };
   }, [intervalMinutes, enabled]);

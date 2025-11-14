@@ -33,7 +33,7 @@ export interface UserStats {
   newFollowers: number;
 }
 
-export interface WeeklyDigestEmailProps {
+export interface WeeklyDigestEmailProperties {
   recipientName: string;
   weekStart: string;
   weekEnd: string;
@@ -54,7 +54,7 @@ export function WeeklyDigestEmail({
   },
   trendingPosts = [],
   unsubscribeUrl = 'https://pythoughts.com/settings/preferences',
-}: WeeklyDigestEmailProps) {
+}: WeeklyDigestEmailProperties) {
   return (
     <Html>
       <Head />

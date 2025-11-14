@@ -20,7 +20,7 @@ function useSelectContext() {
   return context;
 }
 
-interface SelectProps {
+interface SelectProperties {
   value?: string;
   onValueChange?: (value: string) => void;
   children: React.ReactNode;
@@ -28,11 +28,11 @@ interface SelectProps {
   disabled?: boolean;
 }
 
-export function Select({ value: controlledValue, onValueChange, children, defaultValue, disabled }: SelectProps) {
+export function Select({ value: controlledValue, onValueChange, children, defaultValue, disabled }: SelectProperties) {
   const [internalValue, setInternalValue] = React.useState(defaultValue || "");
   const [open, setOpen] = React.useState(false);
 
-  const value = controlledValue !== undefined ? controlledValue : internalValue;
+  const value = controlledValue === undefined ? internalValue : controlledValue;
   const handleValueChange = (newValue: string) => {
     if (controlledValue === undefined) {
       setInternalValue(newValue);
@@ -48,20 +48,20 @@ export function Select({ value: controlledValue, onValueChange, children, defaul
   );
 }
 
-interface SelectTriggerProps {
+interface SelectTriggerProperties {
   children: React.ReactNode;
   className?: string;
   placeholder?: string;
   id?: string;
 }
 
-export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
-  ({ children: _children, className, placeholder, id }, ref) => {
+export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProperties>(
+  ({ children: _children, className, placeholder, id }, reference) => {
     const { value, open, setOpen, disabled } = useSelectContext();
 
     return (
       <button
-        ref={ref}
+        ref={reference}
         type="button"
         id={id}
         disabled={disabled}
@@ -80,27 +80,27 @@ export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerPr
 
 SelectTrigger.displayName = "SelectTrigger";
 
-interface SelectValueProps {
+interface SelectValueProperties {
   placeholder?: string;
 }
 
-export function SelectValue({ placeholder }: SelectValueProps) {
+export function SelectValue({ placeholder }: SelectValueProperties) {
   const { value } = useSelectContext();
   return <span>{value || placeholder || "Select..."}</span>;
 }
 
-interface SelectContentProps {
+interface SelectContentProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function SelectContent({ children, className }: SelectContentProps) {
+export function SelectContent({ children, className }: SelectContentProperties) {
   const { open, setOpen } = useSelectContext();
-  const contentRef = React.useRef<HTMLDivElement>(null);
+  const contentReference = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (contentRef.current && !contentRef.current.contains(event.target as Node)) {
+      if (contentReference.current && !contentReference.current.contains(event.target as Node)) {
         setOpen(false);
       }
     };
@@ -118,7 +118,7 @@ export function SelectContent({ children, className }: SelectContentProps) {
 
   return (
     <div
-      ref={contentRef}
+      ref={contentReference}
       className={cn(
         "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg animate-fade-in",
         className
@@ -129,13 +129,13 @@ export function SelectContent({ children, className }: SelectContentProps) {
   );
 }
 
-interface SelectItemProps {
+interface SelectItemProperties {
   value: string;
   children: React.ReactNode;
   className?: string;
 }
 
-export function SelectItem({ value, children, className }: SelectItemProps) {
+export function SelectItem({ value, children, className }: SelectItemProperties) {
   const { value: selectedValue, onValueChange } = useSelectContext();
   const isSelected = selectedValue === value;
 
@@ -153,20 +153,20 @@ export function SelectItem({ value, children, className }: SelectItemProps) {
   );
 }
 
-interface SelectGroupProps {
+interface SelectGroupProperties {
   children: React.ReactNode;
 }
 
-export function SelectGroup({ children }: SelectGroupProps) {
+export function SelectGroup({ children }: SelectGroupProperties) {
   return <div className="p-1">{children}</div>;
 }
 
-interface SelectLabelProps {
+interface SelectLabelProperties {
   children: React.ReactNode;
   className?: string;
 }
 
-export function SelectLabel({ children, className }: SelectLabelProps) {
+export function SelectLabel({ children, className }: SelectLabelProperties) {
   return (
     <div className={cn("py-1.5 px-2 text-sm font-semibold text-gray-900 dark:text-gray-100", className)}>
       {children}

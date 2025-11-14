@@ -75,8 +75,8 @@ export function TagExploration() {
       if (isFollowing) {
         const result = await unfollowTag(tagId, user.id);
         if (result.success) {
-          setFollowingTags(prev => {
-            const next = new Set(prev);
+          setFollowingTags(previous => {
+            const next = new Set(previous);
             next.delete(tagId);
             return next;
           });
@@ -86,7 +86,7 @@ export function TagExploration() {
       } else {
         const result = await followTag(tagId, user.id);
         if (result.success) {
-          setFollowingTags(prev => new Set(prev).add(tagId));
+          setFollowingTags(previous => new Set(previous).add(tagId));
           // Update local state
           updateTagFollowState(tagId, true);
         }
@@ -97,15 +97,15 @@ export function TagExploration() {
   };
 
   const updateTagFollowState = (tagId: string, isFollowing: boolean) => {
-    setPopularTags(prev =>
-      prev.map(t =>
+    setPopularTags(previous =>
+      previous.map(t =>
         t.id === tagId
           ? { ...t, is_following: isFollowing, follower_count: t.follower_count + (isFollowing ? 1 : -1) }
           : t
       )
     );
-    setTrendingTags(prev =>
-      prev.map(t =>
+    setTrendingTags(previous =>
+      previous.map(t =>
         t.id === tagId
           ? { ...t, is_following: isFollowing, follower_count: t.follower_count + (isFollowing ? 1 : -1) }
           : t
@@ -119,15 +119,15 @@ export function TagExploration() {
 
   const displayTags = searchQuery.trim().length > 0
     ? searchResults
-    : activeTab === 'popular'
+    : (activeTab === 'popular'
     ? popularTags
-    : trendingTags;
+    : trendingTags);
 
   if (loading) {
     return (
       <div className="space-y-4">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-gray-900 border border-gray-700 rounded-lg p-4 animate-pulse">
+        {Array.from({length: 6}).map((_, index) => (
+          <div key={index} className="bg-gray-900 border border-gray-700 rounded-lg p-4 animate-pulse">
             <div className="h-6 bg-gray-800 rounded w-1/3 mb-2"></div>
             <div className="h-4 bg-gray-800 rounded w-2/3"></div>
           </div>

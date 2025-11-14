@@ -1,13 +1,13 @@
 import { X, Keyboard } from 'lucide-react';
 import { getShortcutLabel, KeyboardShortcut } from '../../hooks/useKeyboardShortcuts';
 
-type KeyboardShortcutsModalProps = {
+type KeyboardShortcutsModalProperties = {
   isOpen: boolean;
   onClose: () => void;
   shortcuts: KeyboardShortcut[];
 };
 
-export function KeyboardShortcutsModal({ isOpen, onClose, shortcuts }: KeyboardShortcutsModalProps) {
+export function KeyboardShortcutsModal({ isOpen, onClose, shortcuts }: KeyboardShortcutsModalProperties) {
   if (!isOpen) return null;
 
   // Group shortcuts by category

@@ -13,22 +13,22 @@ export type RateLimitConfig = {
 
 export const CLIENT_RATE_LIMITS = {
   // Post operations
-  POST_CREATE: { maxRequests: 10, windowMs: 60000 }, // 10 posts per minute
-  POST_UPDATE: { maxRequests: 30, windowMs: 60000 }, // 30 updates per minute
-  POST_DELETE: { maxRequests: 5, windowMs: 60000 }, // 5 deletes per minute
+  POST_CREATE: { maxRequests: 10, windowMs: 60_000 }, // 10 posts per minute
+  POST_UPDATE: { maxRequests: 30, windowMs: 60_000 }, // 30 updates per minute
+  POST_DELETE: { maxRequests: 5, windowMs: 60_000 }, // 5 deletes per minute
 
   // Comment operations
-  COMMENT_CREATE: { maxRequests: 30, windowMs: 60000 }, // 30 comments per minute
-  COMMENT_UPDATE: { maxRequests: 50, windowMs: 60000 }, // 50 updates per minute
+  COMMENT_CREATE: { maxRequests: 30, windowMs: 60_000 }, // 30 comments per minute
+  COMMENT_UPDATE: { maxRequests: 50, windowMs: 60_000 }, // 50 updates per minute
 
   // Vote operations
-  VOTE_CREATE: { maxRequests: 100, windowMs: 60000 }, // 100 votes per minute
+  VOTE_CREATE: { maxRequests: 100, windowMs: 60_000 }, // 100 votes per minute
 
   // Report operations
-  REPORT_CREATE: { maxRequests: 5, windowMs: 60000 }, // 5 reports per minute
+  REPORT_CREATE: { maxRequests: 5, windowMs: 60_000 }, // 5 reports per minute
 
   // Search operations
-  SEARCH: { maxRequests: 20, windowMs: 60000 }, // 20 searches per minute
+  SEARCH: { maxRequests: 20, windowMs: 60_000 }, // 20 searches per minute
 } as const;
 
 export type ClientRateLimitKey = keyof typeof CLIENT_RATE_LIMITS;
@@ -173,7 +173,7 @@ export function useRateLimit(limitKey: ClientRateLimitKey) {
    * Wrapper function to rate limit an async operation
    */
   const rateLimitedCall = useCallback(
-    async <T,>(fn: () => Promise<T>): Promise<T> => {
+    async <T,>(function_: () => Promise<T>): Promise<T> => {
       const { allowed, remaining: currentRemaining, resetTime: currentResetTime } = checkLimit();
 
       if (!allowed) {
@@ -183,7 +183,7 @@ export function useRateLimit(limitKey: ClientRateLimitKey) {
         );
       }
 
-      return await fn();
+      return await function_();
     },
     [checkLimit, config.maxRequests]
   );
@@ -201,14 +201,14 @@ export function useRateLimit(limitKey: ClientRateLimitKey) {
 /**
  * Higher-order function to wrap a function with rate limiting
  */
-export function withRateLimit<TArgs extends unknown[], TReturn>(
+export function withRateLimit<TArguments extends unknown[], TReturn>(
   limitKey: ClientRateLimitKey,
-  fn: (...args: TArgs) => Promise<TReturn>
-): (...args: TArgs) => Promise<TReturn> {
+  function_: (...arguments_: TArguments) => Promise<TReturn>
+): (...arguments_: TArguments) => Promise<TReturn> {
   const config = CLIENT_RATE_LIMITS[limitKey];
   const storageKey = `${STORAGE_PREFIX}${limitKey}`;
 
-  return async (...args: TArgs): Promise<TReturn> => {
+  return async (...arguments_: TArguments): Promise<TReturn> => {
     const now = Date.now();
 
     try {
@@ -243,7 +243,7 @@ export function withRateLimit<TArgs extends unknown[], TReturn>(
       localStorage.setItem(storageKey, JSON.stringify(newData));
 
       // Execute the function
-      return await fn(...args);
+      return await function_(...arguments_);
 
     } catch (error) {
       if (error instanceof Error && error.message.includes('Rate limit exceeded')) {
@@ -252,7 +252,7 @@ export function withRateLimit<TArgs extends unknown[], TReturn>(
 
       // On storage error, allow the request (fail open)
       logger.error('Rate limit wrapper error', error as Error);
-      return await fn(...args);
+      return await function_(...arguments_);
     }
   };
 }

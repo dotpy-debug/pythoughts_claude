@@ -17,15 +17,15 @@ import { cn } from '../../../lib/utils';
 import { ScrollArea } from '../../ui/scroll-area';
 import { Sheet, SheetContent, SheetTrigger } from '../../ui/sheet';
 
-interface FloatingTOCProps {
+interface FloatingTOCProperties {
   items: TOCItem[];
   className?: string;
 }
 
-export function FloatingTOC({ items, className }: FloatingTOCProps) {
+export function FloatingTOC({ items, className }: FloatingTOCProperties) {
   const [activeId, setActiveId] = useState<string>('');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const observerReference = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     // Set up IntersectionObserver for scroll spy
@@ -35,27 +35,27 @@ export function FloatingTOC({ items, className }: FloatingTOCProps) {
     };
 
     const callback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
+      for (const entry of entries) {
         if (entry.isIntersecting) {
           setActiveId(entry.target.id);
         }
-      });
+      }
     };
 
-    observerRef.current = new IntersectionObserver(callback, options);
+    observerReference.current = new IntersectionObserver(callback, options);
 
     // Observe all heading elements
     const flatItems = flattenTOC(items);
-    flatItems.forEach((item) => {
+    for (const item of flatItems) {
       const element = document.getElementById(item.id);
-      if (element && observerRef.current) {
-        observerRef.current.observe(element);
+      if (element && observerReference.current) {
+        observerReference.current.observe(element);
       }
-    });
+    }
 
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
+      if (observerReference.current) {
+        observerReference.current.disconnect();
       }
     };
   }, [items]);
@@ -76,7 +76,7 @@ export function FloatingTOC({ items, className }: FloatingTOCProps) {
       setIsMobileOpen(false);
 
       // Update URL hash
-      window.history.pushState(null, '', `#${id}`);
+      globalThis.history.pushState(null, '', `#${id}`);
     }
   };
 
@@ -187,12 +187,12 @@ function flattenTOC(items: TOCItem[]): TOCItem[] {
   const result: TOCItem[] = [];
 
   const traverse = (items: TOCItem[]) => {
-    items.forEach((item) => {
+    for (const item of items) {
       result.push(item);
       if (item.children) {
         traverse(item.children);
       }
-    });
+    }
   };
 
   traverse(items);

@@ -33,20 +33,20 @@ const buttonVariants = cva(
   }
 );
 
-export interface ShadcnButtonProps
+export interface ShadcnButtonProperties
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   loading?: boolean;
 }
 
-export const ShadcnButton = forwardRef<HTMLButtonElement, ShadcnButtonProps>(
-  ({ className, variant, size, loading, children, disabled, ...props }, ref) => {
+export const ShadcnButton = forwardRef<HTMLButtonElement, ShadcnButtonProperties>(
+  ({ className, variant, size, loading, children, disabled, ...properties }, reference) => {
     return (
       <button
         className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
+        ref={reference}
         disabled={disabled || loading}
-        {...props}
+        {...properties}
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
         {children}

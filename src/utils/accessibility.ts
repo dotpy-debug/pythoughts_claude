@@ -15,21 +15,21 @@ export function generateId(prefix: string = 'a11y'): string {
  * Check if reduced motion is preferred
  */
 export function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 /**
  * Check if user prefers dark mode
  */
 export function prefersDarkMode(): boolean {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  return globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
 }
 
 /**
  * Check if user prefers high contrast
  */
 export function prefersHighContrast(): boolean {
-  return window.matchMedia('(prefers-contrast: high)').matches;
+  return globalThis.matchMedia('(prefers-contrast: high)').matches;
 }
 
 /**
@@ -37,7 +37,7 @@ export function prefersHighContrast(): boolean {
  */
 export function getVoteAriaLabel(count: number, userVote?: 1 | -1 | null): string {
   const voteText = count === 1 ? 'vote' : 'votes';
-  const userVoteText = userVote === 1 ? ', you upvoted' : userVote === -1 ? ', you downvoted' : '';
+  const userVoteText = userVote === 1 ? ', you upvoted' : (userVote === -1 ? ', you downvoted' : '');
   return `${count} ${voteText}${userVoteText}`;
 }
 
@@ -119,14 +119,14 @@ export function getContrastRatio(color1: string, color2: string): number {
 function getRelativeLuminance(color: string): number {
   // Convert hex to RGB
   const hex = color.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16) / 255;
-  const g = parseInt(hex.substring(2, 4), 16) / 255;
-  const b = parseInt(hex.substring(4, 6), 16) / 255;
+  const r = Number.parseInt(hex.slice(0, 2), 16) / 255;
+  const g = Number.parseInt(hex.slice(2, 4), 16) / 255;
+  const b = Number.parseInt(hex.slice(4, 6), 16) / 255;
 
   // Apply gamma correction
-  const rLinear = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
-  const gLinear = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
-  const bLinear = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+  const rLinear = r <= 0.039_28 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+  const gLinear = g <= 0.039_28 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+  const bLinear = b <= 0.039_28 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
 
   // Calculate luminance
   return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
@@ -135,17 +135,17 @@ function getRelativeLuminance(color: string): number {
 /**
  * Format number for screen readers
  */
-export function formatNumberForScreenReader(num: number): string {
-  if (num < 1000) {
-    return num.toString();
+export function formatNumberForScreenReader(number_: number): string {
+  if (number_ < 1000) {
+    return number_.toString();
   }
 
-  if (num < 1000000) {
-    const thousands = Math.floor(num / 100) / 10;
+  if (number_ < 1_000_000) {
+    const thousands = Math.floor(number_ / 100) / 10;
     return `${thousands} thousand`;
   }
 
-  const millions = Math.floor(num / 100000) / 10;
+  const millions = Math.floor(number_ / 100_000) / 10;
   return `${millions} million`;
 }
 
@@ -168,14 +168,14 @@ class LiveAnnouncer {
     this.politeElement.setAttribute('aria-live', 'polite');
     this.politeElement.setAttribute('aria-atomic', 'true');
     this.politeElement.className = 'sr-only';
-    document.body.appendChild(this.politeElement);
+    document.body.append(this.politeElement);
 
     // Create assertive announcer
     this.assertiveElement = document.createElement('div');
     this.assertiveElement.setAttribute('aria-live', 'assertive');
     this.assertiveElement.setAttribute('aria-atomic', 'true');
     this.assertiveElement.className = 'sr-only';
-    document.body.appendChild(this.assertiveElement);
+    document.body.append(this.assertiveElement);
   }
 
   announce(message: string, priority: 'polite' | 'assertive' = 'polite'): void {
@@ -214,22 +214,22 @@ export function validateAriaAttributes(element: HTMLElement): string[] {
   const labelledBy = element.getAttribute('aria-labelledby');
   if (labelledBy) {
     const ids = labelledBy.split(' ');
-    ids.forEach((id) => {
+    for (const id of ids) {
       if (!document.getElementById(id)) {
         errors.push(`aria-labelledby references non-existent ID: ${id}`);
       }
-    });
+    }
   }
 
   // Check aria-describedby references
   const describedBy = element.getAttribute('aria-describedby');
   if (describedBy) {
     const ids = describedBy.split(' ');
-    ids.forEach((id) => {
+    for (const id of ids) {
       if (!document.getElementById(id)) {
         errors.push(`aria-describedby references non-existent ID: ${id}`);
       }
-    });
+    }
   }
 
   // Check for common mistakes
@@ -273,7 +273,7 @@ export function isVisibleToScreenReader(element: HTMLElement): boolean {
   }
 
   // Check if display: none or visibility: hidden
-  const styles = window.getComputedStyle(element);
+  const styles = globalThis.getComputedStyle(element);
   if (styles.display === 'none' || styles.visibility === 'hidden') {
     return false;
   }

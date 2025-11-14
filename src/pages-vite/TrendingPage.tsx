@@ -33,7 +33,7 @@ export function TrendingPage() {
     // Reddit-style "hot" algorithm
     // Score based on votes, comments, views, and recency
 
-    const now = new Date().getTime();
+    const now = Date.now();
     const postTime = new Date(createdAt).getTime();
     const ageInHours = (now - postTime) / (1000 * 60 * 60);
 
@@ -50,21 +50,32 @@ export function TrendingPage() {
     return totalEngagement * timeDecay;
   };
 
-  const loadTrendingPosts = useCallback(async (pageNum: number = 0, append: boolean = false) => {
+  const loadTrendingPosts = useCallback(async (pageNumber: number = 0, append: boolean = false) => {
     try {
       setLoading(!append);
 
       // Calculate date range
       const dateFilter = new Date();
-      if (timeRange === '24h') {
+      switch (timeRange) {
+      case '24h': {
         dateFilter.setHours(dateFilter.getHours() - 24);
-      } else if (timeRange === '7d') {
+      
+      break;
+      }
+      case '7d': {
         dateFilter.setDate(dateFilter.getDate() - 7);
-      } else if (timeRange === '30d') {
+      
+      break;
+      }
+      case '30d': {
         dateFilter.setDate(dateFilter.getDate() - 30);
+      
+      break;
+      }
+      // No default
       }
 
-      const from = pageNum * POSTS_PER_PAGE;
+      const from = pageNumber * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
 
       // Get posts with engagement metrics
@@ -127,9 +138,9 @@ export function TrendingPage() {
           .in('post_id', postIds);
 
         if (viewsData) {
-          viewsData.forEach(view => {
+          for (const view of viewsData) {
             viewCounts[view.post_id] = (viewCounts[view.post_id] || 0) + 1;
-          });
+          }
         }
       }
 
@@ -164,18 +175,18 @@ export function TrendingPage() {
 
         if (!votesError && votesData) {
           const votesMap: Record<string, 1 | -1> = {};
-          votesData.forEach((vote) => {
+          for (const vote of votesData) {
             if (vote.post_id) {
               votesMap[vote.post_id] = vote.vote_type;
             }
-          });
-          setUserVotes(prev => append ? { ...prev, ...votesMap } : votesMap);
+          }
+          setUserVotes(previous => append ? { ...previous, ...votesMap } : votesMap);
         }
       }
 
       // Update posts
       if (append) {
-        setPosts(prev => [...prev, ...paginatedPosts]);
+        setPosts(previous => [...previous, ...paginatedPosts]);
       } else {
         setPosts(paginatedPosts);
       }
@@ -210,8 +221,8 @@ export function TrendingPage() {
         delete newVotes[postId];
         setUserVotes(newVotes);
 
-        setPosts(prevPosts =>
-          prevPosts.map(post =>
+        setPosts(previousPosts =>
+          previousPosts.map(post =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count - voteType }
               : post
@@ -226,8 +237,8 @@ export function TrendingPage() {
 
         setUserVotes({ ...userVotes, [postId]: voteType });
 
-        setPosts(prevPosts =>
-          prevPosts.map(post =>
+        setPosts(previousPosts =>
+          previousPosts.map(post =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count - existingVote + voteType }
               : post
@@ -242,8 +253,8 @@ export function TrendingPage() {
 
         setUserVotes({ ...userVotes, [postId]: voteType });
 
-        setPosts(prevPosts =>
-          prevPosts.map(post =>
+        setPosts(previousPosts =>
+          previousPosts.map(post =>
             post.id === postId
               ? { ...post, vote_count: post.vote_count + voteType }
               : post
@@ -302,7 +313,7 @@ export function TrendingPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="animate-spin text-terminal-green" size={48} />
         </div>
-      ) : posts.length === 0 ? (
+      ) : (posts.length === 0 ? (
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
             <TrendingUp size={48} className="text-gray-600 mx-auto" />
@@ -363,7 +374,7 @@ export function TrendingPage() {
             </div>
           )}
         </>
-      )}
+      ))}
     </div>
   );
 }

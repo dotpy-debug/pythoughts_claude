@@ -20,11 +20,11 @@ export function sanitizeInput(input: string): string {
   if (!input) return '';
 
   return input
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('\'', '&#x27;')
+    .replaceAll('/', '&#x2F;');
 }
 
 /**
@@ -113,7 +113,7 @@ export function isStrongPassword(password: string): boolean {
 /**
  * Validate content length
  */
-export function isValidContentLength(content: string, minLength: number = 1, maxLength: number = 10000): boolean {
+export function isValidContentLength(content: string, minLength: number = 1, maxLength: number = 10_000): boolean {
   const length = content.trim().length;
   return length >= minLength && length <= maxLength;
 }
@@ -135,7 +135,7 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 export function checkRateLimit(
   identifier: string,
   maxRequests: number = 10,
-  windowMs: number = 60000
+  windowMs: number = 60_000
 ): { allowed: boolean; remaining: number; resetTime: number } {
   const now = Date.now();
   const entry = rateLimitStore.get(identifier);
@@ -185,7 +185,7 @@ export function sanitizeSearchQuery(query: string): string {
   if (!query) return '';
 
   return query
-    .replace(/[^\w\s-]/g, '') // Remove special characters except word chars, spaces, hyphens
+    .replaceAll(/[^\w\s-]/g, '') // Remove special characters except word chars, spaces, hyphens
     .trim()
     .slice(0, 100); // Limit length
 }
@@ -279,11 +279,7 @@ export function isSafeError(error: unknown): boolean {
   ];
 
   let message = '';
-  if (error && typeof error === 'object' && 'message' in error) {
-    message = String((error as { message: unknown }).message);
-  } else {
-    message = String(error);
-  }
+  message = error && typeof error === 'object' && 'message' in error ? String((error as { message: unknown }).message) : String(error);
   return safeErrorMessages.some(safe => message.includes(safe));
 }
 
@@ -304,9 +300,9 @@ export function maskEmail(email: string): string {
 /**
  * Remove sensitive data from objects before logging
  */
-export function removeSensitiveData<T extends Record<string, unknown>>(obj: T): T {
+export function removeSensitiveData<T extends Record<string, unknown>>(object: T): T {
   const sensitive = ['password', 'token', 'secret', 'apiKey', 'accessToken', 'refreshToken'];
-  const cleaned = { ...obj };
+  const cleaned = { ...object };
 
   for (const key in cleaned) {
     if (sensitive.some(s => key.toLowerCase().includes(s.toLowerCase()))) {

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { Post } from '../lib/supabase';
 
-const BlogGrid = lazy(() => import('../components/blogs/BlogGrid').then(mod => ({ default: mod.BlogGrid })));
+const BlogGrid = lazy(() => import('../components/blogs/BlogGrid').then(module_ => ({ default: module_.BlogGrid })));
 
 export function BlogsPage() {
   const navigate = useNavigate();

@@ -180,7 +180,7 @@ export function DatabaseBrowser() {
   const handleDeleteRecord = async (recordId: string) => {
     if (!profile) return;
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       'Are you sure you want to delete this record? This action cannot be undone.'
     );
     if (!confirmed) return;
@@ -201,7 +201,7 @@ export function DatabaseBrowser() {
 
     const csv = convertToCSV(tableData);
     const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
+    const url = globalThis.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `${selectedTable}_${new Date().toISOString()}.csv`;
@@ -385,7 +385,7 @@ export function DatabaseBrowser() {
                       <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                       <p className="text-gray-400">Loading data...</p>
                     </div>
-                  ) : tableData.length === 0 ? (
+                  ) : (tableData.length === 0 ? (
                     <div className="p-8 text-center text-gray-400">No data found</div>
                   ) : (
                     <div className="overflow-x-auto">
@@ -406,8 +406,8 @@ export function DatabaseBrowser() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-800">
-                          {tableData.map((row, idx) => (
-                            <tr key={idx} className="hover:bg-gray-800/50">
+                          {tableData.map((row, index) => (
+                            <tr key={index} className="hover:bg-gray-800/50">
                               {columns.map((col) => (
                                 <td key={col} className="px-4 py-3 text-sm text-gray-300">
                                   {editingRecord && editingRecord.id === row.id ? (
@@ -472,7 +472,7 @@ export function DatabaseBrowser() {
                         </tbody>
                       </table>
                     </div>
-                  )}
+                  ))}
 
                   {/* Pagination */}
                   {tableTotal > 50 && (

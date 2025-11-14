@@ -69,12 +69,23 @@ export function AnalyticsPage() {
 
       // Calculate date range
       const dateFilter = new Date();
-      if (timeRange === '7d') {
+      switch (timeRange) {
+      case '7d': {
         dateFilter.setDate(dateFilter.getDate() - 7);
-      } else if (timeRange === '30d') {
+      
+      break;
+      }
+      case '30d': {
         dateFilter.setDate(dateFilter.getDate() - 30);
-      } else if (timeRange === '90d') {
+      
+      break;
+      }
+      case '90d': {
         dateFilter.setDate(dateFilter.getDate() - 90);
+      
+      break;
+      }
+      // No default
       }
 
       // Get user's posts with stats

@@ -122,7 +122,7 @@ export function usePullToRefresh(options: {
   const isPulling = useRef(false);
 
   useEffect(() => {
-    const container = containerRef?.current || window;
+    const container = containerRef?.current || globalThis;
 
     const handleTouchStart = (e: Event) => {
       const touch = (e as unknown as TouchEvent).touches[0];

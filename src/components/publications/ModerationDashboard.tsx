@@ -53,11 +53,11 @@ type ModerationStats = {
   totalModActions: number;
 };
 
-type ModerationDashboardProps = {
+type ModerationDashboardProperties = {
   publicationId: string;
 };
 
-export function ModerationDashboard({ publicationId }: ModerationDashboardProps) {
+export function ModerationDashboard({ publicationId }: ModerationDashboardProperties) {
   const [logs, setLogs] = useState<ModerationLog[]>([]);
   const [pendingSubmissions, setPendingSubmissions] = useState<PendingSubmission[]>([]);
   const [stats, setStats] = useState<ModerationStats>({
@@ -159,8 +159,8 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
         rejectedToday: todayLogs.filter((log: { action_type?: string }) => log.action_type === 'post_rejected').length,
         totalModActions: logsData?.length || 0,
       });
-    } catch (err) {
-      logger.error('Failed to load moderation data', err as Error);
+    } catch (error) {
+      logger.error('Failed to load moderation data', error as Error);
     } finally {
       setIsLoading(false);
     }
@@ -172,16 +172,21 @@ export function ModerationDashboard({ publicationId }: ModerationDashboardProps)
 
   const getActionIcon = (actionType: string) => {
     switch (actionType) {
-      case 'post_approved':
+      case 'post_approved': {
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'post_rejected':
+      }
+      case 'post_rejected': {
         return <XCircle className="h-4 w-4 text-red-500" />;
-      case 'post_removed':
+      }
+      case 'post_removed': {
         return <AlertTriangle className="h-4 w-4 text-orange-500" />;
-      case 'post_featured':
+      }
+      case 'post_featured': {
         return <Eye className="h-4 w-4 text-blue-500" />;
-      default:
+      }
+      default: {
         return <Shield className="h-4 w-4 text-gray-500" />;
+      }
     }
   };
 

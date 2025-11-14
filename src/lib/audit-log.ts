@@ -47,12 +47,12 @@ export type AuditLogEntry = {
  * Audit logging system for tracking sensitive operations
  * Provides comprehensive audit trail for security and compliance
  */
-export class AuditLogger {
+export const AuditLogger = {
   /**
    * Log an audit event
    * @param params - Audit log parameters
    */
-  static async log(params: {
+  async log(parameters: {
     action: AuditAction;
     actorId?: string;
     targetId?: string;
@@ -72,7 +72,7 @@ export class AuditLogger {
         ipAddress = null,
         userAgent = null,
         severity = 'info',
-      } = params;
+      } = parameters;
 
       // Insert audit log entry
       const { error } = await supabase.from('audit_logs').insert({
@@ -109,14 +109,14 @@ export class AuditLogger {
       });
     } catch (error) {
       // Never throw from audit logging - it should not break the application
-      logger.error('Audit logging error', error as Error, params);
+      logger.error('Audit logging error', error as Error, parameters);
     }
-  }
+  },
 
   /**
    * Log user authentication events
    */
-  static async logAuth(params: {
+  async logAuth(parameters: {
     action: Extract<AuditAction, 'user.login' | 'user.logout' | 'user.signup'>;
     userId: string;
     ipAddress?: string;
@@ -124,19 +124,19 @@ export class AuditLogger {
     metadata?: Record<string, unknown>;
   }): Promise<void> {
     await this.log({
-      action: params.action,
-      actorId: params.userId,
-      ipAddress: params.ipAddress,
-      userAgent: params.userAgent,
-      metadata: params.metadata,
+      action: parameters.action,
+      actorId: parameters.userId,
+      ipAddress: parameters.ipAddress,
+      userAgent: parameters.userAgent,
+      metadata: parameters.metadata,
       severity: 'info',
     });
-  }
+  },
 
   /**
    * Log content moderation events
    */
-  static async logModeration(params: {
+  async logModeration(parameters: {
     action: Extract<
       AuditAction,
       | 'moderation.post_flag'
@@ -152,20 +152,20 @@ export class AuditLogger {
     ipAddress?: string;
   }): Promise<void> {
     await this.log({
-      action: params.action,
-      actorId: params.moderatorId,
-      targetId: params.targetId,
-      targetType: params.targetType,
-      metadata: { reason: params.reason },
-      ipAddress: params.ipAddress,
+      action: parameters.action,
+      actorId: parameters.moderatorId,
+      targetId: parameters.targetId,
+      targetType: parameters.targetType,
+      metadata: { reason: parameters.reason },
+      ipAddress: parameters.ipAddress,
       severity: 'warning',
     });
-  }
+  },
 
   /**
    * Log admin actions
    */
-  static async logAdmin(params: {
+  async logAdmin(parameters: {
     action: Extract<AuditAction, 'admin.role_grant' | 'admin.role_revoke' | 'admin.settings_update'>;
     adminId: string;
     targetId?: string;
@@ -173,19 +173,19 @@ export class AuditLogger {
     ipAddress?: string;
   }): Promise<void> {
     await this.log({
-      action: params.action,
-      actorId: params.adminId,
-      targetId: params.targetId,
-      metadata: params.metadata,
-      ipAddress: params.ipAddress,
+      action: parameters.action,
+      actorId: parameters.adminId,
+      targetId: parameters.targetId,
+      metadata: parameters.metadata,
+      ipAddress: parameters.ipAddress,
       severity: 'critical',
     });
-  }
+  },
 
   /**
    * Log security events
    */
-  static async logSecurity(params: {
+  async logSecurity(parameters: {
     action: Extract<
       AuditAction,
       'security.rate_limit_exceeded' | 'security.suspicious_activity' | 'security.spam_detected'
@@ -195,18 +195,18 @@ export class AuditLogger {
     metadata: Record<string, unknown>;
   }): Promise<void> {
     await this.log({
-      action: params.action,
-      actorId: params.userId,
-      metadata: params.metadata,
-      ipAddress: params.ipAddress,
+      action: parameters.action,
+      actorId: parameters.userId,
+      metadata: parameters.metadata,
+      ipAddress: parameters.ipAddress,
       severity: 'warning',
     });
-  }
+  },
 
   /**
    * Query audit logs
    */
-  static async query(filters: {
+  async query(filters: {
     action?: AuditAction;
     actorId?: string;
     targetId?: string;
@@ -261,34 +261,34 @@ export class AuditLogger {
       logger.error('Audit log query error', error as Error);
       return [];
     }
-  }
+  },
 
   /**
    * Get audit trail for a specific user
    */
-  static async getUserAuditTrail(userId: string, limit: number = 50): Promise<AuditLogEntry[]> {
+  async getUserAuditTrail(userId: string, limit: number = 50): Promise<AuditLogEntry[]> {
     return this.query({ actorId: userId, limit });
-  }
+  },
 
   /**
    * Get recent critical security events
    */
-  static async getSecurityEvents(hours: number = 24): Promise<AuditLogEntry[]> {
+  async getSecurityEvents(hours: number = 24): Promise<AuditLogEntry[]> {
     const startDate = new Date(Date.now() - hours * 60 * 60 * 1000);
     return this.query({
       severity: 'critical',
       startDate,
       limit: 100,
     });
-  }
-}
+  },
+};
 
 /**
  * Helper function for easy audit logging
  */
 export async function auditLog(
   action: AuditAction,
-  params?: Omit<Parameters<typeof AuditLogger.log>[0], 'action'>
+  parameters?: Omit<Parameters<typeof AuditLogger.log>[0], 'action'>
 ): Promise<void> {
-  return AuditLogger.log({ action, ...params });
+  return AuditLogger.log({ action, ...parameters });
 }

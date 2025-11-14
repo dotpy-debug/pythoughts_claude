@@ -22,13 +22,13 @@ const emojis: Emoji[] = [
   { name: 'Rocket', emoji: '🚀', type: 'rocket' },
 ];
 
-type EmojiReactionPickerProps = {
+type EmojiReactionPickerProperties = {
   onReact: (type: Emoji['type']) => void;
   userReactions?: Emoji['type'][];
   reactions?: Record<string, number>;
 };
 
-export function EmojiReactionPicker({ onReact, userReactions = [], reactions = {} }: EmojiReactionPickerProps) {
+export function EmojiReactionPicker({ onReact, userReactions = [], reactions = {} }: EmojiReactionPickerProperties) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleReact = (type: Emoji['type']) => {

@@ -31,10 +31,10 @@ describe('Validation Utilities', () => {
         'test+tag@example.com',
       ];
 
-      validEmails.forEach(email => {
+      for (const email of validEmails) {
         const result = emailSchema.safeParse(email);
         expect(result.success).toBe(true);
-      });
+      }
     });
 
     it('should reject invalid email addresses', () => {
@@ -45,10 +45,10 @@ describe('Validation Utilities', () => {
         'user name@example.com',
       ];
 
-      invalidEmails.forEach(email => {
+      for (const email of invalidEmails) {
         const result = emailSchema.safeParse(email);
         expect(result.success).toBe(false);
-      });
+      }
     });
 
     it('should convert email to lowercase', () => {
@@ -108,10 +108,10 @@ describe('Validation Utilities', () => {
         'https://subdomain.example.com',
       ];
 
-      validUrls.forEach(url => {
+      for (const url of validUrls) {
         const result = urlSchema.safeParse(url);
         expect(result.success).toBe(true);
-      });
+      }
     });
 
     it('should reject invalid URLs', () => {
@@ -121,10 +121,10 @@ describe('Validation Utilities', () => {
         'ftp://example.com',
       ];
 
-      invalidUrls.forEach(url => {
+      for (const url of invalidUrls) {
         const result = urlSchema.safeParse(url);
         expect(result.success).toBe(false);
-      });
+      }
     });
   });
 
@@ -136,10 +136,10 @@ describe('Validation Utilities', () => {
         'test-slug-123',
       ];
 
-      validSlugs.forEach(slug => {
+      for (const slug of validSlugs) {
         const result = slugSchema.safeParse(slug);
         expect(result.success).toBe(true);
-      });
+      }
     });
 
     it('should reject invalid slugs', () => {
@@ -150,10 +150,10 @@ describe('Validation Utilities', () => {
         'TEST-SLUG',
       ];
 
-      invalidSlugs.forEach(slug => {
+      for (const slug of invalidSlugs) {
         const result = slugSchema.safeParse(slug);
         expect(result.success).toBe(false);
-      });
+      }
     });
   });
 
@@ -177,10 +177,10 @@ describe('Validation Utilities', () => {
         'TestUser',
       ];
 
-      validUsernames.forEach(username => {
+      for (const username of validUsernames) {
         const result = usernameSchema.safeParse(username);
         expect(result.success).toBe(true);
-      });
+      }
     });
 
     it('should reject username shorter than 3 characters', () => {
@@ -208,10 +208,10 @@ describe('Validation Utilities', () => {
         '#FF5733',
       ];
 
-      validColors.forEach(color => {
+      for (const color of validColors) {
         const result = hexColorSchema.safeParse(color);
         expect(result.success).toBe(true);
-      });
+      }
     });
 
     it('should reject invalid hex colors', () => {
@@ -222,10 +222,10 @@ describe('Validation Utilities', () => {
         'ffffff',
       ];
 
-      invalidColors.forEach(color => {
+      for (const color of invalidColors) {
         const result = hexColorSchema.safeParse(color);
         expect(result.success).toBe(false);
-      });
+      }
     });
   });
 

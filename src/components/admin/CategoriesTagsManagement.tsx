@@ -44,7 +44,7 @@ export function CategoriesTagsManagement() {
 
   // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
-  const [_editingCategory, _setEditingCategory] = useState<Category | null>(null);
+  const [, setEditingCategory] = useState<Category | undefined>();
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [categoryForm, setCategoryForm] = useState({
     name: '',
@@ -60,15 +60,12 @@ export function CategoriesTagsManagement() {
   const [tagSearch, setTagSearch] = useState('');
   const [tagSortBy, setTagSortBy] = useState<'name' | 'post_count' | 'follower_count'>('name');
   const [tagPage, setTagPage] = useState(1);
-  const [_editingTag, _setEditingTag] = useState<Tag | null>(null);
   const [showTagForm, setShowTagForm] = useState(false);
   const [tagForm, setTagForm] = useState({
     name: '',
     slug: '',
     description: '',
   });
-  const [_mergeSourceTag, _setMergeSourceTag] = useState<string>('');
-  const [_mergeTargetTag, _setMergeTargetTag] = useState<string>('');
   const [featuredTags, setFeaturedTags] = useState<string[]>([]);
 
   const loadData = useCallback(async () => {
@@ -131,26 +128,11 @@ export function CategoriesTagsManagement() {
     }
   };
 
-  // TODO: Wire up this handler to the UI
-  // const handleUpdateCategory = async () => {
-  //   if (!profile || !editingCategory) return;
-
-  //   const result = await updateCategory({
-  //     currentUserId: profile.id,
-  //     categoryId: editingCategory.id,
-  //     updates: categoryForm,
-  //   });
-
-  //   if (result.success) {
-  //     setEditingCategory(null);
-  //     await loadData();
-  //   }
-  // };
 
   const handleDeleteCategory = async (categoryId: string) => {
     if (!profile) return;
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       'Are you sure you want to delete this category? This action cannot be undone.'
     );
     if (!confirmed) return;
@@ -180,48 +162,10 @@ export function CategoriesTagsManagement() {
     }
   };
 
-  // TODO: Wire up this handler to the UI
-  // const handleUpdateTag = async () => {
-  //   if (!profile || !editingTag) return;
-
-  //   const result = await updateTag({
-  //     currentUserId: profile.id,
-  //     tagId: editingTag.id,
-  //     updates: tagForm,
-  //   });
-
-  //   if (result.success) {
-  //     setEditingTag(null);
-  //     await loadData();
-  //   }
-  // };
-
-  // TODO: Wire up this handler to the UI
-  // const handleMergeTags = async () => {
-  //   if (!profile || !mergeSourceTag || !mergeTargetTag) return;
-
-  //   const confirmed = window.confirm(
-  //     'Are you sure you want to merge these tags? All posts with the source tag will be moved to the target tag.'
-  //   );
-  //   if (!confirmed) return;
-
-  //   const result = await mergeTags({
-  //     currentUserId: profile.id,
-  //     sourceTagId: mergeSourceTag,
-  //     targetTagId: mergeTargetTag,
-  //   });
-
-  //   if (result.success) {
-  //     setMergeSourceTag('');
-  //     setMergeTargetTag('');
-  //     await loadData();
-  //   }
-  // };
-
   const handleDeleteTag = async (tagId: string) => {
     if (!profile) return;
 
-    const confirmed = window.confirm('Delete this tag? All associations will be removed.');
+    const confirmed = globalThis.confirm('Delete this tag? All associations will be removed.');
     if (!confirmed) return;
 
     const result = await deleteTag({
@@ -237,7 +181,7 @@ export function CategoriesTagsManagement() {
   const handleCleanupTags = async () => {
     if (!profile) return;
 
-    const confirmed = window.confirm(
+    const confirmed = globalThis.confirm(
       'Remove all unused tags (tags with no posts)? This action cannot be undone.'
     );
     if (!confirmed) return;
@@ -341,7 +285,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={categoryForm.name}
-                        onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                        onChange={(event_) => setCategoryForm({ ...categoryForm, name: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -350,7 +294,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={categoryForm.slug}
-                        onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
+                        onChange={(event_) => setCategoryForm({ ...categoryForm, slug: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -358,7 +302,7 @@ export function CategoriesTagsManagement() {
                       <label className="block text-sm text-gray-400 mb-1">Description</label>
                       <textarea
                         value={categoryForm.description}
-                        onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                        onChange={(event_) => setCategoryForm({ ...categoryForm, description: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 resize-none"
                         rows={3}
                       />
@@ -369,7 +313,7 @@ export function CategoriesTagsManagement() {
                         <input
                           type="color"
                           value={categoryForm.color}
-                          onChange={(e) => setCategoryForm({ ...categoryForm, color: e.target.value })}
+                          onChange={(event_) => setCategoryForm({ ...categoryForm, color: event_.target.value })}
                           className="w-full h-10 bg-gray-800 border border-gray-700 rounded-lg"
                         />
                       </div>
@@ -378,7 +322,7 @@ export function CategoriesTagsManagement() {
                         <input
                           type="text"
                           value={categoryForm.icon}
-                          onChange={(e) => setCategoryForm({ ...categoryForm, icon: e.target.value })}
+                          onChange={(event_) => setCategoryForm({ ...categoryForm, icon: event_.target.value })}
                           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-center text-2xl"
                           maxLength={2}
                         />
@@ -410,7 +354,7 @@ export function CategoriesTagsManagement() {
                   <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                   <p className="text-gray-400">Loading categories...</p>
                 </div>
-              ) : categories.length === 0 ? (
+              ) : (categories.length === 0 ? (
                 <div className="col-span-full bg-gray-900 border border-gray-800 rounded-lg p-8 text-center text-gray-400">
                   No categories found
                 </div>
@@ -439,7 +383,7 @@ export function CategoriesTagsManagement() {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => {
-                            _setEditingCategory(category);
+                            setEditingCategory(category);
                             setCategoryForm({
                               name: category.name,
                               slug: category.slug,
@@ -462,7 +406,7 @@ export function CategoriesTagsManagement() {
                     </div>
                   </div>
                 ))
-              )}
+              ))}
             </div>
           </div>
         )}
@@ -523,7 +467,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={tagForm.name}
-                        onChange={(e) => setTagForm({ ...tagForm, name: e.target.value })}
+                        onChange={(event_) => setTagForm({ ...tagForm, name: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -532,7 +476,7 @@ export function CategoriesTagsManagement() {
                       <input
                         type="text"
                         value={tagForm.slug}
-                        onChange={(e) => setTagForm({ ...tagForm, slug: e.target.value })}
+                        onChange={(event_) => setTagForm({ ...tagForm, slug: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200"
                       />
                     </div>
@@ -540,7 +484,7 @@ export function CategoriesTagsManagement() {
                       <label className="block text-sm text-gray-400 mb-1">Description</label>
                       <textarea
                         value={tagForm.description}
-                        onChange={(e) => setTagForm({ ...tagForm, description: e.target.value })}
+                        onChange={(event_) => setTagForm({ ...tagForm, description: event_.target.value })}
                         className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 resize-none"
                         rows={3}
                       />
@@ -571,7 +515,7 @@ export function CategoriesTagsManagement() {
                   <Loader2 className="w-8 h-8 animate-spin text-orange-500 mx-auto mb-2" />
                   <p className="text-gray-400">Loading tags...</p>
                 </div>
-              ) : tags.length === 0 ? (
+              ) : (tags.length === 0 ? (
                 <div className="col-span-full bg-gray-900 border border-gray-800 rounded-lg p-8 text-center text-gray-400">
                   No tags found
                 </div>
@@ -620,7 +564,7 @@ export function CategoriesTagsManagement() {
                     </div>
                   </div>
                 ))
-              )}
+              ))}
             </div>
 
             {/* Pagination */}

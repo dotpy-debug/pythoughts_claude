@@ -10,12 +10,12 @@ type Task = {
   color: string;
 };
 
-type CanvasTaskProps = {
+type CanvasTaskProperties = {
   task: Task;
   onClick: () => void;
 };
 
-export function CanvasTask({ task, onClick }: CanvasTaskProps) {
+export function CanvasTask({ task, onClick }: CanvasTaskProperties) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
   });

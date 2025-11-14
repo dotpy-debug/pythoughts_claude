@@ -1,7 +1,7 @@
 import { useDroppable } from '@dnd-kit/core';
 import { Plus } from 'lucide-react';
 
-interface KanbanColumnProps {
+interface KanbanColumnProperties {
   id: string;
   title: string;
   count: number;
@@ -10,7 +10,7 @@ interface KanbanColumnProps {
   onAddTask?: () => void;
 }
 
-export function KanbanColumn({ id, title, count, color, children, onAddTask }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, count, color, children, onAddTask }: KanbanColumnProperties) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (

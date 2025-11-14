@@ -62,7 +62,7 @@ export function ScheduledPostsPage() {
       return 'Publishing soon...';
     }
 
-    const diffMins = Math.floor(diffMs / 60000);
+    const diffMins = Math.floor(diffMs / 60_000);
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
@@ -99,7 +99,7 @@ export function ScheduledPostsPage() {
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-terminal-green"></div>
         </div>
-      ) : scheduledPosts.length === 0 ? (
+      ) : (scheduledPosts.length === 0 ? (
         <div className="text-center py-20">
           <Clock size={64} className="text-gray-600 mx-auto mb-4" />
           <p className="text-gray-400 font-mono mb-4">No scheduled posts</p>
@@ -143,7 +143,7 @@ export function ScheduledPostsPage() {
                   )}
 
                   <p className="text-sm text-gray-500 line-clamp-2 mb-4 font-mono">
-                    {post.content.substring(0, 200)}...
+                    {post.content.slice(0, 200)}...
                   </p>
 
                   <div className="flex items-center space-x-6 text-sm">
@@ -201,7 +201,7 @@ export function ScheduledPostsPage() {
                         100,
                         Math.max(
                           0,
-                          ((new Date().getTime() - new Date(post.created_at).getTime()) /
+                          ((Date.now() - new Date(post.created_at).getTime()) /
                             (new Date(post.scheduled_publish_at).getTime() -
                               new Date(post.created_at).getTime())) *
                             100
@@ -214,7 +214,7 @@ export function ScheduledPostsPage() {
             </div>
           ))}
         </div>
-      )}
+      ))}
 
       {scheduledPosts.length > 0 && (
         <div className="mt-8 p-4 bg-gray-900 border border-gray-700 rounded-lg">

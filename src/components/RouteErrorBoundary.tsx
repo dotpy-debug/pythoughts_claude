@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { logger } from '../lib/logger';
 import { Terminal, Home, RefreshCw } from 'lucide-react';
 
-interface Props {
+interface Properties {
   children: ReactNode;
   routeName?: string;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
@@ -20,9 +20,9 @@ interface State {
  * Provides a terminal-themed error UI consistent with the app design
  * Includes navigation options specific to route-level errors
  */
-class RouteErrorBoundaryClass extends Component<Props & { navigate: (path: string) => void }, State> {
-  constructor(props: Props & { navigate: (path: string) => void }) {
-    super(props);
+class RouteErrorBoundaryClass extends Component<Properties & { navigate: (path: string) => void }, State> {
+  constructor(properties: Properties & { navigate: (path: string) => void }) {
+    super(properties);
     this.state = {
       hasError: false,
       error: null,
@@ -43,7 +43,7 @@ class RouteErrorBoundaryClass extends Component<Props & { navigate: (path: strin
     logger.error('Route Error Boundary caught an error', error, {
       route: routeName || 'unknown',
       componentStack: errorInfo.componentStack,
-      url: window.location.href,
+      url: globalThis.location.href,
       timestamp: new Date().toISOString(),
     });
 
@@ -162,9 +162,9 @@ class RouteErrorBoundaryClass extends Component<Props & { navigate: (path: strin
 /**
  * Wrapper component to inject navigate function
  */
-export function RouteErrorBoundary(props: Props) {
+export function RouteErrorBoundary(properties: Properties) {
   const navigate = useNavigate();
-  return <RouteErrorBoundaryClass {...props} navigate={navigate} />;
+  return <RouteErrorBoundaryClass {...properties} navigate={navigate} />;
 }
 
 /**
@@ -174,10 +174,10 @@ export function withRouteErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   routeName?: string
 ): React.ComponentType<P> {
-  return function WithRouteErrorBoundaryComponent(props: P) {
+  return function WithRouteErrorBoundaryComponent(properties: P) {
     return (
       <RouteErrorBoundary routeName={routeName}>
-        <Component {...props} />
+        <Component {...properties} />
       </RouteErrorBoundary>
     );
   };

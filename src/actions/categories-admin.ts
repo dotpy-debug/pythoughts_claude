@@ -16,19 +16,19 @@ import type { FeaturedTagsSetting } from '../types/common';
 /**
  * Get all categories with statistics
  */
-export async function getCategories(params: {
+export async function getCategories(parameters: {
   currentUserId: string;
   includeInactive?: boolean;
 }): Promise<{ categories: Category[]; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     let query = supabase
       .from('categories')
       .select('*')
       .order('display_order', { ascending: true });
 
-    if (!params.includeInactive) {
+    if (!parameters.includeInactive) {
       query = query.eq('is_active', true);
     }
 
@@ -52,7 +52,7 @@ export async function getCategories(params: {
 /**
  * Create a new category
  */
-export async function createCategory(params: {
+export async function createCategory(parameters: {
   currentUserId: string;
   name: string;
   slug: string;
@@ -61,16 +61,16 @@ export async function createCategory(params: {
   icon: string;
 }): Promise<{ category: Category | null; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     const { data, error } = await supabase
       .from('categories')
       .insert({
-        name: params.name,
-        slug: params.slug,
-        description: params.description,
-        color: params.color,
-        icon: params.icon,
+        name: parameters.name,
+        slug: parameters.slug,
+        description: parameters.description,
+        color: parameters.color,
+        icon: parameters.icon,
         is_active: true,
         display_order: 0,
       })
@@ -83,11 +83,11 @@ export async function createCategory(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'create_category',
       targetType: 'category',
       targetId: data.id,
-      details: { name: params.name, slug: params.slug },
+      details: { name: parameters.name, slug: parameters.slug },
     });
 
     return { category: data as Category };
@@ -103,21 +103,21 @@ export async function createCategory(params: {
 /**
  * Update a category
  */
-export async function updateCategory(params: {
+export async function updateCategory(parameters: {
   currentUserId: string;
   categoryId: string;
   updates: Partial<Category>;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     const { error } = await supabase
       .from('categories')
       .update({
-        ...params.updates,
+        ...parameters.updates,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.categoryId);
+      .eq('id', parameters.categoryId);
 
     if (error) {
       logger.error('Error updating category', { errorDetails: error });
@@ -125,11 +125,11 @@ export async function updateCategory(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_category',
       targetType: 'category',
-      targetId: params.categoryId,
-      details: { updates: params.updates },
+      targetId: parameters.categoryId,
+      details: { updates: parameters.updates },
     });
 
     return { success: true };
@@ -145,14 +145,14 @@ export async function updateCategory(params: {
 /**
  * Delete a category
  */
-export async function deleteCategory(params: {
+export async function deleteCategory(parameters: {
   currentUserId: string;
   categoryId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.ADMIN);
 
-    const { error } = await supabase.from('categories').delete().eq('id', params.categoryId);
+    const { error } = await supabase.from('categories').delete().eq('id', parameters.categoryId);
 
     if (error) {
       logger.error('Error deleting category', { errorDetails: error });
@@ -160,10 +160,10 @@ export async function deleteCategory(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_category',
       targetType: 'category',
-      targetId: params.categoryId,
+      targetId: parameters.categoryId,
     });
 
     return { success: true };
@@ -179,23 +179,23 @@ export async function deleteCategory(params: {
 /**
  * Reorder categories
  */
-export async function reorderCategories(params: {
+export async function reorderCategories(parameters: {
   currentUserId: string;
   categoryOrders: { id: string; display_order: number }[];
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     // Update each category's display order
-    for (const { id, display_order } of params.categoryOrders) {
+    for (const { id, display_order } of parameters.categoryOrders) {
       await supabase.from('categories').update({ display_order }).eq('id', id);
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'reorder_categories',
       targetType: 'category',
-      details: { count: params.categoryOrders.length },
+      details: { count: parameters.categoryOrders.length },
     });
 
     return { success: true };
@@ -211,7 +211,7 @@ export async function reorderCategories(params: {
 /**
  * Get all tags with statistics
  */
-export async function getTags(params: {
+export async function getTags(parameters: {
   currentUserId: string;
   search?: string;
   sortBy?: 'name' | 'post_count' | 'follower_count';
@@ -219,19 +219,19 @@ export async function getTags(params: {
   limit?: number;
 }): Promise<{ tags: Tag[]; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
-    const page = params.page ?? 1;
-    const limit = params.limit ?? 50;
+    const page = parameters.page ?? 1;
+    const limit = parameters.limit ?? 50;
     const offset = (page - 1) * limit;
 
     let query = supabase.from('tags').select('*', { count: 'exact' });
 
-    if (params.search) {
-      query = query.or(`name.ilike.%${params.search}%,description.ilike.%${params.search}%`);
+    if (parameters.search) {
+      query = query.or(`name.ilike.%${parameters.search}%,description.ilike.%${parameters.search}%`);
     }
 
-    const sortBy = params.sortBy ?? 'name';
+    const sortBy = parameters.sortBy ?? 'name';
     query = query.order(sortBy, { ascending: sortBy === 'name' });
 
     query = query.range(offset, offset + limit - 1);
@@ -260,21 +260,21 @@ export async function getTags(params: {
 /**
  * Create a new tag
  */
-export async function createTag(params: {
+export async function createTag(parameters: {
   currentUserId: string;
   name: string;
   slug: string;
   description: string;
 }): Promise<{ tag: Tag | null; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     const { data, error } = await supabase
       .from('tags')
       .insert({
-        name: params.name,
-        slug: params.slug,
-        description: params.description,
+        name: parameters.name,
+        slug: parameters.slug,
+        description: parameters.description,
         follower_count: 0,
         post_count: 0,
       })
@@ -287,11 +287,11 @@ export async function createTag(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'create_tag',
       targetType: 'tag',
       targetId: data.id,
-      details: { name: params.name, slug: params.slug },
+      details: { name: parameters.name, slug: parameters.slug },
     });
 
     return { tag: data as Tag };
@@ -307,15 +307,15 @@ export async function createTag(params: {
 /**
  * Update a tag
  */
-export async function updateTag(params: {
+export async function updateTag(parameters: {
   currentUserId: string;
   tagId: string;
   updates: Partial<Tag>;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
-    const { error } = await supabase.from('tags').update(params.updates).eq('id', params.tagId);
+    const { error } = await supabase.from('tags').update(parameters.updates).eq('id', parameters.tagId);
 
     if (error) {
       logger.error('Error updating tag', { errorDetails: error });
@@ -323,11 +323,11 @@ export async function updateTag(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_tag',
       targetType: 'tag',
-      targetId: params.tagId,
-      details: { updates: params.updates },
+      targetId: parameters.tagId,
+      details: { updates: parameters.updates },
     });
 
     return { success: true };
@@ -343,19 +343,19 @@ export async function updateTag(params: {
 /**
  * Merge tags (combine two tags into one)
  */
-export async function mergeTags(params: {
+export async function mergeTags(parameters: {
   currentUserId: string;
   sourceTagId: string;
   targetTagId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     // Update all post_tags that reference source tag to point to target tag
     const { error: updateError } = await supabase
       .from('post_tags')
-      .update({ tag_id: params.targetTagId })
-      .eq('tag_id', params.sourceTagId);
+      .update({ tag_id: parameters.targetTagId })
+      .eq('tag_id', parameters.sourceTagId);
 
     if (updateError) {
       logger.error('Error updating post_tags during merge', { error: updateError });
@@ -365,14 +365,14 @@ export async function mergeTags(params: {
     // Update all tag_follows that reference source tag
     await supabase
       .from('tag_follows')
-      .update({ tag_id: params.targetTagId })
-      .eq('tag_id', params.sourceTagId);
+      .update({ tag_id: parameters.targetTagId })
+      .eq('tag_id', parameters.sourceTagId);
 
     // Delete the source tag
     const { error: deleteError } = await supabase
       .from('tags')
       .delete()
-      .eq('id', params.sourceTagId);
+      .eq('id', parameters.sourceTagId);
 
     if (deleteError) {
       logger.error('Error deleting source tag during merge', { error: deleteError });
@@ -380,11 +380,11 @@ export async function mergeTags(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'merge_tags',
       targetType: 'tag',
-      targetId: params.targetTagId,
-      details: { sourceTagId: params.sourceTagId },
+      targetId: parameters.targetTagId,
+      details: { sourceTagId: parameters.sourceTagId },
     });
 
     return { success: true };
@@ -400,14 +400,14 @@ export async function mergeTags(params: {
 /**
  * Delete a tag
  */
-export async function deleteTag(params: {
+export async function deleteTag(parameters: {
   currentUserId: string;
   tagId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
-    const { error } = await supabase.from('tags').delete().eq('id', params.tagId);
+    const { error } = await supabase.from('tags').delete().eq('id', parameters.tagId);
 
     if (error) {
       logger.error('Error deleting tag', { errorDetails: error });
@@ -415,10 +415,10 @@ export async function deleteTag(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_tag',
       targetType: 'tag',
-      targetId: params.tagId,
+      targetId: parameters.tagId,
     });
 
     return { success: true };
@@ -434,11 +434,11 @@ export async function deleteTag(params: {
 /**
  * Clean up unused tags (tags with no posts)
  */
-export async function cleanupUnusedTags(params: {
+export async function cleanupUnusedTags(parameters: {
   currentUserId: string;
 }): Promise<{ success: boolean; deleted: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     // Get tags with post_count = 0
     const { data: unusedTags } = await supabase
@@ -460,7 +460,7 @@ export async function cleanupUnusedTags(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'cleanup_unused_tags',
       targetType: 'tag',
       details: { deletedCount: tagIds.length },
@@ -480,11 +480,11 @@ export async function cleanupUnusedTags(params: {
 /**
  * Get featured tags from system settings
  */
-export async function getFeaturedTags(params: {
+export async function getFeaturedTags(parameters: {
   currentUserId: string;
 }): Promise<{ tags: string[]; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     const { data, error } = await supabase
       .from('system_settings')
@@ -512,18 +512,18 @@ export async function getFeaturedTags(params: {
 /**
  * Update featured tags
  */
-export async function updateFeaturedTags(params: {
+export async function updateFeaturedTags(parameters: {
   currentUserId: string;
   tagSlugs: string[];
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.EDITOR);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.EDITOR);
 
     const { error } = await supabase
       .from('system_settings')
       .update({
-        value: { tags: params.tagSlugs },
-        updated_by: params.currentUserId,
+        value: { tags: parameters.tagSlugs },
+        updated_by: parameters.currentUserId,
         updated_at: new Date().toISOString(),
       })
       .eq('key', 'featured_tags');
@@ -534,10 +534,10 @@ export async function updateFeaturedTags(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_featured_tags',
       targetType: 'setting',
-      details: { tags: params.tagSlugs },
+      details: { tags: parameters.tagSlugs },
     });
 
     return { success: true };

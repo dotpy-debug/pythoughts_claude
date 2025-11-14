@@ -8,7 +8,7 @@ type MentionUser = {
   avatar_url: string | null;
 };
 
-type MentionsInputProps = {
+type MentionsInputProperties = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -26,14 +26,14 @@ export function MentionsInput({
   rows = 4,
   onKeyDown,
   autoFocus,
-}: MentionsInputProps) {
+}: MentionsInputProperties) {
   const [showMentions, setShowMentions] = useState(false);
   const [mentionUsers, setMentionUsers] = useState<MentionUser[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [mentionQuery, setMentionQuery] = useState('');
   const [cursorPosition, setCursorPosition] = useState(0);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const mentionsRef = useRef<HTMLDivElement>(null);
+  const textareaReference = useRef<HTMLTextAreaElement>(null);
+  const mentionsReference = useRef<HTMLDivElement>(null);
 
   // Fetch users for mentions autocomplete
   useEffect(() => {
@@ -66,10 +66,10 @@ export function MentionsInput({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        mentionsRef.current &&
-        !mentionsRef.current.contains(event.target as Node) &&
-        textareaRef.current &&
-        !textareaRef.current.contains(event.target as Node)
+        mentionsReference.current &&
+        !mentionsReference.current.contains(event.target as Node) &&
+        textareaReference.current &&
+        !textareaReference.current.contains(event.target as Node)
       ) {
         setShowMentions(false);
       }
@@ -87,11 +87,13 @@ export function MentionsInput({
     setCursorPosition(cursor);
 
     // Check if we should show mentions
-    const textBeforeCursor = newValue.substring(0, cursor);
+    const textBeforeCursor = newValue.slice(0, Math.max(0, cursor));
     const lastAtIndex = textBeforeCursor.lastIndexOf('@');
 
-    if (lastAtIndex !== -1) {
-      const textAfterAt = textBeforeCursor.substring(lastAtIndex + 1);
+    if (lastAtIndex === -1) {
+      setShowMentions(false);
+    } else {
+      const textAfterAt = textBeforeCursor.slice(Math.max(0, lastAtIndex + 1));
 
       // Only show mentions if there's no space after @
       if (!textAfterAt.includes(' ') && !textAfterAt.includes('\n')) {
@@ -101,21 +103,19 @@ export function MentionsInput({
       } else {
         setShowMentions(false);
       }
-    } else {
-      setShowMentions(false);
     }
   };
 
   const insertMention = (username: string) => {
-    if (!textareaRef.current) return;
+    if (!textareaReference.current) return;
 
-    const textBeforeCursor = value.substring(0, cursorPosition);
-    const textAfterCursor = value.substring(cursorPosition);
+    const textBeforeCursor = value.slice(0, Math.max(0, cursorPosition));
+    const textAfterCursor = value.slice(Math.max(0, cursorPosition));
     const lastAtIndex = textBeforeCursor.lastIndexOf('@');
 
     if (lastAtIndex !== -1) {
       const newValue =
-        textBeforeCursor.substring(0, lastAtIndex) +
+        textBeforeCursor.slice(0, Math.max(0, lastAtIndex)) +
         `@${username} ` +
         textAfterCursor;
 
@@ -125,11 +125,11 @@ export function MentionsInput({
 
       // Set cursor position after mention
       setTimeout(() => {
-        if (textareaRef.current) {
+        if (textareaReference.current) {
           const newCursor = lastAtIndex + username.length + 2; // +2 for @ and space
-          textareaRef.current.selectionStart = newCursor;
-          textareaRef.current.selectionEnd = newCursor;
-          textareaRef.current.focus();
+          textareaReference.current.selectionStart = newCursor;
+          textareaReference.current.selectionEnd = newCursor;
+          textareaReference.current.focus();
         }
       }, 0);
     }
@@ -144,32 +144,36 @@ export function MentionsInput({
     if (!showMentions || mentionUsers.length === 0) return;
 
     switch (e.key) {
-      case 'ArrowDown':
+      case 'ArrowDown': {
         e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % mentionUsers.length);
+        setSelectedIndex((previous) => (previous + 1) % mentionUsers.length);
         break;
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + mentionUsers.length) % mentionUsers.length);
+        setSelectedIndex((previous) => (previous - 1 + mentionUsers.length) % mentionUsers.length);
         break;
+      }
       case 'Enter':
-      case 'Tab':
+      case 'Tab': {
         if (showMentions && mentionUsers[selectedIndex]) {
           e.preventDefault();
           insertMention(mentionUsers[selectedIndex].username);
         }
         break;
-      case 'Escape':
+      }
+      case 'Escape': {
         e.preventDefault();
         setShowMentions(false);
         break;
+      }
     }
   };
 
   return (
     <div className="relative">
       <textarea
-        ref={textareaRef}
+        ref={textareaReference}
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
@@ -181,7 +185,7 @@ export function MentionsInput({
 
       {showMentions && mentionUsers.length > 0 && (
         <div
-          ref={mentionsRef}
+          ref={mentionsReference}
           className="absolute bottom-full left-0 mb-2 w-72 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden z-50"
         >
           <div className="px-3 py-2 border-b border-gray-800">

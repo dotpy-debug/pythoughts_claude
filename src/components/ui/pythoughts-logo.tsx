@@ -1,11 +1,11 @@
 'use client';
 
-interface PyThoughtsLogoProps {
+interface PyThoughtsLogoProperties {
   compact?: boolean;
   className?: string;
 }
 
-export default function PyThoughtsLogo({ compact = false, className = '' }: PyThoughtsLogoProps) {
+export default function PyThoughtsLogo({ compact = false, className = '' }: PyThoughtsLogoProperties) {
   const size = compact ? 32 : 48;
   
   return (
@@ -98,9 +98,9 @@ export default function PyThoughtsLogo({ compact = false, className = '' }: PyTh
               { path: 'M40,40 L38,48 L42,56 L40,65', delay: '0.9s' },
               { path: 'M40,40 L32,44 L24,50 L18,53', delay: '1.2s' },
               { path: 'M40,40 L32,36 L26,30 L18,27', delay: '1.5s' }
-            ].map((lightning, i) => (
+            ].map((lightning, index) => (
               <path
-                key={`lightning-${i}`}
+                key={`lightning-${index}`}
                 d={lightning.path}
                 stroke="url(#lightningGradient)"
                 strokeWidth="1.5"
@@ -133,8 +133,8 @@ export default function PyThoughtsLogo({ compact = false, className = '' }: PyTh
             [40, 40, 40, 65], [40, 40, 18, 53], [40, 40, 18, 27],
             [40, 15, 62, 27], [62, 27, 62, 53], [62, 53, 40, 65],
             [40, 65, 18, 53], [18, 53, 18, 27], [18, 27, 40, 15]
-          ].map((coords, i) => (
-            <g key={i}>
+          ].map((coords, index) => (
+            <g key={index}>
               {/* Base line */}
               <line
                 x1={coords[0]} y1={coords[1]} x2={coords[2]} y2={coords[3]}
@@ -145,7 +145,7 @@ export default function PyThoughtsLogo({ compact = false, className = '' }: PyTh
               >
                 <animate attributeName="opacity" 
                   values="0.5; 0.8; 0.5" 
-                  dur={`${2 + i * 0.15}s`}
+                  dur={`${2 + index * 0.15}s`}
                   repeatCount="indefinite" />
               </line>
               {/* Animated data flow */}
@@ -158,19 +158,19 @@ export default function PyThoughtsLogo({ compact = false, className = '' }: PyTh
               >
                 <animate attributeName="stroke-dasharray" 
                   values="0 100; 50 50; 100 0" 
-                  dur={`${2 + i * 0.1}s`}
+                  dur={`${2 + index * 0.1}s`}
                   repeatCount="indefinite" />
                 <animate attributeName="stroke-dashoffset" 
                   values="0; -100" 
-                  dur={`${2 + i * 0.1}s`}
+                  dur={`${2 + index * 0.1}s`}
                   repeatCount="indefinite" />
               </line>
             </g>
           ))}
 
           {/* Outer Nodes with pulse animation */}
-          {[[40, 15], [62, 27], [62, 53], [40, 65], [18, 53], [18, 27]].map((pos, i) => (
-            <g key={i}>
+          {[[40, 15], [62, 27], [62, 53], [40, 65], [18, 53], [18, 27]].map((pos, index) => (
+            <g key={index}>
               {/* Pulse ring */}
               <circle
                 cx={pos[0]} cy={pos[1]} r="4"
@@ -181,11 +181,11 @@ export default function PyThoughtsLogo({ compact = false, className = '' }: PyTh
               >
                 <animate attributeName="r" 
                   values="4; 9; 4" 
-                  dur={`${2.5 + i * 0.3}s`}
+                  dur={`${2.5 + index * 0.3}s`}
                   repeatCount="indefinite" />
                 <animate attributeName="opacity" 
                   values="0.8; 0; 0.8" 
-                  dur={`${2.5 + i * 0.3}s`}
+                  dur={`${2.5 + index * 0.3}s`}
                   repeatCount="indefinite" />
               </circle>
               {/* Node */}
@@ -195,7 +195,7 @@ export default function PyThoughtsLogo({ compact = false, className = '' }: PyTh
               >
                 <animate attributeName="r" 
                   values="4; 5.2; 4" 
-                  dur={`${2.5 + i * 0.3}s`}
+                  dur={`${2.5 + index * 0.3}s`}
                   repeatCount="indefinite" />
               </circle>
             </g>

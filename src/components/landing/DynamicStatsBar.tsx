@@ -60,7 +60,7 @@ export const DynamicStatsBar = memo(function DynamicStatsBar() {
 /**
  * Individual stat card with animated counter
  */
-interface StatCardProps {
+interface StatCardProperties {
   icon: React.ReactNode;
   value: number;
   label: string;
@@ -74,7 +74,7 @@ const StatCard = memo(function StatCard({
   label,
   color,
   format = 'number',
-}: StatCardProps) {
+}: StatCardProperties) {
   const [displayValue, setDisplayValue] = useState(0);
 
   // Animated counter effect
@@ -100,12 +100,12 @@ const StatCard = memo(function StatCard({
   }, [value]);
 
   // Format the displayed value
-  const formatValue = (num: number): string => {
+  const formatValue = (number_: number): string => {
     if (format === 'abbreviated') {
-      if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-      if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+      if (number_ >= 1_000_000) return `${(number_ / 1_000_000).toFixed(1)}M`;
+      if (number_ >= 1000) return `${(number_ / 1000).toFixed(1)}K`;
     }
-    return num.toLocaleString();
+    return number_.toLocaleString();
   };
 
   return (

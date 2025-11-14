@@ -58,7 +58,7 @@ export async function publishScheduledPosts(): Promise<number> {
         // Add tags if any
         if (post && draft.tags && Array.isArray(draft.tags) && draft.tags.length > 0) {
           for (const tagName of draft.tags) {
-            const slug = tagName.toLowerCase().replace(/\s+/g, '-');
+            const slug = tagName.toLowerCase().replaceAll(/\s+/g, '-');
 
             // Find or create tag
             const { data: existingTag } = await supabase

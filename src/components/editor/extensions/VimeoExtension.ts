@@ -166,7 +166,7 @@ export const Vimeo = Node.create<VimeoOptions>({
       videoId: {
         default: null,
         parseHTML: (element) => {
-          return element.getAttribute('data-vimeo-id');
+          return element.dataset.vimeoId;
         },
         renderHTML: (attributes) => {
           if (!attributes.videoId) {

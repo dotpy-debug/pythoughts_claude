@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Profile, Post } from '../lib/supabase';
 import { ShadcnButton } from '../components/ui/ShadcnButton';
 
-const PostList = lazy(() => import('../components/posts/PostList').then(mod => ({ default: mod.PostList })));
+const PostList = lazy(() => import('../components/posts/PostList').then(module_ => ({ default: module_.PostList })));
 
 type UserStats = {
   totalPosts: number;
@@ -106,7 +106,7 @@ export function UserProfilePage() {
         if (error) throw error;
 
         setIsFollowing(false);
-        setStats(prev => ({ ...prev, totalFollowers: prev.totalFollowers - 1 }));
+        setStats(previous => ({ ...previous, totalFollowers: previous.totalFollowers - 1 }));
       } else {
         // Follow
         const { error } = await supabase
@@ -119,7 +119,7 @@ export function UserProfilePage() {
         if (error) throw error;
 
         setIsFollowing(true);
-        setStats(prev => ({ ...prev, totalFollowers: prev.totalFollowers + 1 }));
+        setStats(previous => ({ ...previous, totalFollowers: previous.totalFollowers + 1 }));
       }
     } catch (error) {
       console.error('Error following/unfollowing user:', error);
@@ -188,11 +188,11 @@ export function UserProfilePage() {
             >
               {followLoading ? (
                 <Loader2 className="animate-spin mr-2" size={16} />
-              ) : isFollowing ? (
+              ) : (isFollowing ? (
                 <UserMinus className="mr-2" size={16} />
               ) : (
                 <UserPlus className="mr-2" size={16} />
-              )}
+              ))}
               {isFollowing ? 'Unfollow' : 'Follow'}
             </ShadcnButton>
           )}

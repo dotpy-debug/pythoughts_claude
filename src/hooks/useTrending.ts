@@ -49,19 +49,19 @@ export function useTrending(options: UseTrendingOptions = {}): UseTrendingReturn
   const [error, setError] = useState<Error | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const refreshIntervalReference = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerReference = useRef<AbortController | null>(null);
 
   /**
    * Fetch trending posts from the API
    */
   const fetchTrendingPosts = useCallback(async (showLoading = true) => {
     // Cancel previous request if still pending
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+    if (abortControllerReference.current) {
+      abortControllerReference.current.abort();
     }
 
-    abortControllerRef.current = new AbortController();
+    abortControllerReference.current = new AbortController();
 
     try {
       if (showLoading) {
@@ -71,22 +71,18 @@ export function useTrending(options: UseTrendingOptions = {}): UseTrendingReturn
 
       let trendingPosts: Post[];
 
-      if (category) {
-        trendingPosts = await getTrendingPostsByCategory(category, limit);
-      } else {
-        trendingPosts = await getTrendingPosts(limit);
-      }
+      trendingPosts = await (category ? getTrendingPostsByCategory(category, limit) : getTrendingPosts(limit));
 
       setPosts(trendingPosts);
       setLastRefreshed(new Date());
-    } catch (err) {
+    } catch (error_) {
       // Ignore abort errors
-      if (err instanceof Error && err.name === 'AbortError') {
+      if (error_ instanceof Error && error_.name === 'AbortError') {
         return;
       }
 
-      console.error('[useTrending] Error fetching trending posts:', err);
-      setError(err instanceof Error ? err : new Error('Failed to fetch trending posts'));
+      console.error('[useTrending] Error fetching trending posts:', error_);
+      setError(error_ instanceof Error ? error_ : new Error('Failed to fetch trending posts'));
     } finally {
       if (showLoading) {
         setLoading(false);
@@ -108,9 +104,9 @@ export function useTrending(options: UseTrendingOptions = {}): UseTrendingReturn
     try {
       await invalidateTrendingCache();
       await fetchTrendingPosts(true);
-    } catch (err) {
-      console.error('[useTrending] Error invalidating cache:', err);
-      setError(err instanceof Error ? err : new Error('Failed to invalidate cache'));
+    } catch (error_) {
+      console.error('[useTrending] Error invalidating cache:', error_);
+      setError(error_ instanceof Error ? error_ : new Error('Failed to invalidate cache'));
     }
   }, [fetchTrendingPosts]);
 
@@ -123,7 +119,7 @@ export function useTrending(options: UseTrendingOptions = {}): UseTrendingReturn
 
     // Set up auto-refresh if enabled
     if (autoRefresh) {
-      refreshIntervalRef.current = setInterval(() => {
+      refreshIntervalReference.current = setInterval(() => {
         // Background refresh without showing loading state
         fetchTrendingPosts(false);
       }, refreshInterval);
@@ -131,11 +127,11 @@ export function useTrending(options: UseTrendingOptions = {}): UseTrendingReturn
 
     // Cleanup function
     return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
+      if (refreshIntervalReference.current) {
+        clearInterval(refreshIntervalReference.current);
       }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (abortControllerReference.current) {
+        abortControllerReference.current.abort();
       }
     };
   }, [fetchTrendingPosts, autoRefresh, refreshInterval]);
@@ -178,8 +174,8 @@ export function useTrendingWithOptimisticUpdates(
    * Optimistically update vote count for a post
    */
   const optimisticVote = useCallback((postId: string, voteType: 1 | -1) => {
-    setPosts((prevPosts: Post[]) =>
-      prevPosts.map((post) =>
+    setPosts((previousPosts: Post[]) =>
+      previousPosts.map((post) =>
         post.id === postId
           ? { ...post, vote_count: post.vote_count + voteType }
           : post
@@ -196,8 +192,8 @@ export function useTrendingWithOptimisticUpdates(
    * Optimistically update comment count for a post
    */
   const optimisticUpdateCommentCount = useCallback((postId: string, delta: number) => {
-    setPosts((prevPosts: Post[]) =>
-      prevPosts.map((post) =>
+    setPosts((previousPosts: Post[]) =>
+      previousPosts.map((post) =>
         post.id === postId
           ? { ...post, comment_count: post.comment_count + delta }
           : post
@@ -253,12 +249,12 @@ export function useTrendingCategories(
             loading: false,
             error: null,
           };
-        } catch (err) {
+        } catch (error) {
           return {
             category,
             posts: [],
             loading: false,
-            error: err instanceof Error ? err : new Error('Failed to fetch'),
+            error: error instanceof Error ? error : new Error('Failed to fetch'),
           };
         }
       });

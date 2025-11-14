@@ -159,7 +159,7 @@ export default async function BlogPostPage({
     .from('posts')
     .update({ view_count: (post.view_count ?? 0) + 1 })
     .eq('id', post.id)
-    .then(null, (err: Error) => console.error('Failed to increment view count:', err));
+    .then(null, (error: Error) => console.error('Failed to increment view count:', error));
 
   return <BlogPostView post={post} />;
 }

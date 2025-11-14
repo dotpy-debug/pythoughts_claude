@@ -3,13 +3,13 @@ import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
-type BookmarkButtonProps = {
+type BookmarkButtonProperties = {
   postId: string;
   variant?: 'default' | 'compact';
   showLabel?: boolean;
 };
 
-export function BookmarkButton({ postId, variant = 'default', showLabel = false }: BookmarkButtonProps) {
+export function BookmarkButton({ postId, variant = 'default', showLabel = false }: BookmarkButtonProperties) {
   const { user } = useAuth();
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [loading, setLoading] = useState(false);

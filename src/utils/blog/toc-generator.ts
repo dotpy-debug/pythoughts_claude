@@ -106,9 +106,9 @@ export class TOCGenerator {
     const root: TOCItem[] = [];
     const stack: TOCItem[] = [];
 
-    flatItems.forEach((item) => {
+    for (const item of flatItems) {
       // Pop stack until we find correct parent
-      while (stack.length > 0 && stack[stack.length - 1].level >= item.level) {
+      while (stack.length > 0 && stack.at(-1).level >= item.level) {
         stack.pop();
       }
 
@@ -117,13 +117,13 @@ export class TOCGenerator {
       if (stack.length === 0) {
         root.push(newItem);
       } else {
-        const parent = stack[stack.length - 1];
+        const parent = stack.at(-1);
         if (!parent.children) parent.children = [];
         parent.children.push(newItem);
       }
 
       stack.push(newItem);
-    });
+    }
 
     return root;
   }
@@ -136,12 +136,12 @@ export class TOCGenerator {
     const result: TOCItem[] = [];
 
     const traverse = (items: TOCItem[]) => {
-      items.forEach((item) => {
+      for (const item of items) {
         result.push(item);
         if (item.children) {
           traverse(item.children);
         }
-      });
+      }
     };
 
     traverse(items);

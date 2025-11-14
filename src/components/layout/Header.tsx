@@ -15,14 +15,14 @@ type SearchSuggestion = {
   subtitle?: string;
 };
 
-type HeaderProps = {
+type HeaderProperties = {
   onCreatePost: () => void;
 };
 
-export function Header({ onCreatePost }: HeaderProps) {
+export function Header({ onCreatePost }: HeaderProperties) {
   const location = useLocation();
   const navigate = useNavigate();
-  const currentTab = location.pathname === '/blogs' ? 'blogs' : location.pathname === '/tasks' ? 'tasks' : 'newsfeed';
+  const currentTab = location.pathname === '/blogs' ? 'blogs' : (location.pathname === '/tasks' ? 'tasks' : 'newsfeed');
   const { user, profile, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -32,8 +32,8 @@ export function Header({ onCreatePost }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
+  const searchReference = useRef<HTMLDivElement>(null);
+  const userMenuReference = useRef<HTMLDivElement>(null);
 
   const handleSignOut = async () => {
     await signOut();
@@ -48,7 +48,7 @@ export function Header({ onCreatePost }: HeaderProps) {
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (searchReference.current && !searchReference.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
     };
@@ -60,7 +60,7 @@ export function Header({ onCreatePost }: HeaderProps) {
   // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      if (userMenuReference.current && !userMenuReference.current.contains(event.target as Node)) {
         setUserMenuOpen(false);
       }
     };
@@ -101,7 +101,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               id: post.id,
               type: 'post' as const,
               title: post.title,
-              subtitle: post.content?.substring(0, 60) + '...',
+              subtitle: post.content?.slice(0, 60) + '...',
             }))
           );
         }
@@ -125,8 +125,8 @@ export function Header({ onCreatePost }: HeaderProps) {
         }
 
         setSuggestions(suggestions.slice(0, 5));
-      } catch (err) {
-        logger.error('Error fetching search suggestions', { searchQuery, errorMessage: err instanceof Error ? err.message : String(err) });
+      } catch (error) {
+        logger.error('Error fetching search suggestions', { searchQuery, errorMessage: error instanceof Error ? error.message : String(error) });
       }
     };
 
@@ -209,7 +209,7 @@ export function Header({ onCreatePost }: HeaderProps) {
 
             <div className="hidden md:flex items-center space-x-4">
               {/* Search Bar */}
-              <div className="relative" ref={searchRef}>
+              <div className="relative" ref={searchReference}>
                 <form onSubmit={handleSearch}>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={16} />
@@ -264,7 +264,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                     <span>{currentTab === 'tasks' ? 'new_task' : 'new_post'}</span>
                   </button>
 
-                  <div className="relative" ref={userMenuRef}>
+                  <div className="relative" ref={userMenuReference}>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
                       className="flex items-center space-x-2 text-gray-300 hover:text-terminal-green transition-colors"

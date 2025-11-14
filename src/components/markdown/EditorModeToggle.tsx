@@ -15,7 +15,7 @@ import { cn } from '../../lib/utils';
 
 export type EditorMode = 'visual' | 'markdown';
 
-interface EditorModeToggleProps {
+interface EditorModeToggleProperties {
   /**
    * Current editor mode
    */
@@ -63,7 +63,7 @@ export function EditorModeToggle({
   hasUnsavedChanges = false,
   className,
   showWarning = true,
-}: EditorModeToggleProps) {
+}: EditorModeToggleProperties) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingMode, setPendingMode] = useState<EditorMode | null>(null);
 
@@ -193,7 +193,7 @@ export function CompactEditorModeToggle({
   mode,
   onModeChange,
   className,
-}: Pick<EditorModeToggleProps, 'mode' | 'onModeChange' | 'className'>) {
+}: Pick<EditorModeToggleProperties, 'mode' | 'onModeChange' | 'className'>) {
   return (
     <button
       onClick={() => onModeChange(mode === 'visual' ? 'markdown' : 'visual')}

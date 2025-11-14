@@ -42,20 +42,20 @@ export function useLandingStats(
   const [error, setError] = useState<Error | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const mountedRef = useRef<boolean>(true);
+  const refreshIntervalReference = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerReference = useRef<AbortController | null>(null);
+  const mountedReference = useRef<boolean>(true);
 
   /**
    * Fetch landing page stats from the API
    */
   const fetchLandingStats = useCallback(async (showLoading = true) => {
     // Cancel previous request if still pending
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+    if (abortControllerReference.current) {
+      abortControllerReference.current.abort();
     }
 
-    abortControllerRef.current = new AbortController();
+    abortControllerReference.current = new AbortController();
 
     try {
       if (showLoading) {
@@ -65,7 +65,7 @@ export function useLandingStats(
 
       const fetchedStats = await getLandingStats();
 
-      if (mountedRef.current) {
+      if (mountedReference.current) {
         setStats(fetchedStats);
         setLastRefreshed(new Date());
         setError(null);
@@ -73,15 +73,15 @@ export function useLandingStats(
 // @ts-expect-error - LandingStats extends LogMetadata conceptually
 
       logger.debug('Landing stats fetched successfully', fetchedStats);
-    } catch (err) {
-      if (mountedRef.current && err !== 'AbortError') {
+    } catch (error_) {
+      if (mountedReference.current && error_ !== 'AbortError') {
         const error =
-          err instanceof Error ? err : new Error('Failed to fetch landing stats');
+          error_ instanceof Error ? error_ : new Error('Failed to fetch landing stats');
         setError(error);
         logger.error('Error fetching landing stats', error);
       }
     } finally {
-      if (mountedRef.current) {
+      if (mountedReference.current) {
         setLoading(false);
       }
     }
@@ -98,14 +98,14 @@ export function useLandingStats(
    * Initial load and auto-refresh setup
    */
   useEffect(() => {
-    mountedRef.current = true;
+    mountedReference.current = true;
 
     // Initial fetch
     fetchLandingStats();
 
     // Set up auto-refresh if enabled
     if (autoRefresh) {
-      refreshIntervalRef.current = setInterval(() => {
+      refreshIntervalReference.current = setInterval(() => {
         fetchLandingStats(false);
       }, refreshInterval);
 
@@ -116,14 +116,14 @@ export function useLandingStats(
 
     // Cleanup
     return () => {
-      mountedRef.current = false;
+      mountedReference.current = false;
 
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
+      if (refreshIntervalReference.current) {
+        clearInterval(refreshIntervalReference.current);
       }
 
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (abortControllerReference.current) {
+        abortControllerReference.current.abort();
       }
     };
   }, [fetchLandingStats, autoRefresh, refreshInterval]);

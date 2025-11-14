@@ -2,17 +2,17 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
-type ReadingProgressBarProps = {
+type ReadingProgressBarProperties = {
   postId: string;
   contentRef: React.RefObject<HTMLDivElement>;
 };
 
-export function ReadingProgressBar({ postId, contentRef }: ReadingProgressBarProps) {
+export function ReadingProgressBar({ postId, contentRef }: ReadingProgressBarProperties) {
   const { user } = useAuth();
   const [progress, setProgress] = useState(0);
   const [readingTime, setReadingTime] = useState(0);
-  const startTimeRef = useRef<number>(Date.now());
-  const lastSaveRef = useRef<number>(Date.now());
+  const startTimeReference = useRef<number>(Date.now());
+  const lastSaveReference = useRef<number>(Date.now());
 
   const saveProgress = useCallback(async (
     percentage: number,
@@ -49,31 +49,31 @@ export function ReadingProgressBar({ postId, contentRef }: ReadingProgressBarPro
     const element = contentRef.current;
     const scrollTop = window.scrollY;
     const windowHeight = window.innerHeight;
-    const docHeight = element.offsetHeight + element.offsetTop;
+    const documentHeight = element.offsetHeight + element.offsetTop;
 
-    const totalDocScrollLength = docHeight - windowHeight;
+    const totalDocumentScrollLength = documentHeight - windowHeight;
     const scrollPosition = scrollTop - element.offsetTop;
 
     let percentage = 0;
-    if (scrollPosition > 0 && totalDocScrollLength > 0) {
+    if (scrollPosition > 0 && totalDocumentScrollLength > 0) {
       percentage = Math.min(
         100,
-        Math.max(0, (scrollPosition / totalDocScrollLength) * 100)
+        Math.max(0, (scrollPosition / totalDocumentScrollLength) * 100)
       );
     }
 
     setProgress(percentage);
 
     const currentTime = Date.now();
-    const timeSpent = Math.floor((currentTime - startTimeRef.current) / 1000);
+    const timeSpent = Math.floor((currentTime - startTimeReference.current) / 1000);
     setReadingTime(timeSpent);
 
     if (
       user &&
-      currentTime - lastSaveRef.current > 5000 &&
+      currentTime - lastSaveReference.current > 5000 &&
       percentage > 0
     ) {
-      lastSaveRef.current = currentTime;
+      lastSaveReference.current = currentTime;
       saveProgress(percentage, scrollPosition, timeSpent);
     }
   }, [contentRef, user, saveProgress]);
@@ -91,7 +91,7 @@ export function ReadingProgressBar({ postId, contentRef }: ReadingProgressBarPro
         .maybeSingle();
 
       if (data && data.last_position > 0 && !data.completed) {
-        const shouldResume = window.confirm(
+        const shouldResume = globalThis.confirm(
           `Would you like to resume reading from where you left off (${data.progress_percentage}%)?`
         );
         if (shouldResume) {

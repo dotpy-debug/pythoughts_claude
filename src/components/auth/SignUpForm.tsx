@@ -5,12 +5,12 @@ import { Button } from '../ui/Button';
 import { PasswordStrengthMeter } from './PasswordStrengthMeter';
 import { isValidUsername, isValidEmail, checkRateLimit } from '../../utils/security';
 
-type SignUpFormProps = {
+type SignUpFormProperties = {
   onSuccess: () => void;
   onToggleMode: () => void;
 };
 
-export function SignUpForm({ onSuccess, onToggleMode }: SignUpFormProps) {
+export function SignUpForm({ onSuccess, onToggleMode }: SignUpFormProperties) {
   const { signUp } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,7 +62,7 @@ export function SignUpForm({ onSuccess, onToggleMode }: SignUpFormProps) {
     }
 
     // Check rate limit (5 attempts per 60 seconds per email)
-    const rateLimit = checkRateLimit(`signup:${email}`, 5, 60000);
+    const rateLimit = checkRateLimit(`signup:${email}`, 5, 60_000);
     if (!rateLimit.allowed) {
       const waitTime = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
       setError(`Too many signup attempts. Please wait ${waitTime} seconds before trying again.`);

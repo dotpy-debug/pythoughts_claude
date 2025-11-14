@@ -50,12 +50,12 @@ type Submission = {
   };
 };
 
-type SubmissionReviewProps = {
+type SubmissionReviewProperties = {
   submission: Submission;
   onReviewed: () => void;
 };
 
-export function SubmissionReview({ submission, onReviewed }: SubmissionReviewProps) {
+export function SubmissionReview({ submission, onReviewed }: SubmissionReviewProperties) {
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [reviewAction, setReviewAction] = useState<'approve' | 'reject' | 'revision' | null>(null);
   const [reviewNotes, setReviewNotes] = useState('');
@@ -136,9 +136,9 @@ export function SubmissionReview({ submission, onReviewed }: SubmissionReviewPro
       setReviewAction(null);
       setReviewNotes('');
       onReviewed();
-    } catch (err) {
-      logger.error('Failed to review submission', err as Error);
-      setError(err instanceof Error ? err.message : 'Failed to review submission');
+    } catch (error_) {
+      logger.error('Failed to review submission', error_ as Error);
+      setError(error_ instanceof Error ? error_.message : 'Failed to review submission');
     } finally {
       setIsSubmitting(false);
     }
@@ -253,9 +253,9 @@ export function SubmissionReview({ submission, onReviewed }: SubmissionReviewPro
                 placeholder={
                   reviewAction === 'approve'
                     ? 'Add any comments for the author...'
-                    : reviewAction === 'reject'
+                    : (reviewAction === 'reject'
                     ? 'Explain why this submission was rejected...'
-                    : 'What changes would you like the author to make?'
+                    : 'What changes would you like the author to make?')
                 }
                 rows={4}
                 maxLength={1000}

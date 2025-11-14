@@ -17,9 +17,9 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 
 /**
- * Available reaction types
+ * Available reaction types (module private)
  */
-export const REACTION_TYPES = {
+const REACTION_TYPES = {
   thumbs_up: { emoji: '👍', label: 'Thumbs up' },
   heart: { emoji: '❤️', label: 'Heart' },
   laugh: { emoji: '😂', label: 'Laugh' },
@@ -28,17 +28,9 @@ export const REACTION_TYPES = {
   thumbs_down: { emoji: '👎', label: 'Thumbs down' },
 } as const;
 
-export type ReactionType = keyof typeof REACTION_TYPES;
+type ReactionType = keyof typeof REACTION_TYPES;
 
-export interface CommentReaction {
-  id: string;
-  comment_id: string;
-  user_id: string;
-  reaction_type: ReactionType;
-  created_at: string;
-}
-
-export interface CommentReactionsProps {
+interface CommentReactionsProperties {
   commentId: string;
   reactionCounts?: Record<string, number>;
   className?: string;
@@ -59,12 +51,10 @@ export function CommentReactions({
   commentId,
   reactionCounts = {},
   className,
-}: CommentReactionsProps) {
+}: CommentReactionsProperties) {
   const { user } = useAuth();
   const [showPicker, setShowPicker] = useState(false);
-  const [userReactions, setUserReactions] = useState<Set<ReactionType>>(
-    new Set()
-  );
+  const [userReactions, setUserReactions] = useState<Set<ReactionType>>(new Set());
   const [loading, setLoading] = useState(false);
 
   const loadUserReactions = useCallback(async () => {
@@ -116,24 +106,22 @@ export function CommentReactions({
 
         if (error) throw error;
 
-        setUserReactions((prev) => {
-          const newSet = new Set(prev);
+        setUserReactions((previous) => {
+          const newSet = new Set(previous);
           newSet.delete(reactionType);
           return newSet;
         });
       } else {
         // Add reaction
-        const { error } = await supabase
-          .from('comment_reactions')
-          .insert({
-            comment_id: commentId,
-            user_id: user.id,
-            reaction_type: reactionType,
-          });
+        const { error } = await supabase.from('comment_reactions').insert({
+          comment_id: commentId,
+          user_id: user.id,
+          reaction_type: reactionType,
+        });
 
         if (error) throw error;
 
-        setUserReactions((prev) => new Set([...prev, reactionType]));
+        setUserReactions((previous) => new Set([...previous, reactionType]));
       }
 
       setShowPicker(false);
@@ -174,9 +162,7 @@ export function CommentReactions({
         >
           <span className="text-base leading-none">{reaction.emoji}</span>
           <span className="text-xs">{reaction.count}</span>
-          {reaction.userReacted && (
-            <Check size={12} className="text-terminal-green" />
-          )}
+          {reaction.userReacted && <Check size={12} className="text-terminal-green" />}
         </button>
       ))}
 
@@ -202,10 +188,7 @@ export function CommentReactions({
         {showPicker && user && (
           <>
             {/* Backdrop */}
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setShowPicker(false)}
-            />
+            <div className="fixed inset-0 z-40" onClick={() => setShowPicker(false)} />
 
             {/* Picker Dropdown */}
             <div className="absolute bottom-full left-0 mb-2 z-50 bg-gray-900 border-2 border-terminal-green rounded-lg shadow-2xl p-2">
@@ -231,12 +214,7 @@ export function CommentReactions({
                       <span className="text-xs text-gray-400 font-mono">
                         {config.label.split(' ')[0]}
                       </span>
-                      {hasReaction && (
-                        <Check
-                          size={12}
-                          className="text-terminal-green mt-1"
-                        />
-                      )}
+                      {hasReaction && <Check size={12} className="text-terminal-green mt-1" />}
                     </button>
                   );
                 })}

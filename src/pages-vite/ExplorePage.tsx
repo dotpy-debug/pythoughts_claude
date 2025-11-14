@@ -5,7 +5,7 @@ import { Post } from '../lib/supabase';
 import { TagExploration } from '../components/tags/TagExploration';
 import { AuthorRecommendations } from '../components/discovery/AuthorRecommendations';
 
-const PostList = lazy(() => import('../components/posts/PostList').then(mod => ({ default: mod.PostList })));
+const PostList = lazy(() => import('../components/posts/PostList').then(module_ => ({ default: module_.PostList })));
 
 export function ExplorePage() {
   const navigate = useNavigate();

@@ -68,10 +68,10 @@ export class MediaUploadService {
       const img = new Image();
       const url = URL.createObjectURL(file);
 
-      img.onload = () => {
+      img.addEventListener('load', () => {
         URL.revokeObjectURL(url);
         resolve({ width: img.width, height: img.height });
-      };
+      });
 
       img.onerror = () => {
         URL.revokeObjectURL(url);
@@ -91,7 +91,7 @@ export class MediaUploadService {
       const img = new Image();
       const url = URL.createObjectURL(file);
 
-      img.onload = () => {
+      img.addEventListener('load', () => {
         URL.revokeObjectURL(url);
 
         const canvas = document.createElement('canvas');
@@ -105,13 +105,13 @@ export class MediaUploadService {
         canvas.width = width;
         canvas.height = height;
 
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
+        const context = canvas.getContext('2d');
+        if (!context) {
           reject(new Error('Failed to get canvas context'));
           return;
         }
 
-        ctx.drawImage(img, 0, 0, width, height);
+        context.drawImage(img, 0, 0, width, height);
 
         canvas.toBlob(
           (blob) => {
@@ -130,7 +130,7 @@ export class MediaUploadService {
           file.type,
           0.85
         );
-      };
+      });
 
       img.onerror = () => {
         URL.revokeObjectURL(url);
@@ -168,8 +168,8 @@ export class MediaUploadService {
       });
     }
 
-    const fileExt = processedFile.name.split('.').pop();
-    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const fileExtension = processedFile.name.split('.').pop();
+    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(7)}.${fileExtension}`;
 
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
@@ -185,7 +185,7 @@ export class MediaUploadService {
 
     const { data: urlData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
 
-    const { data: mediaRecord, error: dbError } = await supabase
+    const { data: mediaRecord, error: databaseError } = await supabase
       .from('media_files')
       .insert({
         user_id: userId,
@@ -200,9 +200,9 @@ export class MediaUploadService {
       .select('id, filename, storage_path, file_type, file_size, width, height')
       .single();
 
-    if (dbError) {
+    if (databaseError) {
       await supabase.storage.from(STORAGE_BUCKET).remove([fileName]);
-      logger.error('Failed to save media record', new Error(dbError.message));
+      logger.error('Failed to save media record', new Error(databaseError.message));
       throw new Error('Failed to save media information');
     }
 
@@ -223,8 +223,8 @@ export class MediaUploadService {
 
     await this.ensureBucketExists();
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const fileExtension = file.name.split('.').pop();
+    const fileName = `${userId}/${Date.now()}-${Math.random().toString(36).slice(7)}.${fileExtension}`;
 
     const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
@@ -240,7 +240,7 @@ export class MediaUploadService {
 
     const { data: urlData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
 
-    const { data: mediaRecord, error: dbError } = await supabase
+    const { data: mediaRecord, error: databaseError } = await supabase
       .from('media_files')
       .insert({
         user_id: userId,
@@ -253,9 +253,9 @@ export class MediaUploadService {
       .select('id, filename, storage_path, file_type, file_size, width, height')
       .single();
 
-    if (dbError) {
+    if (databaseError) {
       await supabase.storage.from(STORAGE_BUCKET).remove([fileName]);
-      logger.error('Failed to save media record', new Error(dbError.message));
+      logger.error('Failed to save media record', new Error(databaseError.message));
       throw new Error('Failed to save media information');
     }
 
@@ -288,10 +288,10 @@ export class MediaUploadService {
       logger.error('Failed to delete file from storage', new Error(storageError.message));
     }
 
-    const { error: dbError } = await supabase.from('media_files').delete().eq('id', mediaId);
+    const { error: databaseError } = await supabase.from('media_files').delete().eq('id', mediaId);
 
-    if (dbError) {
-      logger.error('Failed to delete media record', new Error(dbError.message));
+    if (databaseError) {
+      logger.error('Failed to delete media record', new Error(databaseError.message));
       throw new Error('Failed to delete media');
     }
   }

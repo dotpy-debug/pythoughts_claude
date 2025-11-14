@@ -144,14 +144,14 @@ export function AuthorRecommendations() {
           .eq('follower_id', user.id)
           .eq('following_id', authorId);
 
-        setFollowingSet(prev => {
-          const next = new Set(prev);
+        setFollowingSet(previous => {
+          const next = new Set(previous);
           next.delete(authorId);
           return next;
         });
 
-        setAuthors(prev =>
-          prev.map(a =>
+        setAuthors(previous =>
+          previous.map(a =>
             a.id === authorId
               ? { ...a, is_following: false, follower_count: Math.max(0, a.follower_count - 1) }
               : a
@@ -163,10 +163,10 @@ export function AuthorRecommendations() {
           .from('user_follows')
           .insert({ follower_id: user.id, following_id: authorId });
 
-        setFollowingSet(prev => new Set(prev).add(authorId));
+        setFollowingSet(previous => new Set(previous).add(authorId));
 
-        setAuthors(prev =>
-          prev.map(a =>
+        setAuthors(previous =>
+          previous.map(a =>
             a.id === authorId
               ? { ...a, is_following: true, follower_count: a.follower_count + 1 }
               : a
@@ -192,8 +192,8 @@ export function AuthorRecommendations() {
   if (loading) {
     return (
       <div className="space-y-4">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-gray-900 border border-gray-700 rounded-lg p-4 animate-pulse">
+        {Array.from({length: 6}).map((_, index) => (
+          <div key={index} className="bg-gray-900 border border-gray-700 rounded-lg p-4 animate-pulse">
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-gray-800 rounded-full"></div>
               <div className="flex-1 space-y-2">

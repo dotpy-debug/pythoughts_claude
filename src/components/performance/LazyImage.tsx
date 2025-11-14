@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 
-interface LazyImageProps {
+interface LazyImageProperties {
   src: string;
   alt: string;
   className?: string;
@@ -23,23 +23,23 @@ export function LazyImage({
   onLoad,
   onError,
   threshold = 0.1,
-}: LazyImageProps) {
+}: LazyImageProperties) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const imgRef = useRef<HTMLDivElement>(null);
+  const imgReference = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!imgRef.current) return;
+    if (!imgReference.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             setIsInView(true);
             observer.disconnect();
           }
-        });
+        }
       },
       {
         rootMargin: '50px',
@@ -47,7 +47,7 @@ export function LazyImage({
       }
     );
 
-    observer.observe(imgRef.current);
+    observer.observe(imgReference.current);
 
     return () => {
       observer.disconnect();
@@ -66,7 +66,7 @@ export function LazyImage({
 
   return (
     <div
-      ref={imgRef}
+      ref={imgReference}
       className={`relative overflow-hidden ${placeholderClassName}`}
       style={{ width, height }}
     >

@@ -28,12 +28,12 @@ const badgeVariants = cva(
   }
 );
 
-export interface ShadcnBadgeProps
+export interface ShadcnBadgeProperties
   extends HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
-export function ShadcnBadge({ className, variant, ...props }: ShadcnBadgeProps) {
+export function ShadcnBadge({ className, variant, ...properties }: ShadcnBadgeProperties) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant }), className)} {...properties} />
   );
 }

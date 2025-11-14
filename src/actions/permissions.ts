@@ -15,11 +15,11 @@ import { logger } from '../lib/logger';
 /**
  * Get all admin roles
  */
-export async function getAdminRoles(params: {
+export async function getAdminRoles(parameters: {
   currentUserId: string;
 }): Promise<{ roles: AdminRole[]; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     const { data, error } = await supabase
       .from('admin_roles')
@@ -44,21 +44,21 @@ export async function getAdminRoles(params: {
 /**
  * Create a new role
  */
-export async function createAdminRole(params: {
+export async function createAdminRole(parameters: {
   currentUserId: string;
   name: string;
   description: string;
   permissions: Record<string, boolean | unknown>;
 }): Promise<{ role: AdminRole | null; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     const { data, error } = await supabase
       .from('admin_roles')
       .insert({
-        name: params.name,
-        description: params.description,
-        permissions: params.permissions,
+        name: parameters.name,
+        description: parameters.description,
+        permissions: parameters.permissions,
       })
       .select()
       .single();
@@ -69,11 +69,11 @@ export async function createAdminRole(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'create_admin_role',
       targetType: 'role',
       targetId: data.id,
-      details: { name: params.name },
+      details: { name: parameters.name },
     });
 
     return { role: data as AdminRole };
@@ -89,21 +89,21 @@ export async function createAdminRole(params: {
 /**
  * Update role permissions
  */
-export async function updateAdminRole(params: {
+export async function updateAdminRole(parameters: {
   currentUserId: string;
   roleId: string;
   updates: Partial<AdminRole>;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     const { error } = await supabase
       .from('admin_roles')
       .update({
-        ...params.updates,
+        ...parameters.updates,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.roleId);
+      .eq('id', parameters.roleId);
 
     if (error) {
       logger.error('Error updating admin role', { errorDetails: error });
@@ -111,11 +111,11 @@ export async function updateAdminRole(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'update_admin_role',
       targetType: 'role',
-      targetId: params.roleId,
-      details: { updates: params.updates },
+      targetId: parameters.roleId,
+      details: { updates: parameters.updates },
     });
 
     return { success: true };
@@ -131,25 +131,25 @@ export async function updateAdminRole(params: {
 /**
  * Delete a role
  */
-export async function deleteAdminRole(params: {
+export async function deleteAdminRole(parameters: {
   currentUserId: string;
   roleId: string;
 }): Promise<{ success: boolean; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     // Don't allow deleting default roles
     const { data: role } = await supabase
       .from('admin_roles')
       .select('name')
-      .eq('id', params.roleId)
+      .eq('id', parameters.roleId)
       .single();
 
     if (role && ['super_admin', 'admin', 'moderator', 'editor'].includes(role.name)) {
       return { success: false, error: 'Cannot delete default roles' };
     }
 
-    const { error } = await supabase.from('admin_roles').delete().eq('id', params.roleId);
+    const { error } = await supabase.from('admin_roles').delete().eq('id', parameters.roleId);
 
     if (error) {
       logger.error('Error deleting admin role', { errorDetails: error });
@@ -157,10 +157,10 @@ export async function deleteAdminRole(params: {
     }
 
     await logAdminActivity({
-      adminId: params.currentUserId,
+      adminId: parameters.currentUserId,
       actionType: 'delete_admin_role',
       targetType: 'role',
-      targetId: params.roleId,
+      targetId: parameters.roleId,
     });
 
     return { success: true };
@@ -176,17 +176,17 @@ export async function deleteAdminRole(params: {
 /**
  * Get users by role
  */
-export async function getUsersByRole(params: {
+export async function getUsersByRole(parameters: {
   currentUserId: string;
   role: string;
 }): Promise<{ users: Array<{ id: string; username: string; avatar_url: string | null; role: string; created_at: string }>; total: number; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
 
     const { data, error, count } = await supabase
       .from('profiles')
       .select('id, username, avatar_url, role, created_at', { count: 'exact' })
-      .eq('role', params.role)
+      .eq('role', parameters.role)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -310,11 +310,11 @@ export const AVAILABLE_PERMISSIONS = {
 /**
  * Get permission definitions
  */
-export async function getPermissionDefinitions(params: {
+export async function getPermissionDefinitions(parameters: {
   currentUserId: string;
 }): Promise<{ permissions: typeof AVAILABLE_PERMISSIONS; error?: string }> {
   try {
-    await requireRole(params.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
+    await requireRole(parameters.currentUserId, ADMIN_ROLES.SUPER_ADMIN);
     return { permissions: AVAILABLE_PERMISSIONS };
   } catch (error) {
     return {

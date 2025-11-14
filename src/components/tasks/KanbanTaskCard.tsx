@@ -5,7 +5,7 @@ import type { TaskWithDetails } from '../../actions/tasks';
 import { formatDistanceToNow } from '../../utils/dateUtils';
 import { sanitizeURL } from '../../utils/security';
 
-interface KanbanTaskCardProps {
+interface KanbanTaskCardProperties {
   task: TaskWithDetails;
   onClick?: () => void;
   isDragging?: boolean;
@@ -18,7 +18,7 @@ const priorityColors = {
   low: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
 };
 
-export function KanbanTaskCard({ task, onClick, isDragging }: KanbanTaskCardProps) {
+export function KanbanTaskCard({ task, onClick, isDragging }: KanbanTaskCardProperties) {
   const {
     attributes,
     listeners,

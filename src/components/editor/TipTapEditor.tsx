@@ -39,7 +39,7 @@ import { useState } from 'react';
 
 const lowlight = createLowlight(common);
 
-interface TipTapEditorProps {
+interface TipTapEditorProperties {
   content: string;
   onChange: (content: string) => void;
   placeholder?: string;
@@ -54,8 +54,8 @@ export function TipTapEditor({
   placeholder = 'Start writing your blog post...',
   onImageClick,
 
-  maxLength = 50000,
-}: TipTapEditorProps) {
+  maxLength = 50_000,
+}: TipTapEditorProperties) {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [showYoutubeInput, setShowYoutubeInput] = useState(false);
@@ -139,7 +139,7 @@ export function TipTapEditor({
   }
 
   const addImage = () => {
-    const url = window.prompt('Enter image URL:');
+    const url = globalThis.prompt('Enter image URL:');
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
     }

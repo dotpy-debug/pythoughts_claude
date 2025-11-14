@@ -8,7 +8,7 @@
 import { useEffect } from 'react';
 import { updateMetaTags } from '../../utils/seo';
 
-interface SEOHeadProps {
+interface SEOHeadProperties {
   /**
    * Page title (appears in browser tab and search results)
    * Max recommended: 60 characters
@@ -113,7 +113,7 @@ export function SEOHead({
   tags,
   robots = 'index, follow',
   structuredData,
-}: SEOHeadProps) {
+}: SEOHeadProperties) {
   useEffect(() => {
     // Update document title
     document.title = title;
@@ -122,7 +122,7 @@ export function SEOHead({
     updateMetaTags({
       title,
       description,
-      url: canonicalUrl || window.location.href,
+      url: canonicalUrl || globalThis.location.href,
       type,
       image,
     });
@@ -133,7 +133,7 @@ export function SEOHead({
       if (!keywordsTag) {
         keywordsTag = document.createElement('meta');
         keywordsTag.setAttribute('name', 'keywords');
-        document.head.appendChild(keywordsTag);
+        document.head.append(keywordsTag);
       }
       keywordsTag.setAttribute('content', keywords);
     }
@@ -144,7 +144,7 @@ export function SEOHead({
       if (!authorTag) {
         authorTag = document.createElement('meta');
         authorTag.setAttribute('name', 'author');
-        document.head.appendChild(authorTag);
+        document.head.append(authorTag);
       }
       authorTag.setAttribute('content', author);
     }
@@ -154,7 +154,7 @@ export function SEOHead({
     if (!robotsTag) {
       robotsTag = document.createElement('meta');
       robotsTag.setAttribute('name', 'robots');
-      document.head.appendChild(robotsTag);
+      document.head.append(robotsTag);
     }
     robotsTag.setAttribute('content', robots);
 
@@ -166,7 +166,7 @@ export function SEOHead({
         if (!publishedTag) {
           publishedTag = document.createElement('meta');
           publishedTag.setAttribute('property', 'article:published_time');
-          document.head.appendChild(publishedTag);
+          document.head.append(publishedTag);
         }
         publishedTag.setAttribute('content', publishedTime);
       }
@@ -177,7 +177,7 @@ export function SEOHead({
         if (!modifiedTag) {
           modifiedTag = document.createElement('meta');
           modifiedTag.setAttribute('property', 'article:modified_time');
-          document.head.appendChild(modifiedTag);
+          document.head.append(modifiedTag);
         }
         modifiedTag.setAttribute('content', modifiedTime);
       }
@@ -188,7 +188,7 @@ export function SEOHead({
         if (!sectionTag) {
           sectionTag = document.createElement('meta');
           sectionTag.setAttribute('property', 'article:section');
-          document.head.appendChild(sectionTag);
+          document.head.append(sectionTag);
         }
         sectionTag.setAttribute('content', section);
       }
@@ -196,15 +196,15 @@ export function SEOHead({
       // Tags
       if (tags && tags.length > 0) {
         // Remove existing article:tag meta tags
-        document.querySelectorAll('meta[property="article:tag"]').forEach(tag => tag.remove());
+        for (const tag of document.querySelectorAll('meta[property="article:tag"]')) tag.remove();
 
         // Add new tag meta tags
-        tags.forEach(tag => {
+        for (const tag of tags) {
           const tagMeta = document.createElement('meta');
           tagMeta.setAttribute('property', 'article:tag');
           tagMeta.setAttribute('content', tag);
-          document.head.appendChild(tagMeta);
-        });
+          document.head.append(tagMeta);
+        }
       }
 
       // Author
@@ -213,7 +213,7 @@ export function SEOHead({
         if (!articleAuthorTag) {
           articleAuthorTag = document.createElement('meta');
           articleAuthorTag.setAttribute('property', 'article:author');
-          document.head.appendChild(articleAuthorTag);
+          document.head.append(articleAuthorTag);
         }
         articleAuthorTag.setAttribute('content', author);
       }
@@ -225,7 +225,7 @@ export function SEOHead({
       if (!canonicalLink) {
         canonicalLink = document.createElement('link');
         canonicalLink.setAttribute('rel', 'canonical');
-        document.head.appendChild(canonicalLink);
+        document.head.append(canonicalLink);
       }
       canonicalLink.setAttribute('href', canonicalUrl);
     }
@@ -238,7 +238,7 @@ export function SEOHead({
         script = document.createElement('script');
         script.id = scriptId;
         script.type = 'application/ld+json';
-        document.head.appendChild(script);
+        document.head.append(script);
       }
       script.textContent = JSON.stringify(structuredData);
     }

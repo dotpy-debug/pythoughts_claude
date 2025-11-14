@@ -2,7 +2,7 @@ import { Smile, Heart, Laugh, Frown, Angry, Zap } from 'lucide-react';
 
 type ReactionType = 'like' | 'love' | 'laugh' | 'wow' | 'sad' | 'angry';
 
-type ReactionPickerProps = {
+type ReactionPickerProperties = {
   onSelect: (reaction: ReactionType) => void;
   onClose: () => void;
 };
@@ -16,7 +16,7 @@ const reactions: { type: ReactionType; icon: React.ReactNode; label: string }[] 
   { type: 'angry', icon: <Angry size={24} />, label: 'Angry' },
 ];
 
-export function ReactionPicker({ onSelect, onClose }: ReactionPickerProps) {
+export function ReactionPicker({ onSelect, onClose }: ReactionPickerProperties) {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />

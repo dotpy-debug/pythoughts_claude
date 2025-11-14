@@ -37,20 +37,20 @@ export function useBlogOfTheDay(): UseBlogOfTheDayReturn {
   const [error, setError] = useState<Error | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
 
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const mountedRef = useRef<boolean>(true);
-  const midnightCheckRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerReference = useRef<AbortController | null>(null);
+  const mountedReference = useRef<boolean>(true);
+  const midnightCheckReference = useRef<NodeJS.Timeout | null>(null);
 
   /**
    * Fetch blog of the day from the API
    */
   const fetchBlogOfTheDay = useCallback(async (showLoading = true) => {
     // Cancel previous request if still pending
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+    if (abortControllerReference.current) {
+      abortControllerReference.current.abort();
     }
 
-    abortControllerRef.current = new AbortController();
+    abortControllerReference.current = new AbortController();
 
     try {
       if (showLoading) {
@@ -60,7 +60,7 @@ export function useBlogOfTheDay(): UseBlogOfTheDayReturn {
 
       const fetchedBlog = await getBlogOfTheDay();
 
-      if (mountedRef.current) {
+      if (mountedReference.current) {
         setBlog(fetchedBlog);
         setLastRefreshed(new Date());
         setError(null);
@@ -74,15 +74,15 @@ export function useBlogOfTheDay(): UseBlogOfTheDayReturn {
       } else {
         logger.warn('No blog of the day available');
       }
-    } catch (err) {
-      if (mountedRef.current && err !== 'AbortError') {
+    } catch (error_) {
+      if (mountedReference.current && error_ !== 'AbortError') {
         const error =
-          err instanceof Error ? err : new Error('Failed to fetch blog of the day');
+          error_ instanceof Error ? error_ : new Error('Failed to fetch blog of the day');
         setError(error);
         logger.error('Error fetching blog of the day', error);
       }
     } finally {
-      if (mountedRef.current) {
+      if (mountedReference.current) {
         setLoading(false);
       }
     }
@@ -109,7 +109,7 @@ export function useBlogOfTheDay(): UseBlogOfTheDayReturn {
    * Initial load and midnight refresh setup
    */
   useEffect(() => {
-    mountedRef.current = true;
+    mountedReference.current = true;
 
     // Initial fetch
     fetchBlogOfTheDay();
@@ -123,7 +123,7 @@ export function useBlogOfTheDay(): UseBlogOfTheDayReturn {
         refreshAt: new Date(Date.now() + msUntilMidnight).toISOString(),
       });
 
-      midnightCheckRef.current = setTimeout(() => {
+      midnightCheckReference.current = setTimeout(() => {
         logger.info('Midnight reached - refreshing blog of the day');
         fetchBlogOfTheDay(false);
         // Schedule next midnight refresh
@@ -135,14 +135,14 @@ export function useBlogOfTheDay(): UseBlogOfTheDayReturn {
 
     // Cleanup
     return () => {
-      mountedRef.current = false;
+      mountedReference.current = false;
 
-      if (midnightCheckRef.current) {
-        clearTimeout(midnightCheckRef.current);
+      if (midnightCheckReference.current) {
+        clearTimeout(midnightCheckReference.current);
       }
 
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+      if (abortControllerReference.current) {
+        abortControllerReference.current.abort();
       }
     };
   }, [fetchBlogOfTheDay, getMillisecondsUntilMidnight]);

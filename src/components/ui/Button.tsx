@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'gradient' | 'danger' | 'terminal' | 'default' | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProperties extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -39,8 +39,8 @@ export function Button({
   children,
   disabled,
   className = '',
-  ...props
-}: ButtonProps) {
+  ...properties
+}: ButtonProperties) {
   return (
     <button
       className={`
@@ -49,13 +49,13 @@ export function Button({
         ${variantClasses[variant]} ${sizeClasses[size]} ${className}
       `}
       disabled={disabled || loading}
-      {...props}
+      {...properties}
     >
       {loading ? (
         <Loader2 className="animate-spin" size={18} />
-      ) : icon ? (
+      ) : (icon ? (
         <span>{icon}</span>
-      ) : null}
+      ) : null)}
       <span>{children}</span>
     </button>
   );

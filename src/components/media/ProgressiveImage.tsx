@@ -15,7 +15,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Image as ImageIcon, AlertCircle } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-interface ProgressiveImageProps {
+interface ProgressiveImageProperties {
   /**
    * Full-quality image source
    */
@@ -103,7 +103,7 @@ export function ProgressiveImage({
   alt,
   placeholder,
   className,
-  imgProps = {},
+  imgProps: imgProperties = {},
   lazy = true,
   rootMargin = '50px',
   onLoad,
@@ -111,16 +111,16 @@ export function ProgressiveImage({
   fallback,
   aspectRatio,
   objectFit = 'cover',
-}: ProgressiveImageProps) {
+}: ProgressiveImageProperties) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isInView, setIsInView] = useState(!lazy);
-  const imgRef = useRef<HTMLImageElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const imgReference = useRef<HTMLImageElement>(null);
+  const containerReference = useRef<HTMLDivElement>(null);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
-    if (!lazy || !containerRef.current) {
+    if (!lazy || !containerReference.current) {
       setIsInView(true);
       return;
     }
@@ -138,7 +138,7 @@ export function ProgressiveImage({
       }
     );
 
-    observer.observe(containerRef.current);
+    observer.observe(containerReference.current);
 
     return () => {
       observer.disconnect();
@@ -163,7 +163,7 @@ export function ProgressiveImage({
 
   return (
     <div
-      ref={containerRef}
+      ref={containerReference}
       className={cn(
         'relative overflow-hidden bg-gray-900',
         aspectRatio && 'h-0',
@@ -195,7 +195,7 @@ export function ProgressiveImage({
       {/* Full-Quality Image */}
       {isInView && !isError && (
         <img
-          ref={imgRef}
+          ref={imgReference}
           src={src}
           alt={alt}
           onLoad={handleLoad}
@@ -207,7 +207,7 @@ export function ProgressiveImage({
           style={{ objectFit }}
           loading={lazy ? 'lazy' : 'eager'}
           decoding="async"
-          {...imgProps}
+          {...imgProperties}
         />
       )}
 
@@ -236,7 +236,7 @@ export function ProgressiveImage({
  *
  * Grid layout with progressive images
  */
-interface ProgressiveImageGridProps {
+interface ProgressiveImageGridProperties {
   images: Array<{
     src: string;
     alt: string;
@@ -256,7 +256,7 @@ export function ProgressiveImageGrid({
   aspectRatio = 1,
   className,
   onImageClick,
-}: ProgressiveImageGridProps) {
+}: ProgressiveImageGridProperties) {
   return (
     <div
       className={cn('grid', className)}

@@ -7,7 +7,7 @@ import { usePostView } from '../hooks/usePostView';
 import { generateBlogPostSchema, StructuredData } from '../utils/seo';
 import { SEOHead } from '../components/seo/SEOHead';
 
-const PostDetail = lazy(() => import('../components/posts/PostDetail').then(mod => ({ default: mod.PostDetail })));
+const PostDetail = lazy(() => import('../components/posts/PostDetail').then(module_ => ({ default: module_.PostDetail })));
 
 export function PostDetailPage() {
   const { postId } = useParams<{ postId: string }>();
@@ -98,7 +98,7 @@ export function PostDetailPage() {
     }
   }, [post, loadRelatedPosts]);
 
-  const handleVote = async (postIdParam: string, voteType: 1 | -1) => {
+  const handleVote = async (postIdParameter: string, voteType: 1 | -1) => {
     if (!user || !post) return;
 
     try {
@@ -107,7 +107,7 @@ export function PostDetailPage() {
           .from('votes')
           .delete()
           .eq('user_id', user.id)
-          .eq('post_id', postIdParam);
+          .eq('post_id', postIdParameter);
 
         setUserVote(null);
         setPost({
@@ -119,7 +119,7 @@ export function PostDetailPage() {
           .from('votes')
           .update({ vote_type: voteType })
           .eq('user_id', user.id)
-          .eq('post_id', postIdParam);
+          .eq('post_id', postIdParameter);
 
         setUserVote(voteType);
         setPost({
@@ -129,7 +129,7 @@ export function PostDetailPage() {
       } else {
         await supabase.from('votes').insert({
           user_id: user.id,
-          post_id: postIdParam,
+          post_id: postIdParameter,
           vote_type: voteType,
         });
 
@@ -169,7 +169,7 @@ export function PostDetailPage() {
       {/* SEO Meta Tags */}
       <SEOHead
         title={post.seo_title || `${post.title} - Pythoughts`}
-        description={post.seo_description || post.content.substring(0, 160).replace(/[#*`]/g, '')}
+        description={post.seo_description || post.content.slice(0, 160).replaceAll(/[#*`]/g, '')}
         canonicalUrl={post.canonical_url || `https://pythoughts.com/post/${post.id}`}
         type="article"
         image={post.image_url || undefined}

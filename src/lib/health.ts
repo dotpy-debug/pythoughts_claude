@@ -10,7 +10,7 @@
 import { supabase } from './supabase';
 import { getRedisClient } from './redis';
 import { logger } from './logger';
-import { env } from './env';
+import { env as environment } from './env';
 
 /**
  * Health check status
@@ -140,7 +140,7 @@ async function checkRedis(): Promise<ComponentHealth> {
       latency,
       metadata: {
         version: versionMatch ? versionMatch[1] : 'unknown',
-        uptime: uptimeMatch ? parseInt(uptimeMatch[1]) : 0,
+        uptime: uptimeMatch ? Number.parseInt(uptimeMatch[1]) : 0,
       },
     };
   } catch (error) {
@@ -202,7 +202,7 @@ async function checkExternalServices(): Promise<ComponentHealth> {
 
   try {
     // Check if Supabase URL is reachable
-    const response = await fetch(env.VITE_SUPABASE_URL, {
+    const response = await fetch(environment.VITE_SUPABASE_URL, {
       method: 'HEAD',
       signal: AbortSignal.timeout(5000),
     });
@@ -285,7 +285,7 @@ export async function performHealthCheck(): Promise<SystemHealth> {
       timestamp: new Date().toISOString(),
       uptime,
       version: process.env.APP_VERSION || '1.0.0',
-      environment: env.NODE_ENV,
+      environment: environment.NODE_ENV,
       components,
     };
 
@@ -307,7 +307,7 @@ export async function performHealthCheck(): Promise<SystemHealth> {
       timestamp: new Date().toISOString(),
       uptime: Math.floor((Date.now() - APP_START_TIME) / 1000),
       version: process.env.APP_VERSION || '1.0.0',
-      environment: env.NODE_ENV,
+      environment: environment.NODE_ENV,
       components: [
         {
           name: 'system',
@@ -384,14 +384,14 @@ export async function isAlive(): Promise<boolean> {
 export async function hasStarted(): Promise<boolean> {
   try {
     // Check if critical dependencies are available
-    const [dbHealth, redisHealth] = await Promise.all([
+    const [databaseHealth, redisHealth] = await Promise.all([
       checkDatabase(),
       checkRedis(),
     ]);
 
     // Application has started if both database and redis are reachable
     return (
-      dbHealth.status !== 'unhealthy' &&
+      databaseHealth.status !== 'unhealthy' &&
       redisHealth.status !== 'unhealthy'
     );
   } catch (error) {
@@ -410,7 +410,7 @@ export function getMetrics(): Record<string, unknown> {
   return {
     uptime,
     timestamp: new Date().toISOString(),
-    environment: env.NODE_ENV,
+    environment: environment.NODE_ENV,
     version: process.env.APP_VERSION || '1.0.0',
     memory: {
       rss: Math.round(memoryUsage.rss / 1024 / 1024), // MB
@@ -437,7 +437,7 @@ export function formatHealthResponse(
   body: unknown;
 } {
   const statusCode = health.status === 'healthy' ? 200 :
-                     health.status === 'degraded' ? 200 : 503;
+                     (health.status === 'degraded' ? 200 : 503);
 
   if (!includeDetails) {
     return {

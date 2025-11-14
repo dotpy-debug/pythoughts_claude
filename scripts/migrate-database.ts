@@ -12,9 +12,9 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
-import { readFileSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, existsSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // Get directory paths
 const __filename = fileURLToPath(import.meta.url);
@@ -25,24 +25,24 @@ const projectRoot = resolve(__dirname, '..');
  * Color codes for console output
  */
 const colors = {
-  reset: '\x1b[0m',
-  bright: '\x1b[1m',
-  green: '\x1b[32m',
-  yellow: '\x1b[33m',
-  red: '\x1b[31m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m',
+  reset: '\u001B[0m',
+  bright: '\u001B[1m',
+  green: '\u001B[32m',
+  yellow: '\u001B[33m',
+  red: '\u001B[31m',
+  blue: '\u001B[34m',
+  cyan: '\u001B[36m',
 };
 
 /**
  * Logger utility
  */
 const logger = {
-  info: (msg: string) => console.log(`${colors.blue}ℹ${colors.reset} ${msg}`),
-  success: (msg: string) => console.log(`${colors.green}✓${colors.reset} ${msg}`),
-  warning: (msg: string) => console.log(`${colors.yellow}⚠${colors.reset} ${msg}`),
-  error: (msg: string) => console.error(`${colors.red}✗${colors.reset} ${msg}`),
-  step: (msg: string) => console.log(`${colors.cyan}→${colors.reset} ${msg}`),
+  info: (message: string) => console.log(`${colors.blue}ℹ${colors.reset} ${message}`),
+  success: (message: string) => console.log(`${colors.green}✓${colors.reset} ${message}`),
+  warning: (message: string) => console.log(`${colors.yellow}⚠${colors.reset} ${message}`),
+  error: (message: string) => console.error(`${colors.red}✗${colors.reset} ${message}`),
+  step: (message: string) => console.log(`${colors.cyan}→${colors.reset} ${message}`),
 };
 
 /**
@@ -62,14 +62,14 @@ function getDatabaseUrl(): string {
       // Extract project ref from Supabase URL
       const match = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
       if (match) {
-        const projectRef = match[1];
+        const projectReference = match[1];
         logger.warning('DATABASE_URL not found, using Supabase direct connection');
-        logger.info(`Project ref: ${projectRef}`);
+        logger.info(`Project ref: ${projectReference}`);
 
         // Return a placeholder that will need manual configuration
         throw new Error(
           'DATABASE_URL is required. Please add it to your .env.local:\n' +
-          `DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.${projectRef}.supabase.co:5432/postgres`
+          `DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.${projectReference}.supabase.co:5432/postgres`
         );
       }
     }
@@ -152,9 +152,9 @@ async function runMigrations(sql: postgres.Sql, migrationsFolder: string): Promi
   try {
     logger.step('Starting database migrations...');
 
-    const db = drizzle(sql);
+    const database = drizzle(sql);
 
-    await migrate(db, { migrationsFolder });
+    await migrate(database, { migrationsFolder });
 
     logger.success('All migrations completed successfully');
     return true;
@@ -183,7 +183,7 @@ async function runRawSqlMigrations(sql: postgres.Sql, migrationsFolder: string):
   try {
     logger.step('Attempting fallback: running raw SQL migrations...');
 
-    const { readdirSync } = await import('fs');
+    const { readdirSync } = await import('node:fs');
     const files = readdirSync(migrationsFolder)
       .filter(file => file.endsWith('.sql'))
       .sort();

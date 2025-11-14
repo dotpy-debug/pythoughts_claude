@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Publication, PublicationMember, Post } from '../lib/supabase';
 import { ShadcnButton } from '../components/ui/ShadcnButton';
 
-const PostList = lazy(() => import('../components/posts/PostList').then(mod => ({ default: mod.PostList })));
+const PostList = lazy(() => import('../components/posts/PostList').then(module_ => ({ default: module_.PostList })));
 
 export function PublicationDetailPage() {
   const { slug } = useParams<{ slug: string }>();

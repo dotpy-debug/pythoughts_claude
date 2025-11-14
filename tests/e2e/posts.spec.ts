@@ -41,7 +41,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Verify post appears in feed
     await expect(page.locator(`text=${postTitle}`)).toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
   });
 
@@ -51,7 +51,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Wait for posts to load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Get initial like count
@@ -73,7 +73,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Wait for posts to load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     const likeButton = page
@@ -94,7 +94,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Wait for posts to load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Click on first post to view details
@@ -112,7 +112,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Verify comment appears
     await expect(page.locator(`text=${commentText}`)).toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
   });
 
@@ -121,7 +121,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Wait for posts to load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Open reaction picker
@@ -139,7 +139,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Wait for posts to load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Get post title
@@ -192,7 +192,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Wait for posts to load
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Scroll to bottom to trigger infinite scroll or click next page
@@ -259,7 +259,7 @@ test.describe('Post Creation and Interaction', () => {
 
     // Verify post is deleted
     await expect(page.locator(`text=${postTitle}`)).not.toBeVisible({
-      timeout: 10000,
+      timeout: 10_000,
     });
   });
 });
@@ -271,7 +271,7 @@ test.describe('Post Viewing (Unauthenticated)', () => {
     // Posts should be visible
     await expect(
       page.locator('[data-testid="post-card"], article').first()
-    ).toBeVisible({ timeout: 10000 });
+    ).toBeVisible({ timeout: 10_000 });
   });
 
   test('should prompt to sign in when trying to like', async ({ page }) => {
@@ -279,7 +279,7 @@ test.describe('Post Viewing (Unauthenticated)', () => {
 
     // Wait for posts
     await page.waitForSelector('[data-testid="post-card"], article', {
-      timeout: 10000,
+      timeout: 10_000,
     });
 
     // Try to like a post

@@ -29,7 +29,7 @@ import { useDebounce } from '../../../hooks/useDebounce';
 import { Save } from 'lucide-react';
 import './editor-styles.css';
 
-interface BlogEditorCanvasProps {
+interface BlogEditorCanvasProperties {
   initialPost?: Partial<BlogPost>;
   onSave: (post: Partial<BlogPost>) => Promise<void>;
   onPublish: (post: Partial<BlogPost>) => Promise<void>;
@@ -39,7 +39,7 @@ export function BlogEditorCanvas({
   initialPost,
   onSave,
   onPublish,
-}: BlogEditorCanvasProps) {
+}: BlogEditorCanvasProperties) {
   const [editorState, setEditorState] = useState<BlogEditorState>({
     post: initialPost || {},
     isSaving: false,
@@ -64,11 +64,11 @@ export function BlogEditorCanvas({
       },
     },
     onUpdate: ({ editor }) => {
-      setEditorState((prev) => ({
-        ...prev,
+      setEditorState((previous) => ({
+        ...previous,
         hasUnsavedChanges: true,
         post: {
-          ...prev.post,
+          ...previous.post,
           content_json: editor.getJSON(),
         },
       }));
@@ -91,7 +91,7 @@ export function BlogEditorCanvas({
   const handleAutoSave = async () => {
     if (!editor) return;
 
-    setEditorState((prev) => ({ ...prev, isSaving: true }));
+    setEditorState((previous) => ({ ...previous, isSaving: true }));
 
     try {
       const generator = new TOCGenerator();
@@ -109,8 +109,8 @@ export function BlogEditorCanvas({
 
       await onSave(updatedPost);
 
-      setEditorState((prev) => ({
-        ...prev,
+      setEditorState((previous) => ({
+        ...previous,
         post: updatedPost,
         isSaving: false,
         hasUnsavedChanges: false,
@@ -118,7 +118,7 @@ export function BlogEditorCanvas({
       }));
     } catch (error) {
       console.error('Auto-save failed:', error);
-      setEditorState((prev) => ({ ...prev, isSaving: false }));
+      setEditorState((previous) => ({ ...previous, isSaving: false }));
     }
   };
 
@@ -194,9 +194,9 @@ export function BlogEditorCanvas({
         <PostMetaPanel
           post={editorState.post}
           onChange={(post) =>
-            setEditorState((prev) => ({
-              ...prev,
-              post: { ...prev.post, ...post },
+            setEditorState((previous) => ({
+              ...previous,
+              post: { ...previous.post, ...post },
               hasUnsavedChanges: true,
             }))
           }
