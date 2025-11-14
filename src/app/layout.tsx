@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import '../index.css';
 
 export const metadata: Metadata = {
@@ -51,20 +50,20 @@ export const metadata: Metadata = {
   manifest: '/site.webmanifest',
 };
 
-export default async function RootLayout({
+/**
+ * Root Layout (Next.js 15 + WASM Compatible)
+ *
+ * Note: Removed headers() call to fix workUnitAsyncStorage error in WASM environments (bolt.new)
+ * CSP nonce is handled by middleware.ts and injected via HTTP headers
+ */
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const headersList = await headers();
-  const nonce = headersList.get('x-nonce') || '';
-
   return (
     <html lang="en" className="dark">
-      <head>
-        {/* CSP meta tag is set by middleware, but we include nonce for inline scripts */}
-        <meta property="csp-nonce" content={nonce} />
-      </head>
+      <head />
       <body
         className="min-h-screen bg-[#0d1117] text-terminal-green antialiased"
         suppressHydrationWarning
