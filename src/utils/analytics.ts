@@ -115,7 +115,7 @@ export async function getEngagementTimeSeries(
     }
 
     // Calculate engagement score (views * 0.1 + votes * 2 + comments * 1.5)
-    for (const data of dataByDate) {
+    for (const [, data] of dataByDate) {
       data.engagement = data.views * 0.1 + data.votes * 2 + data.comments * 1.5;
     }
 

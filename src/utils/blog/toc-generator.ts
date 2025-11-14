@@ -108,7 +108,7 @@ export class TOCGenerator {
 
     for (const item of flatItems) {
       // Pop stack until we find correct parent
-      while (stack.length > 0 && stack.at(-1).level >= item.level) {
+      while (stack.length > 0 && stack.at(-1)?.level !== undefined && stack.at(-1)!.level >= item.level) {
         stack.pop();
       }
 
@@ -118,8 +118,10 @@ export class TOCGenerator {
         root.push(newItem);
       } else {
         const parent = stack.at(-1);
-        if (!parent.children) parent.children = [];
-        parent.children.push(newItem);
+        if (parent) {
+          if (!parent.children) parent.children = [];
+          parent.children.push(newItem);
+        }
       }
 
       stack.push(newItem);

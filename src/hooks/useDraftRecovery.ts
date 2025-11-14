@@ -145,7 +145,7 @@ export function useDraftRecovery(
             }
           } catch (error) {
             // If we can't parse it, remove it
-            logger.warn('Failed to parse draft backup, removing:', { key, error });
+            logger.warn('Failed to parse draft backup, removing:', { key, error: error instanceof Error ? error : new Error(String(error)) });
             localStorage.removeItem(key);
           }
         }

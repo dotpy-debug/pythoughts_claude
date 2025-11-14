@@ -109,7 +109,10 @@ export function TagInput({ selectedTags, onTagsChange, maxTags = 5 }: TagInputPr
       }
     } else if (e.key === 'Backspace' && !input && selectedTags.length > 0) {
       // Remove last tag when backspace is pressed on empty input
-      handleRemoveTag(selectedTags.at(-1));
+      const lastTag = selectedTags.at(-1);
+      if (lastTag) {
+        handleRemoveTag(lastTag);
+      }
     }
   };
 

@@ -175,6 +175,8 @@ export function useMemoryMonitor(
       const firstSample = recentSamples[0];
       const lastSample = recentSamples.at(-1);
 
+      if (!lastSample) return;
+
       // Calculate growth rate (MB per minute)
       const timeDiff = (lastSample.timestamp - firstSample.timestamp) / 1000 / 60; // minutes
       const memoryDiff =
@@ -306,7 +308,7 @@ export function useMemoryMonitor(
 
   // Force garbage collection (if available)
   const forceGC = useCallback(() => {
-    const windowWithGC = globalThis as WindowWithGC;
+    const windowWithGC = globalThis as unknown as WindowWithGC;
 
     if (windowWithGC.gc && typeof windowWithGC.gc === 'function') {
       windowWithGC.gc();
