@@ -66,7 +66,9 @@ export class EnvValidationError extends Error {
     this.name = 'EnvValidationError';
 
     // Maintain proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {}
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, EnvValidationError);
+    }
   }
 }
 

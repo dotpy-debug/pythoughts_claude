@@ -130,9 +130,9 @@ async function runSecretScan(
   console.log(chalk.blue('  ↪ Scanning for secrets...'));
 
   const secretPatterns = [
-    { pattern: /(?i)(api[_-]?key|apikey)\s*[:=]\s*['"]([^'"]{20,})['"]/, name: 'API Key' },
+    { pattern: /(api[_-]?key|apikey)\s*[:=]\s*['"]([^'"]{20,})['"]/i, name: 'API Key' },
     { pattern: /-----BEGIN (RSA |DSA |EC )?PRIVATE KEY-----/, name: 'Private Key' },
-    { pattern: /(?i)(password|passwd)\s*[:=]\s*['"]([^'"]+)['"]/, name: 'Password' },
+    { pattern: /(password|passwd)\s*[:=]\s*['"]([^'"]+)['"]/i, name: 'Password' },
   ];
 
   let foundSecrets = false;

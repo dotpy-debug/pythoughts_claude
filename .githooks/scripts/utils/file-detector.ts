@@ -110,6 +110,10 @@ export function categorizeFiles(files: string[]): Map<string, string[]> {
     for (const [category, patternDef] of Object.entries(rules.patterns)) {
       const patterns = Array.isArray(patternDef)
         ? patternDef
+        : typeof patternDef === 'object' && 'patterns' in patternDef
+        ? Array.isArray(patternDef.patterns)
+          ? patternDef.patterns
+          : [patternDef.patterns]
         : typeof patternDef === 'object' && 'pattern' in patternDef
         ? Array.isArray(patternDef.pattern)
           ? patternDef.pattern

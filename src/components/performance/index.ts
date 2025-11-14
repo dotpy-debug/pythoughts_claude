@@ -7,6 +7,6 @@
 export {
   VirtualScroll,
   DynamicVirtualScroll,
-  type VirtualScrollProps,
-  type DynamicVirtualScrollProps,
+  type VirtualScrollProperties,
+  type DynamicVirtualScrollProperties,
 } from './VirtualScroll';

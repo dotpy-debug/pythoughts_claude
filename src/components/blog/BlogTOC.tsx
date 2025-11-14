@@ -281,14 +281,14 @@ export function buildNestedTOC(headings: TOCHeading[]): NestedTOCItem[] {
     };
 
     // Find the correct parent based on level
-    while (stack.length > 0 && stack.at(-1).level >= heading.level) {
+    while (stack.length > 0 && stack.at(-1)!.level >= heading.level) {
       stack.pop();
     }
 
     if (stack.length === 0) {
       root.push(item);
     } else {
-      stack.at(-1).children!.push(item);
+      stack.at(-1)!.children!.push(item);
     }
 
     stack.push(item);

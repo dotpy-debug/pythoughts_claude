@@ -423,7 +423,7 @@ export function calculateSummary(values: number[]): AnalyticsSummary {
 
   // Min/Max
   const min = sorted[0];
-  const max = sorted.at(-1);
+  const max = sorted.at(-1) ?? sorted[sorted.length - 1];
 
   // 95th percentile
   const p95Index = Math.ceil(sorted.length * 0.95) - 1;
