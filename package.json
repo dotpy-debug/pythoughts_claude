@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:next": "next dev --turbo=false",
+    "dev:next": "next dev",
     "dev:collab": "tsx server/index.ts",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:collab\"",
     "build": "vite build",
@@ -65,7 +65,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
     "prepare": "husky",
     "bolt:fix": "bash scripts/bolt-fix.sh",
-    "bolt:dev": "NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true next dev --turbo=false",
+    "bolt:dev": "NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true next dev",
     "bolt:build": "NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true next build",
     "bolt:start": "NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true next start",
     "hooks:analyze": "tsx .githooks/scripts/analyze-changes.ts",
