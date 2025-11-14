@@ -213,8 +213,5 @@
     "vite-ssg-sitemap": "^0.10.0",
     "vitest": "^3.2.4",
     "zod": "^4.1.12"
-  },
-  "optionalDependencies": {
-    "sharp": "^0.34.4"
   }
 }
