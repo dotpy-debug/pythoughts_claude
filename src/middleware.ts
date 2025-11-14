@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
  * Middleware for security headers and CSP nonce generation
  * Runs on every request to inject security headers
  */
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
 
   const cspHeader = `
@@ -23,18 +23,12 @@ export function middleware(request: NextRequest) {
     .replaceAll(/\s{2,}/g, ' ')
     .trim();
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-nonce', nonce);
-  requestHeaders.set('Content-Security-Policy', cspHeader);
-
-  const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  // Create response without modifying request headers (fixes Next.js 15.5.4 workUnitAsyncStorage error)
+  const response = NextResponse.next();
 
   // Set CSP header on response
   response.headers.set('Content-Security-Policy', cspHeader);
+  response.headers.set('x-nonce', nonce);
 
   // Additional security headers (defense in depth)
   response.headers.set(
