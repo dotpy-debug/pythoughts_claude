@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "preCommit": {
+    "enabled": true,
+    "checks": {
+      "lint": {
+        "enabled": true,
+        "autoFix": true,
+        "timeout": 30000,
+        "fileExtensions": [".ts", ".tsx", ".js", ".jsx"]
+      },
+      "typeCheck": {
+        "enabled": true,
+        "timeout": 60000,
+        "incremental": true,
+        "cache": true
+      },
+      "syntaxValidation": {
+        "enabled": true,
+        "validateJSON": true,
+        "validateYAML": true
+      },
+      "secretScanning": {
+        "enabled": true,
+        "patterns": [
+          "(?i)(api[_-]?key|apikey)\\s*[:=]\\s*['\"]([^'\"]+)['\"]",
+          "(?i)(secret[_-]?key|secretkey)\\s*[:=]\\s*['\"]([^'\"]+)['\"]",
+          "(?i)(private[_-]?key|privatekey)\\s*[:=]\\s*['\"]([^'\"]+)['\"]",
+          "(?i)(password)\\s*[:=]\\s*['\"]([^'\"]+)['\"]",
+          "-----BEGIN (RSA |DSA |EC )?PRIVATE KEY-----"
+        ]
+      },
+      "consoleLogs": {
+        "enabled": true,
+        "blockCommit": false,
+        "warnOnly": true
+      }
+    },
+    "parallelExecution": true,
+    "maxParallelTasks": 4,
+    "allowBypass": true
+  },
+  "prePush": {
+    "enabled": true,
+    "checks": {
+      "changeAnalysis": {
+        "enabled": true,
+        "baseBranch": "auto"
+      },
+      "criticalTests": {
+        "enabled": true,
+        "onlyOnCodeChanges": true,
+        "timeout": 300000
+      },
+      "securityAudit": {
+        "enabled": true,
+        "severityThreshold": "high",
+        "failOnVulnerabilities": true
+      }
+    },
+    "generateCIMetadata": true,
+    "displayOptimizations": true,
+    "allowBypass": true
+  },
+  "performance": {
+    "enableCaching": true,
+    "cacheDir": ".githooks/.cache",
+    "cacheTTL": 3600,
+    "progressIndicators": true,
+    "verboseOutput": false
+  },
+  "errorReporting": {
+    "enabled": true,
+    "aiIntegration": true,
+    "saveReports": true,
+    "reportsDir": ".githooks/reports"
+  },
+  "notifications": {
+    "showTimings": true,
+    "showSummary": true,
+    "colorOutput": true,
+    "emojis": true
+  }
+}
