@@ -7,101 +7,111 @@ version: 1.0.0
 patterns:
   # Documentation files
   documentation:
-    - '**/*.md'
-    - '**/docs/**/*'
-    - '**/README*'
-    - '**/CHANGELOG*'
-    - '**/LICENSE*'
-    - '**/.github/**/*.md'
+    patterns:
+      - '**/*.md'
+      - '**/docs/**/*'
+      - '**/README*'
+      - '**/CHANGELOG*'
+      - '**/LICENSE*'
+      - '**/.github/**/*.md'
     description: 'Documentation and markdown files'
 
   # Configuration files (non-code)
   config:
-    - '**/.editorconfig'
-    - '**/.prettierrc*'
-    - '**/.eslintrc*'
-    - '**/tsconfig*.json'
-    - '**/.gitignore'
-    - '**/.env.example'
-    - '**/.nvmrc'
-    description: 'Configuration files that don\'t affect runtime'
+    patterns:
+      - '**/.editorconfig'
+      - '**/.prettierrc*'
+      - '**/.eslintrc*'
+      - '**/tsconfig*.json'
+      - '**/.gitignore'
+      - '**/.env.example'
+      - '**/.nvmrc'
+    description: 'Configuration files that don''t affect runtime'
 
   # Source code files
   code:
-    - 'src/**/*.{ts,tsx,js,jsx}'
-    - 'app/**/*.{ts,tsx,js,jsx}'
-    - 'pages/**/*.{ts,tsx,js,jsx}'
-    - 'components/**/*.{ts,tsx,js,jsx}'
-    - 'lib/**/*.{ts,tsx,js,jsx}'
-    - 'utils/**/*.{ts,tsx,js,jsx}'
-    - 'hooks/**/*.{ts,tsx,js,jsx}'
-    - 'services/**/*.{ts,tsx,js,jsx}'
+    patterns:
+      - 'src/**/*.{ts,tsx,js,jsx}'
+      - 'app/**/*.{ts,tsx,js,jsx}'
+      - 'pages/**/*.{ts,tsx,js,jsx}'
+      - 'components/**/*.{ts,tsx,js,jsx}'
+      - 'lib/**/*.{ts,tsx,js,jsx}'
+      - 'utils/**/*.{ts,tsx,js,jsx}'
+      - 'hooks/**/*.{ts,tsx,js,jsx}'
+      - 'services/**/*.{ts,tsx,js,jsx}'
     description: 'Application source code'
 
   # Database related files
   database:
-    - '**/migrations/**/*'
-    - '**/db/schema.ts'
-    - '**/database/**/*'
-    - '**/drizzle/**/*'
-    - '**/prisma/**/*'
-    - '**/*migration*'
-    - '**/*schema.sql'
-    - '**/*seed*'
+    patterns:
+      - '**/migrations/**/*'
+      - '**/db/schema.ts'
+      - '**/database/**/*'
+      - '**/drizzle/**/*'
+      - '**/prisma/**/*'
+      - '**/*migration*'
+      - '**/*schema.sql'
+      - '**/*seed*'
     description: 'Database migrations and schemas'
 
   # Redis/Cache related files
   cache:
-    - '**/redis/**/*'
-    - '**/cache/**/*'
-    - '**/lib/redis.ts'
-    - '**/lib/cache.ts'
-    - '**/services/cache*'
+    patterns:
+      - '**/redis/**/*'
+      - '**/cache/**/*'
+      - '**/lib/redis.ts'
+      - '**/lib/cache.ts'
+      - '**/services/cache*'
     description: 'Redis and caching logic'
 
   # API routes and endpoints
   api:
-    - '**/api/**/*'
-    - '**/routes/**/*'
-    - '**/controllers/**/*'
-    - '**/actions/**/*'
+    patterns:
+      - '**/api/**/*'
+      - '**/routes/**/*'
+      - '**/controllers/**/*'
+      - '**/actions/**/*'
     description: 'API endpoints and server actions'
 
   # Tests
   tests:
-    - '**/*.test.{ts,tsx,js,jsx}'
-    - '**/*.spec.{ts,tsx,js,jsx}'
-    - '**/tests/**/*'
-    - '**/__tests__/**/*'
-    - '**/e2e/**/*'
+    patterns:
+      - '**/*.test.{ts,tsx,js,jsx}'
+      - '**/*.spec.{ts,tsx,js,jsx}'
+      - '**/tests/**/*'
+      - '**/__tests__/**/*'
+      - '**/e2e/**/*'
     description: 'Test files'
 
   # Styles
   styles:
-    - '**/*.css'
-    - '**/*.scss'
-    - '**/*.sass'
-    - '**/*.less'
-    - '**/tailwind.config.*'
-    - '**/postcss.config.*'
+    patterns:
+      - '**/*.css'
+      - '**/*.scss'
+      - '**/*.sass'
+      - '**/*.less'
+      - '**/tailwind.config.*'
+      - '**/postcss.config.*'
     description: 'Stylesheets and styling configuration'
 
   # Infrastructure and deployment
   infrastructure:
-    - '**/Dockerfile*'
-    - '**/docker-compose*.yml'
-    - '**/.github/workflows/**/*'
-    - '**/vercel.json'
-    - '**/netlify.toml'
-    - '**/scripts/**/*'
+    patterns:
+      - '**/Dockerfile*'
+      - '**/docker-compose*.yml'
+      - '**/.github/workflows/**/*'
+      - '**/vercel.json'
+      - '**/netlify.toml'
+      - '**/scripts/**/*'
     description: 'Infrastructure and deployment files'
 
   # Package dependencies
   dependencies:
-    - '**/package.json'
-    - '**/package-lock.json'
-    - '**/yarn.lock'
-    - '**/pnpm-lock.yaml'
+    patterns:
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/yarn.lock'
+      - '**/pnpm-lock.yaml'
     description: 'Package dependencies'
 
 # Content analysis keywords

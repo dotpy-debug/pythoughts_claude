@@ -5,9 +5,6 @@ const nextConfig = {
   // Enable React strict mode for better development experience
   reactStrictMode: true,
 
-  // Empty turbopack config to silence warning
-  turbopack: {},
-
   // Configure image optimization (Supabase Storage + external sources)
   // NOTE: For bolt.new deployments, if sharp fails to install, set NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION=true
   images: process.env.NEXT_PUBLIC_DISABLE_IMAGE_OPTIMIZATION === 'true'
@@ -38,13 +35,40 @@ const nextConfig = {
         formats: ['image/avif', 'image/webp'],
         deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+        dangerouslyAllowSVG: true,
+        contentDispositionType: 'attachment',
+        contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
       },
 
-  // Experimental features
+  // Server Actions configuration (stable in Next.js 15)
+  serverActions: {
+    bodySizeLimit: '2mb',
+    allowedOrigins: ['localhost:3000', 'localhost:5173'],
+  },
+
+  // Experimental features for Next.js 15
   experimental: {
-    // Enable Server Actions for form handling
-    serverActions: {
-      bodySizeLimit: '2mb',
+    // Optimize package imports for better tree-shaking
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-scroll-area',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-tooltip',
+      'recharts',
+      'react-chartjs-2',
+    ],
+    // Enable Turbopack for faster builds (Next.js 15 feature)
+    turbo: {
+      resolveAlias: {
+        '@': './src',
+      },
+    },
+    // Strict Next.js caching semantics
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
     },
   },
 
@@ -129,7 +153,10 @@ const nextConfig = {
 
   // Optimize build output
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
   },
 
   // Configure output for static export if needed
@@ -137,9 +164,47 @@ const nextConfig = {
 
   // TypeScript configuration
   typescript: {
-    // Allow production builds to successfully complete even with type errors
-    // We'll rely on pre-commit type checking instead
+    // Enforce type checking during build
     ignoreBuildErrors: false,
+  },
+
+  // ESLint configuration
+  eslint: {
+    // Enforce linting during build
+    ignoreDuringBuilds: false,
+  },
+
+  // Logging configuration
+  logging: {
+    fetches: {
+      fullUrl: process.env.NODE_ENV === 'development',
+    },
+  },
+
+  // Power optimization
+  poweredByHeader: false,
+
+  // Compression
+  compress: true,
+
+  // Generate ETags for pages
+  generateEtags: true,
+
+  // Page extensions
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+
+  // Webpack configuration (for advanced use cases)
+  webpack: (config, { isServer }) => {
+    // Add any custom webpack config here if needed
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    return config;
   },
 };
 

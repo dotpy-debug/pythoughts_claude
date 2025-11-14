@@ -5,19 +5,19 @@
  */
 
 export { PostReplyEmail } from './PostReplyEmail';
-export type { PostReplyEmailProps } from './PostReplyEmail';
+export type { PostReplyEmailProperties } from './PostReplyEmail';
 
 export { CommentReplyEmail } from './CommentReplyEmail';
-export type { CommentReplyEmailProps } from './CommentReplyEmail';
+export type { CommentReplyEmailProperties } from './CommentReplyEmail';
 
 export { VoteNotificationEmail } from './VoteNotificationEmail';
-export type { VoteNotificationEmailProps } from './VoteNotificationEmail';
+export type { VoteNotificationEmailProperties } from './VoteNotificationEmail';
 
 export { MentionNotificationEmail } from './MentionNotificationEmail';
-export type { MentionNotificationEmailProps } from './MentionNotificationEmail';
+export type { MentionNotificationEmailProperties } from './MentionNotificationEmail';
 
 export { TaskAssignedEmail } from './TaskAssignedEmail';
-export type { TaskAssignedEmailProps } from './TaskAssignedEmail';
+export type { TaskAssignedEmailProperties } from './TaskAssignedEmail';
 
 export { WeeklyDigestEmail } from './WeeklyDigestEmail';
-export type { WeeklyDigestEmailProps, TrendingPost, UserStats } from './WeeklyDigestEmail';
+export type { WeeklyDigestEmailProperties, TrendingPost, UserStats } from './WeeklyDigestEmail';
